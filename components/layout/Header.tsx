@@ -20,7 +20,7 @@ export default function Header() {
             <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
-                        SpotTheDifference
+                        SpotDiffs
                     </Link>
 
                     <nav className="hidden md:flex items-center gap-8">
