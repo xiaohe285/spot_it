@@ -1,8 +1,43 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
-import { levels } from '@/data/levels';
+import Image from 'next/image';
+import { getLevelsByDifficulty } from '@/lib/levels';
 
-export default function DifficultyPage() {
-    const difficulties = ['Easy', 'Hard', 'Expert'];
+const MAX_GAMES_PER_DIFFICULTY = 12;
+const siteUrl = 'https://spotdiffs.com';
+
+export const metadata: Metadata = {
+  title: 'Games by Difficulty - Easy, Hard & Expert Puzzles',
+  description: 'Browse spot the difference games by difficulty level. Choose from easy, hard, or expert puzzles to match your skill level.',
+  openGraph: {
+    title: 'Games by Difficulty - Spot the Difference',
+    description: 'Browse spot the difference games by difficulty level. Choose from easy, hard, or expert puzzles.',
+    url: `${siteUrl}/games/difficulty`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Games by Difficulty - Spot the Difference',
+    description: 'Browse spot the difference games by difficulty level.',
+  },
+  alternates: {
+    canonical: `${siteUrl}/games/difficulty`,
+  },
+};
+
+export default async function DifficultyPage() {
+    const difficulties: ('Easy' | 'Hard' | 'Expert')[] = ['Easy', 'Hard', 'Expert'];
+
+    // Fetch levels for each difficulty
+    const easyLevels = await getLevelsByDifficulty('Easy');
+    const hardLevels = await getLevelsByDifficulty('Hard');
+    const expertLevels = await getLevelsByDifficulty('Expert');
+
+    const levelsByDifficulty = {
+        Easy: easyLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
+        Hard: hardLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
+        Expert: expertLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
+    };
 
     return (
         <div className="container mx-auto px-4 py-12">
@@ -13,7 +48,7 @@ export default function DifficultyPage() {
 
             <div className="space-y-12">
                 {difficulties.map((difficulty) => {
-                    const difficultyLevels = levels.filter(l => l.difficulty === difficulty);
+                    const difficultyLevels = levelsByDifficulty[difficulty];
                     if (difficultyLevels.length === 0) return null;
 
                     return (
@@ -26,7 +61,7 @@ export default function DifficultyPage() {
                                 </span>
                             </h2>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {difficultyLevels.map((level) => (
                                     <Link
                                         key={level.id}
@@ -34,14 +69,17 @@ export default function DifficultyPage() {
                                         className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                                     >
                                         <div className="relative h-48 overflow-hidden">
-                                            <img
-                                                src={level.imageUrl1}
+                                            <Image
+                                                src={level.image_url_1}
                                                 alt={level.title}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                fill
+                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
-                                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-purple-600">
-                                                {level.category}
-                                            </div>
+                                            {level.category_name && (
+                                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-purple-600">
+                                                    {level.category_name}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="p-6">
                                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 transition-colors">{level.title}</h3>

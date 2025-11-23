@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Level } from '@/types';
+import { LevelWithCategory } from '@/lib/levels';
 import { soundEffects } from '@/utils/soundEffects';
 
 export interface GameStats {
@@ -16,7 +16,7 @@ export interface GameStats {
 }
 
 interface GameCanvasProps {
-    level: Level;
+    level: LevelWithCategory;
     onComplete: (stats: GameStats) => void;
     maxHints?: number;
 }
@@ -253,7 +253,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                 <div className="relative w-full md:w-1/2 aspect-video cursor-crosshair group" onClick={(e) => handleImageClick(e, 1)}>
                     <Image
                         ref={imageRef}
-                        src={level.imageUrl1}
+                        src={level.image_url_1}
                         alt="Original"
                         fill
                         className="object-cover rounded-lg shadow-lg pointer-events-none select-none"
@@ -340,7 +340,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                 {/* Image 2 */}
                 <div className="relative w-full md:w-1/2 aspect-video cursor-crosshair group" onClick={(e) => handleImageClick(e, 2)}>
                     <Image
-                        src={level.imageUrl2}
+                        src={level.image_url_2}
                         alt="Difference"
                         fill
                         className="object-cover rounded-lg shadow-lg pointer-events-none select-none"

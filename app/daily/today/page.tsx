@@ -1,4 +1,26 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+const siteUrl = 'https://spotdiffs.com';
+
+export const metadata: Metadata = {
+  title: 'Daily Challenge - Today\'s Puzzle',
+  description: 'Play today\'s daily spot the difference challenge! Earn double points and exclusive badges by completing the daily puzzle.',
+  openGraph: {
+    title: 'Daily Challenge - Spot the Difference',
+    description: 'Play today\'s daily spot the difference challenge! Earn double points and exclusive badges.',
+    url: `${siteUrl}/daily/today`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Daily Challenge - Spot the Difference',
+    description: 'Play today\'s daily puzzle and earn exclusive rewards!',
+  },
+  alternates: {
+    canonical: `${siteUrl}/daily/today`,
+  },
+};
 
 export default function DailyChallengePage() {
     return (
@@ -26,7 +48,7 @@ export default function DailyChallengePage() {
                     />
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                         <Link
-                            href="/game/2" // Linking to a mock level for now
+                            href="/game/mountain-peaks"
                             className="px-10 py-5 bg-white text-gray-900 rounded-full font-bold text-xl hover:bg-yellow-400 transition-colors shadow-lg transform hover:scale-105"
                         >
                             Play Challenge

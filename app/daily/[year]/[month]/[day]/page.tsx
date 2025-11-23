@@ -1,17 +1,50 @@
-import { use } from 'react';
+'use client';
+
+import { use, useState } from 'react';
 import Link from 'next/link';
 import { levels } from '@/data/levels';
-import GameCanvas from '@/components/game/GameCanvas';
+import GameCanvas, { GameStats } from '@/components/game/GameCanvas';
+import { LevelWithCategory } from '@/lib/levels';
 
 export default function DailyChallengeDetailPage({ params }: { params: Promise<{ year: string; month: string; day: string }> }) {
     const { year, month, day } = use(params);
-    const dateStr = `${year}-${month}-${day}`;
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const [gameStats, setGameStats] = useState<GameStats | null>(null);
 
     // In a real app, we would fetch the specific challenge for this date
     // For now, we'll just pick a random level based on the date to simulate variety
     const levelIndex = (parseInt(year) + parseInt(month) + parseInt(day)) % levels.length;
-    const level = levels[levelIndex];
+    const mockLevel = levels[levelIndex];
+
+    // Convert mock data to LevelWithCategory format
+    const level: LevelWithCategory = {
+        id: mockLevel.id,
+        slug: mockLevel.slug,
+        title: mockLevel.title,
+        description: null,
+        category_id: null,
+        image_url_1: mockLevel.imageUrl1,
+        image_url_2: mockLevel.imageUrl2,
+        differences: mockLevel.differences,
+        difficulty: mockLevel.difficulty as 'Easy' | 'Hard' | 'Expert',
+        display_order: 0,
+        seo_title: null,
+        seo_description: null,
+        total_plays: 0,
+        average_score: 0,
+        average_time: 0,
+        published: true,
+        featured: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category_slug: null,
+        category_name: mockLevel.category,
+        category_icon: null,
+    };
+
+    const handleGameComplete = (stats: GameStats) => {
+        setGameStats(stats);
+    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -33,13 +66,13 @@ export default function DailyChallengeDetailPage({ params }: { params: Promise<{
                     </div>
                     <div className="flex gap-4">
                         <div className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-bold">
-                            Score: 0
+                            Score: {gameStats?.score || 0}
                         </div>
                     </div>
                 </div>
 
                 <div className="p-6 flex justify-center bg-gray-100 dark:bg-gray-900">
-                    <GameCanvas level={level} />
+                    <GameCanvas level={level} onComplete={handleGameComplete} />
                 </div>
             </div>
         </div>

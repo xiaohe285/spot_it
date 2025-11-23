@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: '/private/',
+            disallow: ['/api/', '/private/'],
         },
-        sitemap: 'https://spot-the-difference.com/sitemap.xml',
+        sitemap: 'https://spotdiffs.com/sitemap.xml',
     };
 }

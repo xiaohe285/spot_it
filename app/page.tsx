@@ -1,23 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { levels } from "@/data/levels";
+import { getPopularLevels, getFeaturedLevels } from "@/lib/levels";
+import { getGlobalLeaderboard } from "@/lib/gameRecords";
 
-export default function Home() {
-  // Mock data for popular games (based on player count)
-  const popularGames = [
-    { ...levels[0], players: 15234 }, // Sunny Beach
-    { ...levels[2], players: 12456 }, // Cute Animals
-    { ...levels[1], players: 11890 }, // City Night
-    { ...levels[3], players: 10567 }, // Mountain Peaks
-  ];
-
-  // Featured games (editor's picks)
-  const featuredGames = [
-    levels[4], // Tropical Forest
-    levels[6], // Space Adventure
-    levels[5], // Underwater World
-    levels[7], // Autumn Park
-  ];
+export default async function Home() {
+  // Fetch data from database
+  const { data: popularGames } = await getPopularLevels(4);
+  const { data: featuredGames } = await getFeaturedLevels(4);
+  const { data: topPlayers } = await getGlobalLeaderboard(3);
   return (
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
@@ -107,7 +97,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {popularGames.map((game) => (
+          {popularGames && popularGames.map((game) => (
             <Link
               key={game.id}
               href={`/game/${game.slug}`}
@@ -116,7 +106,7 @@ export default function Home() {
               {/* Game Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src={game.imageUrl1}
+                  src={game.image_url_1}
                   alt={game.title}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -137,7 +127,7 @@ export default function Home() {
                 {/* Player Count Badge */}
                 <div className="absolute top-3 left-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
                   <span className="text-yellow-400 text-xs">👥</span>
-                  <span className="text-white text-xs font-semibold">{game.players?.toLocaleString()}</span>
+                  <span className="text-white text-xs font-semibold">{game.total_plays?.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -167,7 +157,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredGames.map((game) => (
+          {featuredGames && featuredGames.map((game) => (
             <Link
               key={game.id}
               href={`/game/${game.slug}`}
@@ -176,7 +166,7 @@ export default function Home() {
               {/* Game Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src={game.imageUrl1}
+                  src={game.image_url_1}
                   alt={game.title}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -254,38 +244,49 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Leaderboard Preview */}
-      <section className="container mx-auto px-4 bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-12 shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Top Players</h2>
-            <p className="text-gray-500 dark:text-gray-400">This week's champions</p>
-          </div>
-          <Link href="/leaderboard" className="text-purple-600 font-semibold hover:text-purple-700">
-            View Full Leaderboard
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { rank: 1, name: "EagleEye", score: 15420, avatar: "🦅" },
-            { rank: 2, name: "PixelHunter", score: 14200, avatar: "🕵️" },
-            { rank: 3, name: "SpotMaster", score: 13850, avatar: "👑" },
-          ].map((player) => (
-            <div key={player.rank} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600">
-              <div className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-white
-                ${player.rank === 1 ? 'bg-yellow-400' : player.rank === 2 ? 'bg-gray-400' : 'bg-orange-400'}`}>
-                #{player.rank}
-              </div>
-              <div className="flex-grow">
-                <div className="font-bold text-gray-900 dark:text-white">{player.name}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">{player.score} pts</div>
-              </div>
-              <div className="text-2xl">{player.avatar}</div>
+      {/* Leaderboard Preview - Only show if there are players */}
+      {topPlayers && topPlayers.length > 0 && (
+        <section className="container mx-auto px-4 bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-12 shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Top Players</h2>
+              <p className="text-gray-500 dark:text-gray-400">All-time champions</p>
             </div>
-          ))}
-        </div>
-      </section>
+            <Link href="/leaderboard" className="text-purple-600 font-semibold hover:text-purple-700">
+              View Full Leaderboard
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {topPlayers.map((player) => (
+              <div key={player.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600">
+                <div className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-white shrink-0
+                  ${player.rank === 1 ? 'bg-yellow-400' : player.rank === 2 ? 'bg-gray-400' : 'bg-orange-400'}`}>
+                  #{player.rank}
+                </div>
+                <div className="flex-grow min-w-0">
+                  <div className="font-bold text-gray-900 dark:text-white truncate">
+                    {player.display_name || player.username || 'Anonymous'}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {player.total_score?.toLocaleString() || 0} pts
+                  </div>
+                </div>
+                {/* Avatar: Show image if available, otherwise show first letter */}
+                {player.avatar_url ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                    <img src={player.avatar_url} alt={player.display_name || player.username || 'User'} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center text-white font-bold shrink-0">
+                    {(player.display_name || player.username || 'A')[0].toUpperCase()}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
