@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { Providers } from "@/components/providers/Providers";
 import StructuredData from "@/components/seo/StructuredData";
 import { getWebsiteSchema, getOrganizationSchema } from "@/lib/structuredData";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 
 const siteUrl = "https://spotdiffs.com";
 
@@ -70,10 +71,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html lang="en">
       <head>
         <StructuredData data={[getWebsiteSchema(), getOrganizationSchema()]} />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </head>
       <body className="antialiased min-h-screen flex flex-col bg-gray-50">
         <Providers>
