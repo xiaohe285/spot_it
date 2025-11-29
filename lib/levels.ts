@@ -274,17 +274,25 @@ export async function getDailyChallenge(
     `)
     .eq('challenge_date', targetDate)
     .eq('is_active', true)
-    .single();
+    .limit(1);
 
   if (error) {
-    // If no daily challenge found, fallback to algorithm-based selection
+    console.error('Error fetching daily challenge:', error);
+    // If database error, fallback to algorithm-based selection
     return await getFallbackDailyChallenge(targetDate);
   }
 
+  // If no data found (empty array), fallback to algorithm-based selection
+  if (!data || data.length === 0) {
+    console.log(`No daily challenge found for ${targetDate}, using fallback`);
+    return await getFallbackDailyChallenge(targetDate);
+  }
+
+  const dailyChallenge = data[0];
   return {
-    data: data ? {
-      ...data,
-      level: Array.isArray(data.level) ? data.level[0] : data.level
+    data: dailyChallenge ? {
+      ...dailyChallenge,
+      level: Array.isArray(dailyChallenge.level) ? dailyChallenge.level[0] : dailyChallenge.level
     } : null,
     error: null
   };
@@ -359,6 +367,39 @@ export interface DailyChallengeArchiveItem {
   } | null;
 }
 
+// Optimized batch query for daily challenges in date range
+async function getDailyChallengesBatch(
+  startDate: string, 
+  endDate: string
+): Promise<{ data: DailyChallengeWithLevel[] | null; error: any }> {
+  const supabase = createClient();
+  
+  // Batch query for all challenges in date range
+  const { data, error } = await supabase
+    .from('daily_challenges')
+    .select(`
+      *,
+      level:levels_with_category!inner(*)
+    `)
+    .gte('challenge_date', startDate)
+    .lte('challenge_date', endDate)
+    .eq('is_active', true)
+    .order('challenge_date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching daily challenges batch:', error);
+    return { data: null, error };
+  }
+
+  // Process the results to ensure proper level structure
+  const processedData = data?.map(item => ({
+    ...item,
+    level: Array.isArray(item.level) ? item.level[0] : item.level
+  })) || [];
+
+  return { data: processedData, error: null };
+}
+
 export async function getDailyChallengeArchive(
   userId?: string,
   limit: number = 30
@@ -371,52 +412,84 @@ export async function getDailyChallengeArchive(
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - limit);
     
+    const startDateString = startDate.toISOString().split('T')[0];
+    const endDateString = endDate.toISOString().split('T')[0];
+    
+    // Batch query all challenges in date range (1 query instead of 30)
+    const { data: challenges, error: batchError } = await getDailyChallengesBatch(
+      startDateString, 
+      endDateString
+    );
+    
+    if (batchError) {
+      console.error('Failed to fetch challenges batch:', batchError);
+      // Continue with fallback approach instead of failing completely
+    }
+    
+    // Create a map of challenges by date for quick lookup
+    const challengeMap = new Map<string, DailyChallengeWithLevel>();
+    challenges?.forEach(challenge => {
+      challengeMap.set(challenge.challenge_date, challenge);
+    });
+    
+    // Batch query user records if userId is provided (1 query instead of 30)
+    let userRecordsMap = new Map<string, any>();
+    if (userId && challenges && challenges.length > 0) {
+      const challengeIds = challenges.map(c => c.id);
+      
+      const { data: userRecords, error: recordsError } = await supabase
+        .from('daily_challenge_records')
+        .select('challenge_id, completion_time, score, completed_at')
+        .eq('user_id', userId)
+        .in('challenge_id', challengeIds);
+      
+      if (!recordsError && userRecords) {
+        userRecords.forEach(record => {
+          userRecordsMap.set(record.challenge_id, {
+            completed: true,
+            score: record.score,
+            completion_time: record.completion_time,
+            completed_at: record.completed_at
+          });
+        });
+      }
+    }
+    
     const archiveItems: DailyChallengeArchiveItem[] = [];
     
-    // Generate dates and get challenges for each day
+    // Generate dates and build archive items
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateString = d.toISOString().split('T')[0];
       
-      // Get challenge for this date
-      const { data: challenge, error: challengeError } = await getDailyChallenge(dateString);
+      // Check if we have a challenge for this date
+      let challenge = challengeMap.get(dateString);
       
-      if (challengeError) {
-        continue; // Skip dates with errors
-      }
-      
-      if (challenge) {
-        let userRecord = null;
-        
-        // If userId provided, get user's record for this challenge
-        if (userId) {
-          const { data: record, error: recordError } = await supabase
-            .from('daily_challenge_records')
-            .select('completion_time, score, completed_at')
-            .eq('user_id', userId)
-            .eq('challenge_id', challenge.id)
-            .single();
-          
-          if (!recordError && record) {
-            userRecord = {
-              completed: true,
-              score: record.score,
-              completion_time: record.completion_time,
-              completed_at: record.completed_at
-            };
-          } else {
-            userRecord = {
-              completed: false,
-              score: 0
-            };
-          }
+      // If no challenge found, create fallback
+      if (!challenge) {
+        const { data: fallbackChallenge, error: fallbackError } = await getFallbackDailyChallenge(dateString);
+        if (!fallbackError && fallbackChallenge) {
+          challenge = fallbackChallenge;
+        } else {
+          continue; // Skip this date if we can't create a fallback
         }
-        
-        archiveItems.push({
-          date: dateString,
-          challenge,
-          userRecord
-        });
       }
+      
+      // Get user record for this challenge (if available)
+      let userRecord = userRecordsMap.get(challenge.id) || null;
+      
+      // If user is provided but no record found, mark as not completed
+      if (userId && !userRecord) {
+        userRecord = {
+          completed: false,
+          score: 0
+        };
+      }
+      
+      archiveItems.push({
+        date: dateString,
+        challenge,
+        userRecord
+      });
     }
     
     // Sort by date descending (most recent first)
@@ -425,6 +498,7 @@ export async function getDailyChallengeArchive(
     return { data: archiveItems, error: null };
     
   } catch (error) {
+    console.error('Error in getDailyChallengeArchive:', error);
     return { data: null, error };
   }
 }
