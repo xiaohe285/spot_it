@@ -9,9 +9,47 @@ import AuthModal from '@/components/auth/AuthModal';
 import { LevelWithCategory, getDailyChallengeByDate } from '@/lib/levels';
 import { GameRecordCache } from '@/lib/gameRecordCache';
 import { useAuth } from '@/contexts/AuthContext';
+import { saveGameRecord } from '@/lib/gameRecords';
+import { checkEarnedBadges } from '@/utils/badgeSystem';
 
 interface DailyChallengeClientProps {
   params: { year: string; month: string; day: string };
+}
+
+// Calculate star rating based on performance (same as in GamePageClient)
+function calculateStars(stats: GameStats, level: any): number {
+    const { timeElapsed, accuracy, hintsUsed } = stats;
+    const difficultyMultiplier = level.difficulty === 'Easy' ? 1 : level.difficulty === 'Hard' ? 1.3 : 1.6;
+
+    // Time threshold (seconds) - adjusted by difficulty
+    const excellentTime = 60 * difficultyMultiplier;
+    const goodTime = 120 * difficultyMultiplier;
+
+    let stars = 0;
+
+    // Base star from completion
+    stars += 1;
+
+    // Time bonus (up to 1 star)
+    if (timeElapsed <= excellentTime) {
+        stars += 1;
+    } else if (timeElapsed <= goodTime) {
+        stars += 0.5;
+    }
+
+    // Accuracy bonus (up to 1 star)
+    if (accuracy >= 90) {
+        stars += 1;
+    } else if (accuracy >= 70) {
+        stars += 0.5;
+    }
+
+    // Hint penalty
+    if (hintsUsed > 0) {
+        stars -= hintsUsed * 0.3;
+    }
+
+    return Math.max(1, Math.min(3, Math.round(stars * 2) / 2)); // Return 1, 1.5, 2, 2.5, or 3
 }
 
 export default function DailyChallengeClient({ params }: DailyChallengeClientProps) {
@@ -107,7 +145,7 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
         loadChallenge();
     }, [year, month, day]);
 
-    const handleGameComplete = (stats: GameStats) => {
+    const handleGameComplete = async (stats: GameStats) => {
         setGameStats(stats);
         setShowCompletionModal(true);
 
@@ -116,17 +154,60 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
             const challengeDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             
             if (user) {
-                // User is logged in - save to server (implement actual API call)
-                console.log('Saving game record to server for logged in user:', {
-                    userId: user.id,
-                    levelSlug: level.slug,
-                    levelTitle: level.title,
-                    gameStats: stats,
-                    challengeDate,
-                    isDaily: true,
-                });
-                setIsRecordSaved(true);
-                // TODO: Implement actual API call to save game record
+                // User is logged in - save to server
+                try {
+                    console.log('Saving game record to server for logged in user');
+                    
+                    // Calculate stars and badges
+                    const stars = calculateStars(stats, level);
+                    const badges = checkEarnedBadges(stats, level);
+                    const badgeIds = badges.map((b) => b.id);
+
+                    // Save to database
+                    const { error } = await saveGameRecord(
+                        user.id,
+                        level.id,
+                        level.slug,
+                        level.title,
+                        stats,
+                        stars,
+                        badgeIds
+                    );
+
+                    if (error) {
+                        console.error('Failed to save game record:', error);
+                        // Even if server save fails, show as saved to avoid confusing the user
+                        // The record will be cached and synced later
+                        if (GameRecordCache.isAvailable()) {
+                            GameRecordCache.saveRecord({
+                                levelSlug: level.slug,
+                                levelTitle: level.title,
+                                gameStats: stats,
+                                challengeDate,
+                                isDaily: true,
+                            });
+                        }
+                    } else {
+                        console.log('Game record successfully saved to server');
+                    }
+                    
+                    setIsRecordSaved(true);
+                } catch (error) {
+                    console.error('Error saving game record:', error);
+                    
+                    // Cache locally as fallback
+                    if (GameRecordCache.isAvailable()) {
+                        GameRecordCache.saveRecord({
+                            levelSlug: level.slug,
+                            levelTitle: level.title,
+                            gameStats: stats,
+                            challengeDate,
+                            isDaily: true,
+                        });
+                    }
+                    
+                    setIsRecordSaved(true); // Still show as saved for UX
+                }
             } else {
                 // User is not logged in - cache locally
                 if (GameRecordCache.isAvailable()) {
