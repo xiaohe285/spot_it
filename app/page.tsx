@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getPopularLevels, getFeaturedLevels } from "@/lib/levels";
+import { getPopularLevels, getFeaturedLevels, getTodaysChallenge } from "@/lib/levels";
 import { getGlobalLeaderboard } from "@/lib/gameRecords";
 
 export default async function Home() {
@@ -8,6 +8,7 @@ export default async function Home() {
   const { data: popularGames } = await getPopularLevels(4);
   const { data: featuredGames } = await getFeaturedLevels(4);
   const { data: topPlayers } = await getGlobalLeaderboard(3);
+  const { data: todaysChallenge } = await getTodaysChallenge();
   return (
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
@@ -42,44 +43,85 @@ export default async function Home() {
 
             {/* Right: Daily Challenge Preview */}
             <div className="flex justify-center lg:justify-end">
-              <Link
-                href="/daily/today"
-                className="group relative w-full max-w-md"
-              >
-                <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-yellow-400/50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-yellow-400">
-                  {/* Badge */}
-                  <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm shadow-lg">
-                    <span className="text-lg">⭐</span>
-                    TODAY'S CHALLENGE
-                  </div>
+              {todaysChallenge ? (
+                <Link
+                  href={`/game/${todaysChallenge.level.slug}`}
+                  className="group relative w-full max-w-md"
+                >
+                  <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-yellow-400/50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-yellow-400">
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+                      <span className="text-lg">⭐</span>
+                      TODAY&apos;S CHALLENGE
+                    </div>
 
-                  {/* Preview Image */}
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
-                    <img
-                      src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1000&auto=format&fit=crop"
-                      alt="Today's Challenge"
-                      className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
-                    />
-                  </div>
+                    {/* Difficulty Badge */}
+                    <div className="absolute top-4 right-4 z-20">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        todaysChallenge.level.difficulty === 'Easy' ? 'bg-green-500 text-white' :
+                        todaysChallenge.level.difficulty === 'Hard' ? 'bg-orange-500 text-white' :
+                        'bg-red-500 text-white'
+                      }`}>
+                        {todaysChallenge.level.difficulty}
+                      </span>
+                    </div>
 
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <div className="px-8 py-4 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full font-bold text-lg shadow-xl transform transition-all group-hover:bg-yellow-400 group-hover:scale-110">
-                      Start Challenge →
+                    {/* Preview Image */}
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+                      <Image
+                        src={todaysChallenge.level.image_url_1}
+                        alt={todaysChallenge.level.title}
+                        fill
+                        className="object-cover transform transition-transform duration-700 group-hover:scale-110"
+                      />
+                    </div>
+
+                    {/* Play Button Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                      <div className="px-8 py-4 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full font-bold text-lg shadow-xl transform transition-all group-hover:bg-yellow-400 group-hover:scale-110">
+                        Start Challenge →
+                      </div>
+                    </div>
+
+                    {/* Bottom Info */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent z-10">
+                      <h3 className="text-white font-bold text-xl mb-1">
+                        {todaysChallenge.special_title || todaysChallenge.level.title}
+                      </h3>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="text-yellow-400 font-semibold">
+                          ⚡ {todaysChallenge.bonus_multiplier}x Points
+                        </span>
+                        <span className="text-gray-300">
+                          🏆 {todaysChallenge.special_badge || 'Daily Badge'}
+                        </span>
+                        <span className="text-gray-300">
+                          🔍 {todaysChallenge.level.differences.length} Differences
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Bottom Info */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent z-10">
-                    <h3 className="text-white font-bold text-xl mb-1">The Hidden Temple</h3>
-                    <div className="flex items-center gap-3 text-sm">
-                      <span className="text-yellow-400 font-semibold">⚡ Double XP</span>
-                      <span className="text-gray-300">🏆 Exclusive Badge</span>
+                </Link>
+              ) : (
+                /* Fallback when no challenge available */
+                <Link
+                  href="/games"
+                  className="group relative w-full max-w-md"
+                >
+                  <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-purple-400/50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-purple-400">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500">
+                      <div className="absolute inset-0 flex items-center justify-center z-20">
+                        <div className="text-center text-white">
+                          <div className="text-6xl mb-4">🎯</div>
+                          <h3 className="text-2xl font-bold mb-2">Browse Games</h3>
+                          <p className="text-purple-100">Thousands of puzzles await!</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              )}
             </div>
           </div>
         </div>

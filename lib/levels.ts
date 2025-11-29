@@ -239,6 +239,251 @@ export async function searchLevels(
 }
 
 // =====================================================
+// Daily Challenges
+// =====================================================
+
+export interface DailyChallenge {
+  id: string;
+  challenge_date: string;
+  level_id: string;
+  bonus_multiplier: number;
+  special_badge: string | null;
+  special_title: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DailyChallengeWithLevel extends DailyChallenge {
+  level: LevelWithCategory;
+}
+
+export async function getDailyChallenge(
+  date?: string
+): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+  const supabase = createClient();
+  
+  // Use provided date or today's date
+  const targetDate = date || new Date().toISOString().split('T')[0];
+
+  const { data, error } = await supabase
+    .from('daily_challenges')
+    .select(`
+      *,
+      level:levels_with_category!inner(*)
+    `)
+    .eq('challenge_date', targetDate)
+    .eq('is_active', true)
+    .single();
+
+  if (error) {
+    // If no daily challenge found, fallback to algorithm-based selection
+    return await getFallbackDailyChallenge(targetDate);
+  }
+
+  return {
+    data: data ? {
+      ...data,
+      level: Array.isArray(data.level) ? data.level[0] : data.level
+    } : null,
+    error: null
+  };
+}
+
+// Fallback: Generate daily challenge based on date algorithm
+async function getFallbackDailyChallenge(
+  date: string
+): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+  const supabase = createClient();
+
+  // Create a simple seed from the date
+  const dateObj = new Date(date + 'T00:00:00Z');
+  const daysSinceEpoch = Math.floor(dateObj.getTime() / (1000 * 60 * 60 * 24));
+  
+  // Get all published levels
+  const { data: levels, error } = await supabase
+    .from('levels_with_category')
+    .select('*')
+    .eq('published', true)
+    .order('display_order', { ascending: true });
+
+  if (error || !levels || levels.length === 0) {
+    return { data: null, error: error || new Error('No levels found') };
+  }
+
+  // Use modulo to select a level deterministically based on date
+  const selectedLevel = levels[daysSinceEpoch % levels.length];
+
+  // Create a synthetic daily challenge object
+  const dailyChallenge: DailyChallengeWithLevel = {
+    id: `fallback-${date}`,
+    challenge_date: date,
+    level_id: selectedLevel.id,
+    bonus_multiplier: 2.0,
+    special_badge: 'Daily Champion',
+    special_title: `${date} Daily Challenge`,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    level: selectedLevel
+  };
+
+  return { data: dailyChallenge, error: null };
+}
+
+export async function getTodaysChallenge(): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+  return getDailyChallenge();
+}
+
+export async function getDailyChallengeByDate(
+  year: number,
+  month: number,
+  day: number
+): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+  const date = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  return getDailyChallenge(date);
+}
+
+// =====================================================
+// Daily Challenge Archive
+// =====================================================
+
+export interface DailyChallengeArchiveItem {
+  date: string;
+  challenge: DailyChallengeWithLevel;
+  userRecord?: {
+    completed: boolean;
+    score: number;
+    completion_time?: number;
+    completed_at?: string;
+  } | null;
+}
+
+export async function getDailyChallengeArchive(
+  userId?: string,
+  limit: number = 30
+): Promise<{ data: DailyChallengeArchiveItem[] | null; error: any }> {
+  const supabase = createClient();
+  
+  try {
+    // Get the date range for the archive (last 'limit' days)
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - limit);
+    
+    const archiveItems: DailyChallengeArchiveItem[] = [];
+    
+    // Generate dates and get challenges for each day
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateString = d.toISOString().split('T')[0];
+      
+      // Get challenge for this date
+      const { data: challenge, error: challengeError } = await getDailyChallenge(dateString);
+      
+      if (challengeError) {
+        continue; // Skip dates with errors
+      }
+      
+      if (challenge) {
+        let userRecord = null;
+        
+        // If userId provided, get user's record for this challenge
+        if (userId) {
+          const { data: record, error: recordError } = await supabase
+            .from('daily_challenge_records')
+            .select('completion_time, score, completed_at')
+            .eq('user_id', userId)
+            .eq('challenge_id', challenge.id)
+            .single();
+          
+          if (!recordError && record) {
+            userRecord = {
+              completed: true,
+              score: record.score,
+              completion_time: record.completion_time,
+              completed_at: record.completed_at
+            };
+          } else {
+            userRecord = {
+              completed: false,
+              score: 0
+            };
+          }
+        }
+        
+        archiveItems.push({
+          date: dateString,
+          challenge,
+          userRecord
+        });
+      }
+    }
+    
+    // Sort by date descending (most recent first)
+    archiveItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    return { data: archiveItems, error: null };
+    
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+export async function getUserDailyChallengeHistory(
+  userId: string,
+  limit: number = 50
+): Promise<{ data: DailyChallengeArchiveItem[] | null; error: any }> {
+  const supabase = createClient();
+  
+  try {
+    // Get user's daily challenge records with challenge details
+    const { data: records, error } = await supabase
+      .from('daily_challenge_records')
+      .select(`
+        *,
+        daily_challenges!inner(*)
+      `)
+      .eq('user_id', userId)
+      .order('completed_at', { ascending: false })
+      .limit(limit);
+    
+    if (error) {
+      return { data: null, error };
+    }
+    
+    const historyItems: DailyChallengeArchiveItem[] = [];
+    
+    // Process each record
+    for (const record of records || []) {
+      const challengeData = Array.isArray(record.daily_challenges) 
+        ? record.daily_challenges[0] 
+        : record.daily_challenges;
+      
+      // Get full challenge details with level information
+      const { data: fullChallenge, error: challengeError } = await getDailyChallenge(challengeData.challenge_date);
+      
+      if (!challengeError && fullChallenge) {
+        historyItems.push({
+          date: challengeData.challenge_date,
+          challenge: fullChallenge,
+          userRecord: {
+            completed: true,
+            score: record.score,
+            completion_time: record.completion_time,
+            completed_at: record.completed_at
+          }
+        });
+      }
+    }
+    
+    return { data: historyItems, error: null };
+    
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+// =====================================================
 // Statistics
 // =====================================================
 

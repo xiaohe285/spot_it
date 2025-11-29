@@ -7,9 +7,10 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'signup';
+  onSuccess?: () => void;
 }
 
-export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess }: AuthModalProps) {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +37,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         } else {
           setSuccess('Successfully logged in!');
           setTimeout(() => {
+            onSuccess?.();
             onClose();
             resetForm();
           }, 1000);
