@@ -51,15 +51,28 @@ export default async function DifficultyPage() {
                     const difficultyLevels = levelsByDifficulty[difficulty];
                     if (difficultyLevels.length === 0) return null;
 
+                    const difficultySlug = difficulty.toLowerCase();
+
                     return (
                         <section key={difficulty}>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                                {difficulty}
-                                <span className={`text-sm px-3 py-1 rounded-full text-white
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    {difficulty}
+                                    <span className={`text-sm px-3 py-1 rounded-full text-white
                   ${difficulty === 'Easy' ? 'bg-green-500' : difficulty === 'Hard' ? 'bg-orange-500' : 'bg-red-600'}`}>
-                                    {difficultyLevels.length} Games
-                                </span>
-                            </h2>
+                                        {difficultyLevels.length}+ Games
+                                    </span>
+                                </h2>
+                                <Link
+                                    href={`/games/difficulty/${difficultySlug}`}
+                                    className="text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2 transition-colors"
+                                >
+                                    View All
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
+                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {difficultyLevels.map((level) => (

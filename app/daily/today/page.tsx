@@ -4,17 +4,17 @@ import Link from 'next/link';
 const siteUrl = 'https://spotdiffs.com';
 
 export const metadata: Metadata = {
-  title: 'Daily Challenge - Today\'s Puzzle',
+  title: 'Spot the Difference Daily Challenge - Today\'s Puzzle',
   description: 'Play today\'s daily spot the difference challenge! Earn double points and exclusive badges by completing the daily puzzle.',
   openGraph: {
-    title: 'Daily Challenge - Spot the Difference',
+    title: 'Spot the Difference Daily Challenge - Today\'s Puzzle',
     description: 'Play today\'s daily spot the difference challenge! Earn double points and exclusive badges.',
     url: `${siteUrl}/daily/today`,
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Daily Challenge - Spot the Difference',
+    title: 'Spot the Difference Daily Challenge - Today\'s Puzzle',
     description: 'Play today\'s daily puzzle and earn exclusive rewards!',
   },
   alternates: {

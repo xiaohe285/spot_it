@@ -134,6 +134,65 @@ export async function getLevelsByDifficulty(
   return { data, error };
 }
 
+export async function getLevelsByDifficultyPaginated(
+  difficulty: 'Easy' | 'Hard' | 'Expert',
+  page: number = 1,
+  pageSize: number = 24
+): Promise<{
+  data: LevelWithCategory[] | null;
+  error: any;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
+  const supabase = createClient();
+
+  // Calculate range for pagination
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  // Fetch total count
+  const { count, error: countError } = await supabase
+    .from('levels_with_category')
+    .select('*', { count: 'exact', head: true })
+    .eq('difficulty', difficulty)
+    .eq('published', true);
+
+  if (countError) {
+    return {
+      data: null,
+      error: countError,
+      total: 0,
+      page,
+      pageSize,
+      totalPages: 0,
+    };
+  }
+
+  const total = count || 0;
+
+  // Fetch paginated data
+  const { data, error } = await supabase
+    .from('levels_with_category')
+    .select('*')
+    .eq('difficulty', difficulty)
+    .eq('published', true)
+    .order('display_order', { ascending: true })
+    .range(from, to);
+
+  const totalPages = Math.ceil(total / pageSize);
+
+  return {
+    data,
+    error,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  };
+}
+
 export async function getFeaturedLevels(
   limit: number = 4
 ): Promise<{ data: LevelWithCategory[] | null; error: any }> {
