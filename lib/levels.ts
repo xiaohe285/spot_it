@@ -432,10 +432,57 @@ export async function getDailyChallengeArchive(
       challengeMap.set(challenge.challenge_date, challenge);
     });
     
-    // Batch query user records if userId is provided (1 query instead of 30)
+    // Pre-load all levels once for fallback generation (避免重复查询)
+    let allLevels: any[] = [];
+    const missingDates: string[] = [];
+    
+    // Check which dates need fallback
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateString = d.toISOString().split('T')[0];
+      if (!challengeMap.has(dateString)) {
+        missingDates.push(dateString);
+      }
+    }
+    
+    // Load all levels once if we need fallback challenges
+    if (missingDates.length > 0) {
+      const { data: levels, error: levelsError } = await supabase
+        .from('levels_with_category')
+        .select('*')
+        .eq('published', true)
+        .order('display_order', { ascending: true });
+      
+      if (!levelsError && levels) {
+        allLevels = levels;
+        
+        // Generate fallback challenges for missing dates
+        missingDates.forEach(dateString => {
+          const dateObj = new Date(dateString + 'T00:00:00Z');
+          const daysSinceEpoch = Math.floor(dateObj.getTime() / (1000 * 60 * 60 * 24));
+          const selectedLevel = allLevels[daysSinceEpoch % allLevels.length];
+          
+          const fallbackChallenge: DailyChallengeWithLevel = {
+            id: `fallback-${dateString}`,
+            challenge_date: dateString,
+            level_id: selectedLevel.id,
+            bonus_multiplier: 2.0,
+            special_badge: 'Daily Champion',
+            special_title: `${dateString} Daily Challenge`,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            level: selectedLevel
+          };
+          
+          challengeMap.set(dateString, fallbackChallenge);
+        });
+      }
+    }
+    
+    // Batch query user records if userId is provided
     let userRecordsMap = new Map<string, any>();
-    if (userId && challenges && challenges.length > 0) {
-      const challengeIds = challenges.map(c => c.id);
+    if (userId && challengeMap.size > 0) {
+      const challengeIds = Array.from(challengeMap.values()).map(c => c.id);
       
       const { data: userRecords, error: recordsError } = await supabase
         .from('daily_challenge_records')
@@ -457,21 +504,13 @@ export async function getDailyChallengeArchive(
     
     const archiveItems: DailyChallengeArchiveItem[] = [];
     
-    // Generate dates and build archive items
+    // Generate archive items for all dates
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateString = d.toISOString().split('T')[0];
       
-      // Check if we have a challenge for this date
-      let challenge = challengeMap.get(dateString);
-      
-      // If no challenge found, create fallback
+      const challenge = challengeMap.get(dateString);
       if (!challenge) {
-        const { data: fallbackChallenge, error: fallbackError } = await getFallbackDailyChallenge(dateString);
-        if (!fallbackError && fallbackChallenge) {
-          challenge = fallbackChallenge;
-        } else {
-          continue; // Skip this date if we can't create a fallback
-        }
+        continue; // Skip if no challenge available
       }
       
       // Get user record for this challenge (if available)
