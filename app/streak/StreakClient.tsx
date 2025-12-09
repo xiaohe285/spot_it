@@ -270,7 +270,7 @@ export default function StreakPage() {
 
                 {/* CTA Section */}
                 {!user ? (
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
+                    <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
                         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Sign In to Track Your Streak! 📊</h2>
                         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                             Create an account to start tracking your daily game streak and unlock achievements!
@@ -280,13 +280,13 @@ export default function StreakPage() {
                                 // Redirect to homepage with login prompt
                                 window.location.href = '/';
                             }}
-                            className="inline-block px-8 py-4 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
+                            className="cursor-pointer inline-block px-8 py-4 bg-white text-orange-600 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
                         >
                             Sign In
                         </button>
                     </div>
                 ) : displayStreakStats.current_streak > 0 ? (
-                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
+                    <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
                         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Don&apos;t Break the Streak! 💪</h2>
                         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                             Come back tomorrow to keep your{' '}
@@ -300,7 +300,7 @@ export default function StreakPage() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
+                    <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
                         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Start Your Streak Today! 🚀</h2>
                         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                             Play a game today to start building your streak!
