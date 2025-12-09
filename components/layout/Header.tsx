@@ -17,23 +17,23 @@ export default function Header() {
 
     return (
         <>
-            <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+            <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
                         SpotDiffs
                     </Link>
 
                     <nav className="hidden md:flex items-center gap-8">
-                        <Link href="/games" className="text-gray-600 hover:text-purple-600 font-medium transition-colors">
+                        <Link href="/games" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Games
                         </Link>
-                        <Link href="/daily/today" className="text-gray-600 hover:text-purple-600 font-medium transition-colors">
+                        <Link href="/daily/today" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Daily Challenge
                         </Link>
-                        <Link href="/leaderboard" className="text-gray-600 hover:text-purple-600 font-medium transition-colors">
+                        <Link href="/leaderboard" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Leaderboard
                         </Link>
-                        <Link href="/streak" className="text-gray-600 hover:text-purple-600 font-medium transition-colors">
+                        <Link href="/streak" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Streak
                         </Link>
                     </nav>
@@ -67,7 +67,7 @@ export default function Header() {
                                     <div className="py-2">
                                         <button
                                             onClick={signOut}
-                                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                                            className="cursor-pointer w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
                                         >
                                             <span>🚪</span>
                                             Logout
@@ -79,13 +79,13 @@ export default function Header() {
                             <>
                                 <button
                                     onClick={() => handleAuthClick('login')}
-                                    className="px-4 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors"
+                                    className="cursor-pointer px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                                 >
                                     Login
                                 </button>
                                 <button
                                     onClick={() => handleAuthClick('signup')}
-                                    className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all transform hover:-translate-y-0.5"
+                                    className="cursor-pointer px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5"
                                 >
                                     Sign Up
                                 </button>

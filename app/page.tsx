@@ -12,30 +12,34 @@ export default async function Home() {
   return (
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
-      <section className="relative min-h-[600px] flex items-center bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 overflow-hidden py-16">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?q=80&w=2574&auto=format&fit=crop')] bg-cover bg-center opacity-20"></div>
+      <section className="relative min-h-[600px] flex items-center bg-gradient-to-br from-orange-100 via-pink-50 to-yellow-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden py-16">
         <div className="relative z-10 container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center max-w-7xl mx-auto">
             {/* Left: Main Content */}
             <div className="text-center lg:text-left">
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight drop-shadow-lg">
-                Spot the <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-500">Difference</span>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-800 dark:text-white mb-6 tracking-tight">
+                Challenge Your Eyes, <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500">Spot the Difference!</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-100 mb-10 leading-relaxed font-medium drop-shadow-md">
-                Challenge your observation skills with thousands of levels.
-                Find the hidden differences and climb the leaderboard!
+              <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed font-medium">
+                Find hidden differences from images, enjoy daily puzzles, and explore fun themed levels for all ages. Start spotting now and challenge your eyes!
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link
                   href="/games"
-                  className="px-8 py-4 bg-white text-purple-900 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl"
+                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-full font-bold text-lg hover:opacity-90 transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
                 >
-                  Start Playing
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  </svg>
+                  Start Playing Now
                 </Link>
                 <Link
-                  href="/daily/today"
-                  className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-bold text-lg hover:bg-white/10 transition-all"
+                  href="/games"
+                  className="px-8 py-4 bg-green-500 text-white rounded-full font-bold text-lg hover:bg-green-600 transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
                 >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                  </svg>
                   View All Challenges
                 </Link>
               </div>
@@ -79,7 +83,7 @@ export default async function Home() {
 
                     {/* Play Button Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-20">
-                      <div className="px-8 py-4 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full font-bold text-lg shadow-xl transform transition-all group-hover:bg-yellow-400 group-hover:scale-110">
+                      <div className="px-8 py-4 bg-white/95 backdrop-blur-sm text-orange-600 rounded-full font-bold text-lg shadow-xl transform transition-all group-hover:bg-yellow-400 group-hover:scale-110">
                         Start Challenge →
                       </div>
                     </div>
