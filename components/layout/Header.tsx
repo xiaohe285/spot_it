@@ -49,7 +49,7 @@ export default function Header() {
                                             {user.user_metadata?.display_name || user.email?.split('@')[0]}
                                         </p>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center text-white font-bold ring-2 ring-transparent group-hover:ring-purple-300 transition-all">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center text-white font-bold ring-2 ring-transparent group-hover:ring-orange-300 transition-all">
                                         {(user.user_metadata?.display_name || user.email)?.[0]?.toUpperCase()}
                                     </div>
                                 </div>

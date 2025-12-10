@@ -324,7 +324,7 @@ export default async function Home() {
                     <img src={player.avatar_url} alt={player.display_name || player.username || 'User'} className="w-full h-full object-cover" />
                   </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center text-white font-bold shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0">
                     {(player.display_name || player.username || 'A')[0].toUpperCase()}
                   </div>
                 )}
