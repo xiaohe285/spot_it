@@ -127,7 +127,7 @@ export default function Pagination({
                 href={`${basePath}?page=${pageNum}`}
                 className={`px-4 py-2 rounded-lg border transition-colors ${
                   isActive
-                    ? 'bg-purple-600 text-white border-purple-600 font-semibold'
+                    ? 'bg-orange-500 text-white border-orange-500 font-semibold'
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
@@ -168,11 +168,11 @@ export default function Pagination({
           value={jumpPage}
           onChange={(e) => setJumpPage(e.target.value)}
           placeholder="Page"
-          className="w-20 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-20 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
         <button
           type="submit"
-          className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors text-sm font-medium"
+          className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors text-sm font-medium"
         >
           Go
         </button>
