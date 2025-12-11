@@ -236,14 +236,14 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
     return (
         <div className="flex flex-col gap-4 w-full max-w-7xl mx-auto">
             {/* Game HUD */}
-            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
+            <div className="bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
                 {/* Progress */}
                 <div className="flex items-center gap-3">
-                    <div className="text-white">
+                    <div className="text-gray-900 dark:text-white">
                         <span className="text-2xl font-bold">{foundDifferences.length}</span>
-                        <span className="text-gray-400">/{level.differences.length}</span>
+                        <span className="text-gray-600 dark:text-gray-400">/{level.differences.length}</span>
                     </div>
-                    <div className="w-48 h-3 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="w-48 h-3 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300"
                             style={{ width: `${progress}%` }}
@@ -252,7 +252,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                 </div>
 
                 {/* Timer */}
-                <div className="flex items-center gap-2 text-white">
+                <div className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <span className="text-2xl">⏱️</span>
                     <span className="text-2xl font-mono font-bold">{formatTime(timeElapsed)}</span>
                 </div>
@@ -270,7 +270,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                     disabled={hintsUsed >= actualMaxHints || foundDifferences.length === level.differences.length}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all ${
                         hintsUsed >= actualMaxHints
-                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
                             : 'bg-yellow-500 text-white hover:bg-yellow-600 hover:scale-105 cursor-pointer'
                     }`}
                 >
@@ -282,7 +282,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                 <button
                     onClick={handleAskForHelp}
                     disabled={foundDifferences.length === level.differences.length}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 cursor-pointer disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 cursor-pointer disabled:bg-gray-300 disabled:dark:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
                 >
                     <span className="text-lg">🆘</span>
                     <span>Ask for Help</span>

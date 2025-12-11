@@ -149,14 +149,14 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     return (
         <>
             <StructuredData data={[getGameSchema(level), getBreadcrumbSchema(breadcrumbItems)]} />
-            <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+            <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col">
                 {/* Game Header */}
-                <div className="bg-gray-800 p-4 flex justify-between items-center shadow-md">
-                <Link href="/" className="text-gray-200 hover:text-white transition-colors font-medium">
+                <div className="bg-gray-100 dark:bg-gray-800 p-4 flex justify-between items-center shadow-md">
+                <Link href="/" className="text-gray-600 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors font-medium">
                     ← Back to Home
                 </Link>
-                <h1 className="text-xl font-bold">{level.title}</h1>
-                <div className="text-yellow-400 font-mono text-lg">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{level.title}</h1>
+                <div className="text-orange-600 dark:text-yellow-400 font-mono text-lg">
                     Difficulty: {level.difficulty}
                 </div>
             </div>
