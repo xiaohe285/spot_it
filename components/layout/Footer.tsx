@@ -43,7 +43,7 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-400 dark:text-gray-500 text-sm">
-                    © {new Date().getFullYear()} SpotIt! All rights reserved.
+                    © {new Date().getFullYear()} SpotDiffs! All rights reserved.
                 </div>
             </div>
         </footer>
