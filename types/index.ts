@@ -3,10 +3,11 @@ export interface Level {
   slug: string;
   title: string;
   imageUrl1: string;
-  imageUrl2: string;
+  imageUrl2?: string; // 单图模式时可选
   differences: { x: number; y: number; radius: number }[];
   difficulty: 'Easy' | 'Hard' | 'Expert';
   category: 'Adults' | 'Kids' | 'Themes';
+  mode?: 'compare' | 'single'; // 游戏模式，默认为compare
 }
 
 export interface User {

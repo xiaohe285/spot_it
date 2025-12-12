@@ -354,7 +354,9 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
             {/* Game Images */}
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
                 {/* Image 1 */}
-                <div className="relative w-full md:w-1/2 aspect-square cursor-crosshair group bg-gray-100 dark:bg-gray-900 rounded-lg" onClick={(e) => handleImageClick(e, 1)}>
+                <div className={`relative w-full aspect-square cursor-crosshair group bg-gray-100 dark:bg-gray-900 rounded-lg ${
+                    level.mode === 'single' ? 'max-w-2xl mx-auto' : 'md:w-1/2'
+                }`} onClick={(e) => handleImageClick(e, 1)}>
                     <Image
                         ref={imageRef}
                         src={level.image_url_1}
@@ -441,8 +443,9 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                     ))}
                 </div>
 
-                {/* Image 2 */}
-                <div className="relative w-full md:w-1/2 aspect-square cursor-crosshair group bg-gray-100 dark:bg-gray-900 rounded-lg" onClick={(e) => handleImageClick(e, 2)}>
+                {/* Image 2 - Only show in compare mode */}
+                {level.mode !== 'single' && level.image_url_2 && (
+                    <div className="relative w-full md:w-1/2 aspect-square cursor-crosshair group bg-gray-100 dark:bg-gray-900 rounded-lg" onClick={(e) => handleImageClick(e, 2)}>
                     <Image
                         src={level.image_url_2}
                         alt="Difference"
@@ -512,6 +515,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                         </div>
                     ))}
                 </div>
+                )}
             </div>
         </div>
     );

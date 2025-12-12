@@ -21,9 +21,10 @@ export interface Level {
   description: string | null;
   category_id: string | null;
   image_url_1: string;
-  image_url_2: string;
+  image_url_2?: string; // 单图模式时可选
   differences: { x: number; y: number; radius: number }[];
   difficulty: 'Easy' | 'Hard' | 'Expert';
+  mode?: 'compare' | 'single'; // 游戏模式，默认为compare
   display_order: number;
   seo_title: string | null;
   seo_description: string | null;
