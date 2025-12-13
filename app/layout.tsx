@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -78,8 +79,20 @@ export default function RootLayout({
       <head>
         <StructuredData data={[getWebsiteSchema(), getOrganizationSchema()]} />
         {gaId && <GoogleAnalytics gaId={gaId} />}
-        <script
-          type="text/javascript"
+      </head>
+      <body className="antialiased min-h-screen flex flex-col bg-gray-50">
+        <Providers>
+          <Header />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
+        
+        {/* Microsoft Clarity - 异步加载 */}
+        <Script
+          id="clarity-script"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function(c,l,a,r,i,t,y){
@@ -90,15 +103,6 @@ export default function RootLayout({
             `
           }}
         />
-      </head>
-      <body className="antialiased min-h-screen flex flex-col bg-gray-50">
-        <Providers>
-          <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </Providers>
       </body>
     </html>
   );
