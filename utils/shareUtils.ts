@@ -12,7 +12,7 @@ export function generateShareText(data: ShareData): string {
   const { levelTitle, stars, stats } = data;
   const starEmoji = '⭐'.repeat(Math.floor(stars));
 
-  return `I just completed "${levelTitle}" in Spot It! ${starEmoji}
+  return `I just completed "${levelTitle}" in Spot Diffs! ${starEmoji}
 
 🎯 Score: ${stats.score.toLocaleString()}
 ⏱️ Time: ${Math.floor(stats.timeElapsed / 60)}:${(stats.timeElapsed % 60).toString().padStart(2, '0')}
