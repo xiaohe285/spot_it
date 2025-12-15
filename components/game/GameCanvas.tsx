@@ -197,10 +197,10 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
 
         soundEffects.playHint();
 
-        // Remove hint after 3 seconds
+        // Remove hint after 4 seconds
         setTimeout(() => {
             setHintRegions((prev) => prev.filter((i) => i !== randomIndex));
-        }, 3000);
+        }, 4000);
     };
 
     const handleAskForHelp = () => {

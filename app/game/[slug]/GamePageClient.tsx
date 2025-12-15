@@ -183,15 +183,12 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         <div className="text-center mb-5">
                             <div className="text-4xl mb-2">🎉</div>
                             <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                                Level Complete!
-                            </h2>
-                            <p className="text-gray-300 text-sm font-medium">
                                 {stars === 3 && "🏆 Perfect! You're a true master!"}
                                 {stars === 2.5 && "✨ Amazing performance!"}
                                 {stars === 2 && "👍 Great job!"}
                                 {stars === 1.5 && "👏 Well done!"}
-                                {stars === 1 && "🎯 Good effort! Try for more stars next time!"}
-                            </p>
+                                {stars === 1 && "🎯 Good effort!"}
+                            </h2>
                         </div>
 
                         {/* Score and Stars Combined */}
@@ -255,45 +252,30 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         )}
 
                         {/* Share Buttons - Simplified */}
-                        <div className="flex gap-2 mb-5">
+                        <div className="flex gap-2 mb-5 cursor-pointer">
                             <button
                                 onClick={handleShareTwitter}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-sm font-semibold transition-all border border-blue-500/30"
+                                className="cursor-pointer flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-sm font-semibold transition-all border border-blue-500/30"
                             >
                                 <span>𝕏</span>
                                 <span>Share</span>
                             </button>
                             <button
-                                onClick={handleCopyShare}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-700/50 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-semibold transition-all border border-gray-600"
+                                onClick={() => window.location.reload()}
+                                className="cursor-pointer flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-700/50 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-semibold transition-all border border-gray-600"
                             >
-                                <span>{copySuccess ? '✓' : '📋'}</span>
-                                <span>{copySuccess ? 'Copied!' : 'Copy'}</span>
+                                 🔄 Replay
                             </button>
                         </div>
 
                         {/* Action Buttons - Emphasized Primary */}
                         <div className="space-y-2">
                             <button
-                                onClick={() => router.push('/games')}
-                                className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/50 transform hover:scale-[1.02]"
+                                onClick={() => router.back()}
+                                className="cursor-pointer w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/50 transform hover:scale-[1.02]"
                             >
                                 Next Level →
                             </button>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="flex-1 py-2.5 text-gray-300 hover:text-white font-semibold transition-all hover:underline"
-                                >
-                                    🔄 Replay
-                                </button>
-                                <button
-                                    onClick={() => router.push('/')}
-                                    className="flex-1 py-2.5 text-gray-300 hover:text-white font-semibold transition-all hover:underline"
-                                >
-                                    🏠 Home
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
