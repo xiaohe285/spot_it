@@ -79,6 +79,14 @@ export default function RootLayout({
       <head>
         <StructuredData data={[getWebsiteSchema(), getOrganizationSchema()]} />
         {gaId && <GoogleAnalytics gaId={gaId} />}
+        
+        {/* Google AdSense */}
+        <Script
+          id="google-adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3161682431818340"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
       </head>
       <body className="antialiased min-h-screen flex flex-col bg-gray-50">
         <Providers>
