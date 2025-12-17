@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCategoryBySlug, getLevelsByCategory } from '@/lib/levels';
+import { getCategoryBySlug, getLevelsByCategoryPaginated } from '@/lib/levels';
+import Pagination from '@/components/Pagination';
 
 const siteUrl = 'https://spotdiffs.com';
 
@@ -40,11 +41,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+interface CategoryPageProps {
+    params: Promise<{ slug: string }>;
+    searchParams: Promise<{ page?: string }>;
+}
+
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
     const { slug } = await params;
+    const { page } = await searchParams;
+    const currentPage = Number(page) || 1;
 
     const { data: category, error: categoryError } = await getCategoryBySlug(slug);
-    const { data: categoryLevels, error: levelsError } = await getLevelsByCategory(slug);
+    const { data: categoryLevels, error: levelsError, total, pageSize, totalPages } = await getLevelsByCategoryPaginated(slug, currentPage, 24);
 
     if (categoryError || !category) {
         return (
@@ -76,40 +84,57 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             )}
 
             {categoryLevels && categoryLevels.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {categoryLevels.map((level) => (
-                        <Link
-                            key={level.id}
-                            href={`/game/${level.slug}`}
-                            className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                        >
-                            <div className="relative h-48 overflow-hidden">
-                                <Image
-                                    src={level.image_url_1}
-                                    alt={level.title}
-                                    fill
-                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                                <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-purple-600 dark:text-purple-400">
-                                    {level.difficulty}
-                                </div>
-                                {level.featured && (
-                                    <div className="absolute top-4 left-4">
-                                        <span className="text-2xl">⭐</span>
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {categoryLevels.map((level, index) => (
+                            <Link
+                                key={level.id}
+                                href={`/game/${level.slug}`}
+                                className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                            >
+                                <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                    <Image
+                                        src={level.image_url_1}
+                                        alt={`${level.title} - Find the difference puzzle`}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        loading={index < 6 ? "eager" : "lazy"}
+                                        priority={index < 6}
+                                        quality={85}
+                                        placeholder="blur"
+                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                    />
+                                    <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-purple-600 dark:text-purple-300 shadow-sm">
+                                        {level.difficulty}
                                     </div>
-                                )}
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                    {level.title}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                    Find {level.differences.length} differences
-                                </p>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                                    {level.featured && (
+                                        <div className="absolute top-4 left-4">
+                                            <span className="text-2xl">⭐</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="p-6">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">{category.name}</div>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                        {level.title}
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                                        Find {level.differences.length} differences
+                                    </p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        total={total}
+                        pageSize={pageSize}
+                        basePath={`/games/${slug}`}
+                    />
+                </>
             ) : (
                 <div className="text-center py-20">
                     <p className="text-xl text-gray-500 dark:text-gray-400">No games found in this category yet.</p>
