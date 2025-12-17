@@ -115,7 +115,7 @@ export async function getLevelsByCategory(
     .select('*')
     .eq('category_slug', categorySlug)
     .eq('published', true)
-    .order('display_order', { ascending: true });
+    .order('created_at', { ascending: false });
 
   return { data, error };
 }
@@ -158,7 +158,7 @@ export async function getLevelsByCategoryPaginated(
     .select('*')
     .eq('category_slug', categorySlug)
     .eq('published', true)
-    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false })
     .range(from, to);
 
   return { 

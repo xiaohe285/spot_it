@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { getGlobalLeaderboard } from '@/lib/gameRecords';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
+import AuthModal from '@/components/auth/AuthModal';
 
 interface LeaderboardEntry {
     rank: number;
@@ -20,6 +22,7 @@ export default function LeaderboardPage() {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showAuthModal, setShowAuthModal] = useState(false);
 
     useEffect(() => {
         async function loadLeaderboard() {
@@ -147,7 +150,71 @@ export default function LeaderboardPage() {
                         </div>
                     )}
                 </div>
+
+                {/* CTA Card */}
+                <div className="mt-8 bg-gradient-to-r from-orange-500 to-pink-500 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl">
+                    {user ? (
+                        // User is logged in
+                        <>
+                            <div className="text-5xl mb-4">🎯</div>
+                            <h3 className="text-3xl md:text-4xl font-extrabold mb-4">Climb Higher on the Leaderboard!</h3>
+                            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                                Keep playing games to earn more points and improve your ranking. 
+                                The more you play, the better you get, and the higher you climb!
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link
+                                    href="/games"
+                                    className="inline-block px-8 py-4 bg-white text-orange-600 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
+                                >
+                                    Play More Games
+                                </Link>
+                                <Link
+                                    href="/daily/today"
+                                    className="inline-block px-8 py-4 bg-white/20 border-2 border-white/50 text-white rounded-full font-bold text-lg hover:bg-white/30 transition-all"
+                                >
+                                    Try Daily Challenge
+                                </Link>
+                            </div>
+                        </>
+                    ) : (
+                        // User is not logged in
+                        <>
+                            <div className="text-5xl mb-4">👤</div>
+                            <h3 className="text-3xl md:text-4xl font-extrabold mb-4">Join the Competition!</h3>
+                            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                                Sign in to start playing games and see your username appear on this leaderboard. 
+                                Compete with players from around the world!
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button 
+                                    onClick={() => setShowAuthModal(true)}
+                                    className="cursor-pointer inline-block px-8 py-4 bg-white text-orange-600 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
+                                >
+                                    Sign In to Play
+                                </button>
+                                <Link
+                                    href="/games"
+                                    className="inline-block px-8 py-4 bg-white/20 border-2 border-white/50 text-white rounded-full font-bold text-lg hover:bg-white/30 transition-all"
+                                >
+                                    Browse Games
+                                </Link>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode="login"
+                onSuccess={() => {
+                    setShowAuthModal(false);
+                    // Optionally refresh leaderboard data after login
+                    window.location.reload();
+                }}
+            />
         </div>
     );
 }
