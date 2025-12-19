@@ -73,7 +73,7 @@ export default async function DailyChallengePage() {
                             />
                             <div className="absolute inset-0 flex items-center justify-center z-20">
                                 <Link
-                                    href={`/game/${todaysChallenge.level.slug}`}
+                                    href={`/game/${todaysChallenge.level.slug}?from=daily`}
                                     className="px-10 py-5 bg-white text-gray-900 rounded-full font-bold text-xl hover:bg-yellow-400 transition-colors shadow-lg transform hover:scale-105"
                                 >
                                     Play Challenge
