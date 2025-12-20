@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
@@ -9,11 +9,24 @@ export default function Header() {
     const { user, loading, signOut } = useAuth();
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const handleAuthClick = (mode: 'login' | 'signup') => {
         setAuthMode(mode);
         setShowAuthModal(true);
     };
+
+    // Close mobile menu on route change or outside click
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) { // md breakpoint
+                setIsMobileMenuOpen(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <>
@@ -39,6 +52,20 @@ export default function Header() {
                     </nav>
 
                     <div className="flex items-center gap-4">
+                        {/* Mobile menu button */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {isMobileMenuOpen ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                )}
+                            </svg>
+                        </button>
+
                         {loading ? (
                             <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
                         ) : user ? (
@@ -93,6 +120,82 @@ export default function Header() {
                         )}
                     </div>
                 </div>
+
+                {/* Mobile Menu */}
+                {isMobileMenuOpen && (
+                    <div className="md:hidden border-t border-gray-200 dark:border-gray-700">
+                        <div className="px-4 py-4 space-y-2">
+                            <Link 
+                                href="/games" 
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Games
+                            </Link>
+                            <Link 
+                                href="/daily/today" 
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Daily Challenge
+                            </Link>
+                            <Link 
+                                href="/leaderboard" 
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Leaderboard
+                            </Link>
+                            <Link 
+                                href="/streak" 
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Streak
+                            </Link>
+                            
+                            {!user && (
+                                <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                                    <button
+                                        onClick={() => {
+                                            handleAuthClick('login');
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="block w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors"
+                                    >
+                                        Login
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            handleAuthClick('signup');
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="block w-full text-left px-3 py-2 mt-1 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:shadow-lg transition-all"
+                                    >
+                                        Sign Up
+                                    </button>
+                                </div>
+                            )}
+
+                            {user && (
+                                <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                                    <div className="px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white">
+                                        {user.user_metadata?.display_name || user.email?.split('@')[0]}
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            signOut();
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="block w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        🚪 Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </header>
 
             <AuthModal
