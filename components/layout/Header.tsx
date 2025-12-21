@@ -51,20 +51,16 @@ export default function Header() {
                         </Link>
                     </nav>
 
-                    <div className="flex items-center gap-4">
-                        {/* Mobile menu button */}
-                        <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                {isMobileMenuOpen ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                )}
-                            </svg>
-                        </button>
+                    <div className="flex items-center gap-3">
+                        {/* Mobile Games link - show only on mobile when user is not logged in */}
+                        {!user && (
+                            <Link
+                                href="/games"
+                                className="md:hidden px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                            >
+                                Games
+                            </Link>
+                        )}
 
                         {loading ? (
                             <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
@@ -104,20 +100,45 @@ export default function Header() {
                             </div>
                         ) : (
                             <>
+                                {/* Desktop: Show both buttons */}
+                                <div className="hidden md:flex items-center gap-4">
+                                    <button
+                                        onClick={() => handleAuthClick('login')}
+                                        className="cursor-pointer px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                    >
+                                        Login
+                                    </button>
+                                    <button
+                                        onClick={() => handleAuthClick('signup')}
+                                        className="cursor-pointer px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5"
+                                    >
+                                        Sign Up
+                                    </button>
+                                </div>
+
+                                {/* Mobile: Show single combined button */}
                                 <button
                                     onClick={() => handleAuthClick('login')}
-                                    className="cursor-pointer px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                    className="md:hidden cursor-pointer px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all"
                                 >
-                                    Login
-                                </button>
-                                <button
-                                    onClick={() => handleAuthClick('signup')}
-                                    className="cursor-pointer px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5"
-                                >
-                                    Sign Up
+                                    Sign In
                                 </button>
                             </>
                         )}
+
+                        {/* Mobile menu button */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {isMobileMenuOpen ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                )}
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
