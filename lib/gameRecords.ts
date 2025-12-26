@@ -20,6 +20,36 @@ export interface GameRecord {
   created_at?: string;
 }
 
+export interface LeaderboardEntry {
+  user_id: string;
+  username?: string;
+  avatar?: string;
+  score: number;
+  time_elapsed: number;
+  accuracy: number;
+  stars: number;
+  rank: number;
+  level_slug?: string;
+  level_title?: string;
+}
+
+export interface UserRank {
+  rank: number;
+  total_score: number;
+  games_played: number;
+  average_stars: number;
+}
+
+export interface UserStats {
+  total_score: number;
+  games_played: number;
+  total_time_played: number;
+  average_accuracy: number;
+  average_stars: number;
+  total_stars: number;
+  badges_earned: string[];
+}
+
 // Save game record to Supabase
 export async function saveGameRecord(
   userId: string,
@@ -29,7 +59,7 @@ export async function saveGameRecord(
   stats: GameStats,
   stars: number,
   badges: string[]
-): Promise<{ data: GameRecord | null; error: any }> {
+): Promise<{ data: GameRecord | null; error: Error | null }> {
   const supabase = createClient();
 
   const record: Omit<GameRecord, 'id' | 'played_at' | 'created_at'> = {
@@ -61,7 +91,7 @@ export async function saveGameRecord(
 export async function getUserGameHistory(
   userId: string,
   limit: number = 10
-): Promise<{ data: GameRecord[] | null; error: any }> {
+): Promise<{ data: GameRecord[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -78,7 +108,7 @@ export async function getUserGameHistory(
 export async function getUserBestScore(
   userId: string,
   levelSlug: string
-): Promise<{ data: GameRecord | null; error: any }> {
+): Promise<{ data: GameRecord | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -97,7 +127,7 @@ export async function getUserBestScore(
 export async function getLevelLeaderboard(
   levelSlug: string,
   limit: number = 10
-): Promise<{ data: any[] | null; error: any }> {
+): Promise<{ data: LeaderboardEntry[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -112,7 +142,7 @@ export async function getLevelLeaderboard(
 // Get global leaderboard
 export async function getGlobalLeaderboard(
   limit: number = 100
-): Promise<{ data: any[] | null; error: any }> {
+): Promise<{ data: LeaderboardEntry[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -124,7 +154,7 @@ export async function getGlobalLeaderboard(
 }
 
 // Get user's rank in global leaderboard
-export async function getUserRank(userId: string): Promise<{ data: any | null; error: any }> {
+export async function getUserRank(userId: string): Promise<{ data: UserRank | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -137,7 +167,7 @@ export async function getUserRank(userId: string): Promise<{ data: any | null; e
 }
 
 // Get user's statistics
-export async function getUserStats(userId: string): Promise<{ data: any | null; error: any }> {
+export async function getUserStats(userId: string): Promise<{ data: UserStats | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase

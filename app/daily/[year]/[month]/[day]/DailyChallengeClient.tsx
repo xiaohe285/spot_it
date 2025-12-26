@@ -7,6 +7,9 @@ import GameCanvas, { GameStats } from '@/components/game/GameCanvas';
 import GameCompletionModal from '@/components/game/GameCompletionModal';
 import AuthModal from '@/components/auth/AuthModal';
 import { LevelWithCategory, getDailyChallengeByDate } from '@/lib/levels';
+interface LevelForCalculation {
+  difficulty: 'Easy' | 'Hard' | 'Expert';
+}
 import { GameRecordCache } from '@/lib/gameRecordCache';
 import { useAuth } from '@/contexts/AuthContext';
 import { saveGameRecord } from '@/lib/gameRecords';
@@ -17,7 +20,7 @@ interface DailyChallengeClientProps {
 }
 
 // Calculate star rating based on performance (same as in GamePageClient)
-function calculateStars(stats: GameStats, level: any): number {
+function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     const { timeElapsed, accuracy, hintsUsed } = stats;
     const difficultyMultiplier = level.difficulty === 'Easy' ? 1 : level.difficulty === 'Hard' ? 1.3 : 1.6;
 

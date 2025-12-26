@@ -304,28 +304,28 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {topPlayers.map((player) => (
-              <div key={player.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600">
+            {topPlayers.map((player, index) => (
+              <div key={player.user_id || index} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600">
                 <div className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-white shrink-0
                   ${player.rank === 1 ? 'bg-yellow-400' : player.rank === 2 ? 'bg-gray-400' : 'bg-orange-400'}`}>
                   #{player.rank}
                 </div>
                 <div className="flex-grow min-w-0">
                   <div className="font-bold text-gray-900 dark:text-white truncate">
-                    {player.display_name || player.username || 'Anonymous'}
+                    {player.username || 'Anonymous'}
                   </div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {player.total_score?.toLocaleString() || 0} pts
+                    {player.score?.toLocaleString() || 0} pts
                   </div>
                 </div>
                 {/* Avatar: Show image if available, otherwise show first letter */}
-                {player.avatar_url ? (
+                {player.avatar ? (
                   <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                    <img src={player.avatar_url} alt={player.display_name || player.username || 'User'} className="w-full h-full object-cover" />
+                    <img src={player.avatar} alt={player.username || 'User'} className="w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0">
-                    {(player.display_name || player.username || 'A')[0].toUpperCase()}
+                    {(player.username || 'A')[0].toUpperCase()}
                   </div>
                 )}
               </div>

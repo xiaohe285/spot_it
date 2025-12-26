@@ -1,12 +1,16 @@
 // Badge System for achievements
 import { GameStats } from '@/components/game/GameCanvas';
 
+interface LevelForCalculation {
+  difficulty: 'Easy' | 'Hard' | 'Expert';
+}
+
 export interface Badge {
   id: string;
   name: string;
   description: string;
   icon: string;
-  condition: (stats: GameStats, level: any) => boolean;
+  condition: (stats: GameStats, level: LevelForCalculation) => boolean;
 }
 
 export const BADGES: Badge[] = [
@@ -48,7 +52,7 @@ export interface BadgeRecord {
 }
 
 // Check which badges were earned in this game
-export function checkEarnedBadges(stats: GameStats, level: any): Badge[] {
+export function checkEarnedBadges(stats: GameStats, level: LevelForCalculation): Badge[] {
   return BADGES.filter((badge) => badge.condition(stats, level));
 }
 

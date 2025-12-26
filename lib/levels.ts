@@ -47,7 +47,7 @@ export interface LevelWithCategory extends Level {
 // Categories
 // =====================================================
 
-export async function getAllCategories(): Promise<{ data: Category[] | null; error: any }> {
+export async function getAllCategories(): Promise<{ data: Category[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -61,7 +61,7 @@ export async function getAllCategories(): Promise<{ data: Category[] | null; err
 
 export async function getCategoryBySlug(
   slug: string
-): Promise<{ data: Category | null; error: any }> {
+): Promise<{ data: Category | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -78,7 +78,7 @@ export async function getCategoryBySlug(
 // Levels
 // =====================================================
 
-export async function getAllLevels(): Promise<{ data: LevelWithCategory[] | null; error: any }> {
+export async function getAllLevels(): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -92,7 +92,7 @@ export async function getAllLevels(): Promise<{ data: LevelWithCategory[] | null
 
 export async function getLevelBySlug(
   slug: string
-): Promise<{ data: LevelWithCategory | null; error: any }> {
+): Promise<{ data: LevelWithCategory | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -107,7 +107,7 @@ export async function getLevelBySlug(
 
 export async function getLevelsByCategory(
   categorySlug: string
-): Promise<{ data: LevelWithCategory[] | null; error: any }> {
+): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -126,7 +126,7 @@ export async function getLevelsByCategoryPaginated(
   pageSize: number = 24
 ): Promise<{ 
   data: LevelWithCategory[] | null; 
-  error: any;
+  error: Error | null;
   total: number;
   page: number;
   pageSize: number;
@@ -173,7 +173,7 @@ export async function getLevelsByCategoryPaginated(
 
 export async function getLevelsByDifficulty(
   difficulty: 'Easy' | 'Hard' | 'Expert'
-): Promise<{ data: LevelWithCategory[] | null; error: any }> {
+): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -192,7 +192,7 @@ export async function getLevelsByDifficultyPaginated(
   pageSize: number = 24
 ): Promise<{
   data: LevelWithCategory[] | null;
-  error: any;
+  error: Error | null;
   total: number;
   page: number;
   pageSize: number;
@@ -247,7 +247,7 @@ export async function getLevelsByDifficultyPaginated(
 
 export async function getFeaturedLevels(
   limit: number = 4
-): Promise<{ data: LevelWithCategory[] | null; error: any }> {
+): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -260,7 +260,7 @@ export async function getFeaturedLevels(
 
 export async function getPopularLevels(
   limit: number = 4
-): Promise<{ data: LevelWithCategory[] | null; error: any }> {
+): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -277,7 +277,7 @@ export async function getPopularLevels(
 
 export async function searchLevels(
   query: string
-): Promise<{ data: LevelWithCategory[] | null; error: any }> {
+): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -312,7 +312,7 @@ export interface DailyChallengeWithLevel extends DailyChallenge {
 
 export async function getDailyChallenge(
   date?: string
-): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+): Promise<{ data: DailyChallengeWithLevel | null; error: Error | null }> {
   const supabase = createClient();
   
   // Use provided date or today's date
@@ -353,7 +353,7 @@ export async function getDailyChallenge(
 // Fallback: Generate daily challenge based on date algorithm
 async function getFallbackDailyChallenge(
   date: string
-): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+): Promise<{ data: DailyChallengeWithLevel | null; error: Error | null }> {
   const supabase = createClient();
 
   // Create a simple seed from the date
@@ -391,7 +391,7 @@ async function getFallbackDailyChallenge(
   return { data: dailyChallenge, error: null };
 }
 
-export async function getTodaysChallenge(): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+export async function getTodaysChallenge(): Promise<{ data: DailyChallengeWithLevel | null; error: Error | null }> {
   return getDailyChallenge();
 }
 
@@ -399,7 +399,7 @@ export async function getDailyChallengeByDate(
   year: number,
   month: number,
   day: number
-): Promise<{ data: DailyChallengeWithLevel | null; error: any }> {
+): Promise<{ data: DailyChallengeWithLevel | null; error: Error | null }> {
   const date = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   return getDailyChallenge(date);
 }
@@ -423,7 +423,7 @@ export interface DailyChallengeArchiveItem {
 async function getDailyChallengesBatch(
   startDate: string, 
   endDate: string
-): Promise<{ data: DailyChallengeWithLevel[] | null; error: any }> {
+): Promise<{ data: DailyChallengeWithLevel[] | null; error: Error | null }> {
   const supabase = createClient();
   
   // Batch query for all challenges in date range
@@ -455,7 +455,7 @@ async function getDailyChallengesBatch(
 export async function getDailyChallengeArchive(
   userId?: string,
   limit: number = 30
-): Promise<{ data: DailyChallengeArchiveItem[] | null; error: any }> {
+): Promise<{ data: DailyChallengeArchiveItem[] | null; error: Error | null }> {
   const supabase = createClient();
   
   try {
@@ -485,7 +485,7 @@ export async function getDailyChallengeArchive(
     });
     
     // Pre-load all levels once for fallback generation (避免重复查询)
-    let allLevels: any[] = [];
+    let allLevels: LevelWithCategory[] = [];
     const missingDates: string[] = [];
     
     // Check which dates need fallback
@@ -532,7 +532,12 @@ export async function getDailyChallengeArchive(
     }
     
     // Batch query user records if userId is provided
-    let userRecordsMap = new Map<string, any>();
+    const userRecordsMap = new Map<string, {
+      completed: boolean;
+      score: number;
+      completion_time: number;
+      completed_at: string;
+    }>();
     if (userId && challengeMap.size > 0) {
       const challengeIds = Array.from(challengeMap.values()).map(c => c.id);
       
@@ -572,7 +577,9 @@ export async function getDailyChallengeArchive(
       if (userId && !userRecord) {
         userRecord = {
           completed: false,
-          score: 0
+          score: 0,
+          completion_time: 0,
+          completed_at: ''
         };
       }
       
@@ -590,14 +597,14 @@ export async function getDailyChallengeArchive(
     
   } catch (error) {
     console.error('Error in getDailyChallengeArchive:', error);
-    return { data: null, error };
+    return { data: null, error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 export async function getUserDailyChallengeHistory(
   userId: string,
   limit: number = 50
-): Promise<{ data: DailyChallengeArchiveItem[] | null; error: any }> {
+): Promise<{ data: DailyChallengeArchiveItem[] | null; error: Error | null }> {
   const supabase = createClient();
   
   try {
@@ -644,7 +651,7 @@ export async function getUserDailyChallengeHistory(
     return { data: historyItems, error: null };
     
   } catch (error) {
-    return { data: null, error };
+    return { data: null, error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -652,9 +659,15 @@ export async function getUserDailyChallengeHistory(
 // Statistics
 // =====================================================
 
+export interface LevelStats {
+  total_plays: number;
+  average_score: number;
+  average_time: number;
+}
+
 export async function getLevelStats(
   slug: string
-): Promise<{ data: any | null; error: any }> {
+): Promise<{ data: LevelStats | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase

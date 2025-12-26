@@ -82,7 +82,7 @@ export class GameRecordCache {
   }
 
   // Sync cached records to server (to be called after login)
-  static async syncToServer(userId: string): Promise<{ success: boolean; synced: number; errors: number }> {
+  static async syncToServer(): Promise<{ success: boolean; synced: number; errors: number }> {
     const cachedRecords = this.getAllRecords();
     if (cachedRecords.length === 0) {
       return { success: true, synced: 0, errors: 0 };

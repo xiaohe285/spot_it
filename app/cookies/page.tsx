@@ -35,7 +35,7 @@ export default function CookiesPage() {
               Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and analyzing how you use our service.
             </p>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
-              This Cookie Policy explains what cookies are, how we use them on Spot the Difference ("Service," "we," "our," or "us"), how third parties may use cookies on our Service, and how you can manage your cookie preferences.
+              This Cookie Policy explains what cookies are, how we use them on Spot the Difference (&quot;Service,&quot; &quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), how third parties may use cookies on our Service, and how you can manage your cookie preferences.
             </p>
           </section>
 
@@ -131,7 +131,7 @@ export default function CookiesPage() {
               We use Microsoft Clarity to understand how users interact with our website through features like session replays and heatmaps. This helps us identify usability issues and improve the user experience.
             </p>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
-              For more information about Microsoft Clarity's privacy practices, visit: 
+              For more information about Microsoft Clarity&apos;s privacy practices, visit: 
               <a href="https://privacy.microsoft.com/privacystatement" className="text-purple-600 hover:underline" target="_blank" rel="noopener noreferrer">
                 https://privacy.microsoft.com/privacystatement
               </a>
@@ -165,7 +165,7 @@ export default function CookiesPage() {
 
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">5.3 Mobile Devices</h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
-              On mobile devices, you can manage cookies through your browser app settings or by using privacy settings in your device's system preferences.
+              On mobile devices, you can manage cookies through your browser app settings or by using privacy settings in your device&apos;s system preferences.
             </p>
           </section>
 
@@ -177,7 +177,7 @@ export default function CookiesPage() {
             <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
               <li><strong>Essential cookies:</strong> Disabling these may prevent core functionality from working properly</li>
               <li><strong>Preference cookies:</strong> You may need to reset your preferences each time you visit</li>
-              <li><strong>Analytics cookies:</strong> This won't affect your gaming experience but may limit our ability to improve the Service</li>
+              <li><strong>Analytics cookies:</strong> This won&apos;t affect your gaming experience but may limit our ability to improve the Service</li>
             </ul>
           </section>
 
@@ -200,7 +200,7 @@ export default function CookiesPage() {
               We may update this Cookie Policy from time to time to reflect changes in our practices or for legal, regulatory, or operational reasons. When we make material changes, we will:
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Update the "Last Updated" date at the top of this page</li>
+              <li>Update the &quot;Last Updated&quot; date at the top of this page</li>
               <li>Post a notice on our Service</li>
               <li>Notify you via email if you have an account with us</li>
             </ul>

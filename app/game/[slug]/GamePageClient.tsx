@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import GameCanvas, { GameStats } from '@/components/game/GameCanvas';
 import { getLevelBySlug, type LevelWithCategory } from '@/lib/levels';
+interface LevelForCalculation {
+  difficulty: 'Easy' | 'Hard' | 'Expert';
+}
 import { checkEarnedBadges, saveEarnedBadges, Badge } from '@/utils/badgeSystem';
 import { generateShareText, shareToTwitter, copyToClipboard } from '@/utils/shareUtils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,7 +16,7 @@ import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
 
 // Calculate star rating based on performance
-function calculateStars(stats: GameStats, level: any): number {
+function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     const { timeElapsed, accuracy, hintsUsed } = stats;
     const difficultyMultiplier = level.difficulty === 'Easy' ? 1 : level.difficulty === 'Hard' ? 1.3 : 1.6;
 
@@ -55,7 +58,6 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const [isComplete, setIsComplete] = useState(false);
     const [stats, setStats] = useState<GameStats | null>(null);
     const [earnedBadges, setEarnedBadges] = useState<Badge[]>([]);
-    const [copySuccess, setCopySuccess] = useState(false);
     const [level, setLevel] = useState<LevelWithCategory | null>(null);
     const [loading, setLoading] = useState(true);
     const [isFromDailyChallenge, setIsFromDailyChallenge] = useState(false);
@@ -153,15 +155,6 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
         shareToTwitter(shareText, typeof window !== 'undefined' ? window.location.href : undefined);
     };
 
-    const handleCopyShare = async () => {
-        if (!stats) return;
-        const shareText = generateShareText({ levelTitle: level.title, stars, stats });
-        const success = await copyToClipboard(shareText);
-        if (success) {
-            setCopySuccess(true);
-            setTimeout(() => setCopySuccess(false), 2000);
-        }
-    };
 
     // Prepare structured data
     const breadcrumbItems = [

@@ -15,7 +15,7 @@ export interface DayActivity {
 // Get user's complete streak statistics
 export async function getUserStreakStats(
   userId: string
-): Promise<{ data: StreakStats | null; error: any }> {
+): Promise<{ data: StreakStats | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase.rpc('get_user_streak_stats', {
@@ -33,7 +33,7 @@ export async function getUserStreakStats(
 // Get last 30 days activity
 export async function getLast30DaysActivity(
   userId: string
-): Promise<{ data: DayActivity[] | null; error: any }> {
+): Promise<{ data: DayActivity[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase.rpc('get_last_30_days_activity', {

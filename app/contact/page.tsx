@@ -28,7 +28,7 @@ export default function ContactPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Contact Us</h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            We'd love to hear from you! Whether you have questions, feedback, or need support, we're here to help.
+            We&apos;d love to hear from you! Whether you have questions, feedback, or need support, we&apos;re here to help.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ export default function ContactPage() {
             <div className="text-4xl mb-4">📧</div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Email Support</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Send us an email and we'll get back to you as soon as possible.
+              Send us an email and we&apos;ll get back to you as soon as possible.
             </p>
             <a
               href="mailto:support@spotdiffs.com"
@@ -65,7 +65,7 @@ export default function ContactPage() {
             </p>
             <div className="space-y-3">
               <p className="text-gray-500 dark:text-gray-400 italic">
-                Coming soon! We're working on launching our social media presence.
+                Coming soon! We&apos;re working on launching our social media presence.
               </p>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function ContactPage() {
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold mr-3">3</div>
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Device & Browser</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Tell us what device and browser you're using</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Tell us what device and browser you&apos;re using</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -121,7 +121,7 @@ export default function ContactPage() {
             <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">💡</div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">Feature Requests</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Have an idea for a new feature? We'd love to hear it!</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Have an idea for a new feature? We&apos;d love to hear it!</p>
             </div>
             <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">❓</div>
@@ -146,7 +146,7 @@ export default function ContactPage() {
                 </svg>
               </summary>
               <p className="mt-3 text-gray-600 dark:text-gray-300 pl-4">
-                You can reset your password by clicking on "Forgot Password" on the login page. We'll send you a password reset link to your registered email address.
+                You can reset your password by clicking on &quot;Forgot Password&quot; on the login page. We&apos;ll send you a password reset link to your registered email address.
               </p>
             </details>
 
@@ -164,13 +164,13 @@ export default function ContactPage() {
 
             <details className="group">
               <summary className="cursor-pointer font-semibold text-gray-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 list-none flex items-center justify-between">
-                <span>Why isn't my score showing on the leaderboard?</span>
+                <span>Why isn&apos;t my score showing on the leaderboard?</span>
                 <svg className="w-5 h-5 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </summary>
               <p className="mt-3 text-gray-600 dark:text-gray-300 pl-4">
-                Leaderboards update in real-time, but there may be a brief delay. Make sure you're logged in when playing for your scores to be recorded. If the issue persists, please contact us.
+                Leaderboards update in real-time, but there may be a brief delay. Make sure you&apos;re logged in when playing for your scores to be recorded. If the issue persists, please contact us.
               </p>
             </details>
 

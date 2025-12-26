@@ -35,7 +35,7 @@ export default async function DailyChallengePage() {
         <div className="container mx-auto px-4 py-12">
             <div className="max-w-4xl mx-auto text-center">
                 <span className="inline-block px-4 py-1 rounded-full bg-yellow-100 text-yellow-700 font-bold text-sm mb-6">
-                    TODAY'S CHALLENGE
+                    TODAY&apos;S CHALLENGE
                 </span>
                 
                 {todaysChallenge ? (

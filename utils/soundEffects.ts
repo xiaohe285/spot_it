@@ -6,7 +6,7 @@ class SoundEffects {
   constructor() {
     // Initialize AudioContext on first user interaction
     if (typeof window !== 'undefined') {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     }
   }
 
@@ -79,7 +79,6 @@ class SoundEffects {
   playCombo(comboLevel: number) {
     if (!this.audioContext) return;
 
-    const now = this.audioContext.currentTime;
     const baseFreq = 400 + (comboLevel * 100); // Higher pitch for higher combos
 
     this.playTone(baseFreq, 0.15, 'square');

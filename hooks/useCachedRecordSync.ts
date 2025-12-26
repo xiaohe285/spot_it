@@ -55,7 +55,7 @@ export function useCachedRecordSync() {
       }));
 
       try {
-        const result = await GameRecordCache.syncToServer(user.id);
+        const result = await GameRecordCache.syncToServer();
         
         setSyncStatus(prev => ({
           ...prev,
@@ -106,7 +106,7 @@ export function useCachedRecordSync() {
     setSyncStatus(prev => ({ ...prev, isLoading: true }));
 
     try {
-      const result = await GameRecordCache.syncToServer(user.id);
+      const result = await GameRecordCache.syncToServer();
       
       setSyncStatus(prev => ({
         ...prev,

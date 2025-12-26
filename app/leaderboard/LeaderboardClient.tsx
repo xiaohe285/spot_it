@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import AuthModal from '@/components/auth/AuthModal';
 
-interface LeaderboardEntry {
+interface GlobalLeaderboardEntry {
     rank: number;
     id: string;
     username: string | null;
@@ -19,7 +19,7 @@ interface LeaderboardEntry {
 
 export default function LeaderboardPage() {
     const { user } = useAuth();
-    const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    const [leaderboardData, setLeaderboardData] = useState<GlobalLeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -35,7 +35,7 @@ export default function LeaderboardPage() {
                 setError('Failed to load leaderboard');
                 console.error('Leaderboard error:', error);
             } else if (data) {
-                setLeaderboardData(data as LeaderboardEntry[]);
+                setLeaderboardData(data as unknown as GlobalLeaderboardEntry[]);
             }
 
             setLoading(false);
