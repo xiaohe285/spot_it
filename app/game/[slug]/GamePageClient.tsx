@@ -167,16 +167,26 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
         <>
             <StructuredData data={[getGameSchema(level), getBreadcrumbSchema(breadcrumbItems)]} />
             <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col">
-                {/* Game Header */}
-                <div className="bg-gray-100 dark:bg-gray-800 p-4 flex justify-between items-center shadow-md">
-                <Link href="/" className="text-gray-600 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors font-medium">
-                    ← Back to Home
-                </Link>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{level.title}</h1>
-                <div className="text-orange-600 dark:text-yellow-400 font-mono text-lg">
-                    Difficulty: {level.difficulty}
+                {/* Game Header with Breadcrumb */}
+                <div className="bg-gray-100 dark:bg-gray-800 p-4 shadow-md">
+                    <div className="w-full max-w-7xl mx-auto">
+                        <div className="flex items-center justify-between">
+                            {/* Breadcrumb Navigation with Title */}
+                            <div className="flex items-center gap-2">
+                                <Link href="/games" className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium">
+                                    Games
+                                </Link>
+                                <span className="text-gray-400 dark:text-gray-500">/</span>
+                                <h1 className="text-xl text-gray-900 dark:text-white">{level.title}</h1>
+                            </div>
+                            
+                            {/* Difficulty Badge */}
+                            <div className="text-orange-600 dark:text-yellow-400 font-mono text-lg">
+                                Difficulty: {level.difficulty}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
             {/* Game Area */}
             <div className="flex-grow flex items-center justify-center p-4">
