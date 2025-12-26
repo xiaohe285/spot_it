@@ -17,9 +17,9 @@ export default function Footer() {
                     <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Game</h3>
                         <ul className="space-y-2">
-                            <li><Link href="/games" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Play Now</Link></li>
+                            <li><Link href="/games/adults" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">For Adults</Link></li>
+                            <li><Link href="/games/kids" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">For Kids</Link></li>
                             <li><Link href="/how-to-play" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">How to Play</Link></li>
-                            <li><Link href="/leaderboard" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Leaderboard</Link></li>
                         </ul>
                     </div>
 
