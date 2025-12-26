@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getLevelsByDifficulty } from '@/lib/levels';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 const MAX_GAMES_PER_DIFFICULTY = 12;
 const siteUrl = 'https://spotdiffs.com';
@@ -41,10 +42,15 @@ export default async function DifficultyPage() {
 
     return (
         <div className="container mx-auto px-4 py-12">
-            <div className="flex items-center gap-4 mb-8">
-                <Link href="/games" className="text-gray-500 hover:text-purple-600">← All Games</Link>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Games by Difficulty</h1>
-            </div>
+            <Breadcrumb 
+                items={[
+                    { label: 'All Games', href: '/games' },
+                    { label: 'Difficulty' }
+                ]}
+                className="mb-6"
+            />
+            
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">Games by Difficulty</h1>
 
             <div className="space-y-12">
                 {difficulties.map((difficulty) => {

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getLevelsByDifficultyPaginated } from '@/lib/levels';
 import Pagination from '@/components/Pagination';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 const siteUrl = 'https://spotdiffs.com';
 
@@ -96,11 +97,14 @@ export default async function DifficultyPage({ params, searchParams }: Difficult
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="flex items-center gap-4 mb-8">
-        <Link href="/games/difficulty" className="text-gray-500 hover:text-purple-600">
-          ← All Difficulties
-        </Link>
-      </div>
+      <Breadcrumb 
+        items={[
+          { label: 'All Games', href: '/games' },
+          { label: 'Difficulty', href: '/games/difficulty' },
+          { label: difficulty }
+        ]}
+        className="mb-6"
+      />
 
       <div className="flex items-center gap-4 mb-8">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">

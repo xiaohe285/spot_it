@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCategoryBySlug, getLevelsByCategoryPaginated } from '@/lib/levels';
 import Pagination from '@/components/Pagination';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 const siteUrl = 'https://spotdiffs.com';
 
@@ -69,13 +70,17 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     return (
         <div className="container mx-auto px-4 py-12">
-            <div className="flex items-center gap-4 mb-4">
-                <Link href="/games" className="text-gray-500 hover:text-purple-600 dark:text-gray-400">← All Games</Link>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-                    {category.icon && <span className="mr-2">{category.icon}</span>}
-                    {category.name}
-                </h1>
-            </div>
+            <Breadcrumb 
+                items={[
+                    { label: 'All Games', href: '/games' },
+                    { label: category.name }
+                ]}
+                className="mb-6"
+            />
+
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                {category.name}
+            </h1>
 
             {category.description && (
                 <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-3xl">
