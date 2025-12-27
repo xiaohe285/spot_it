@@ -171,19 +171,28 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                 <div className="bg-gray-100 dark:bg-gray-800 p-4 shadow-md">
                     <div className="w-full max-w-7xl mx-auto">
                         <div className="flex items-center justify-between">
-                            {/* Breadcrumb Navigation with Title */}
-                            <div className="flex items-center gap-2">
+                            {/* Breadcrumb Navigation with Title and Badge */}
+                            <div className="flex items-center gap-3">
                                 <Link href="/games" className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium">
                                     Games
                                 </Link>
                                 <span className="text-gray-400 dark:text-gray-500">/</span>
-                                <h1 className="text-xl text-gray-900 dark:text-white">{level.title}</h1>
+                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{level.title}</h1>
+                                
+                                {/* Difficulty Capsule Badge */}
+                                <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
+                                    level.difficulty === 'Easy' 
+                                        ? 'bg-emerald-500' 
+                                        : level.difficulty === 'Hard' 
+                                        ? 'bg-amber-500 shadow-amber-300/30' 
+                                        : 'bg-red-500 shadow-red-300/30'
+                                }`}>
+                                    {level.difficulty}
+                                </span>
                             </div>
                             
-                            {/* Difficulty Badge */}
-                            <div className="text-orange-600 dark:text-yellow-400 font-mono text-lg">
-                                Difficulty: {level.difficulty}
-                            </div>
+                            {/* Empty space for layout balance */}
+                            <div></div>
                         </div>
                     </div>
                 </div>

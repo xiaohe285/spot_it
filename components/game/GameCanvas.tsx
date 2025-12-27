@@ -236,57 +236,99 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
     return (
         <div className="flex flex-col gap-4 w-full max-w-7xl mx-auto">
             {/* Game HUD */}
-            <div className="bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
-                {/* Progress */}
+            <div className="bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex justify-between items-center shadow-lg">
+                {/* Left Side - Status Area */}
+                <div className="flex items-center gap-4">
+                    {/* Circular Progress */}
+                    <div className="relative w-15 h-15">
+                        {/* Background Circle */}
+                        <svg className="w-15 h-15 transform -rotate-90" viewBox="0 0 60 60">
+                            <circle
+                                cx="30"
+                                cy="30"
+                                r="24"
+                                fill="transparent"
+                                stroke="currentColor"
+                                strokeWidth="5"
+                                className="text-gray-300 dark:text-gray-600"
+                            />
+                            {/* Progress Circle */}
+                            <circle
+                                cx="30"
+                                cy="30"
+                                r="24"
+                                fill="transparent"
+                                stroke="currentColor"
+                                strokeWidth="5"
+                                strokeLinecap="round"
+                                className="text-emerald-500 transition-all duration-500"
+                                style={{
+                                    strokeDasharray: `${2 * Math.PI * 24}`,
+                                    strokeDashoffset: `${2 * Math.PI * 24 * (1 - progress / 100)}`
+                                }}
+                            />
+                        </svg>
+                        {/* Center Text */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                                <div className="text-base font-bold text-gray-900 dark:text-white">
+                                    {foundDifferences.length}
+                                </div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400 leading-none">
+                                    / {level.differences.length}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Timer */}
+                    <div className="flex items-center gap-2 text-gray-900 dark:text-white">
+                        <span className="text-xl">⏱️</span>
+                        <span className="text-xl font-mono font-bold">{formatTime(timeElapsed)}</span>
+                    </div>
+
+                    {/* Combo */}
+                    {combo > 1 && (
+                        <div className={`flex items-center gap-1 ${comboAnimation ? 'animate-bounce' : ''}`}>
+                            <span className="text-xl">🔥</span>
+                            <span className="text-lg font-bold text-orange-600 dark:text-orange-400">×{combo}</span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Right Side - Tool Area */}
                 <div className="flex items-center gap-3">
-                    <div className="text-gray-900 dark:text-white">
-                        <span className="text-2xl font-bold">{foundDifferences.length}</span>
-                        <span className="text-gray-600 dark:text-gray-400">/{level.differences.length}</span>
-                    </div>
-                    <div className="w-48 h-3 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+                    {/* Hint Button */}
+                    <button
+                        onClick={handleHint}
+                        disabled={hintsUsed >= actualMaxHints || foundDifferences.length === level.differences.length}
+                        className={`relative w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 ${
+                            hintsUsed >= actualMaxHints
+                                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+                                : 'bg-yellow-400 text-white hover:bg-yellow-500 hover:scale-110 hover:shadow-lg hover:shadow-yellow-300/50 cursor-pointer'
+                        }`}
+                    >
+                        <span>💡</span>
+                        {/* Hint Count Badge */}
+                        {actualMaxHints - hintsUsed > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                {actualMaxHints - hintsUsed}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* SOS Button */}
+                    <button
+                        onClick={handleAskForHelp}
+                        disabled={foundDifferences.length === level.differences.length}
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 text-white hover:scale-110 hover:shadow-lg cursor-pointer disabled:bg-gray-300 disabled:dark:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
+                        style={{ backgroundColor: '#ff690078' }}
+                        onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff6900aa'}
+                        onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff690078'}
+                    >
+                        <span>🆘</span>
+                    </button>
                 </div>
-
-                {/* Timer */}
-                <div className="flex items-center gap-2 text-gray-900 dark:text-white">
-                    <span className="text-2xl">⏱️</span>
-                    <span className="text-2xl font-mono font-bold">{formatTime(timeElapsed)}</span>
-                </div>
-
-                {/* Combo */}
-                {combo > 1 && (
-                    <div className={`flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 ${comboAnimation ? 'animate-bounce' : ''}`}>
-                        <span className="text-white font-bold text-lg">🔥 {combo}x COMBO!</span>
-                    </div>
-                )}
-
-                {/* Hints */}
-                <button
-                    onClick={handleHint}
-                    disabled={hintsUsed >= actualMaxHints || foundDifferences.length === level.differences.length}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all ${
-                        hintsUsed >= actualMaxHints
-                            ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-                            : 'bg-yellow-500 text-white hover:bg-yellow-600 hover:scale-105 cursor-pointer'
-                    }`}
-                >
-                    <span className="text-lg">💡</span>
-                    <span>Hints: {actualMaxHints - hintsUsed}</span>
-                </button>
-
-                {/* Ask for Help */}
-                <button
-                    onClick={handleAskForHelp}
-                    disabled={foundDifferences.length === level.differences.length}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 cursor-pointer disabled:bg-gray-300 disabled:dark:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
-                >
-                    <span className="text-lg">🆘</span>
-                    <span>Ask for Help</span>
-                </button>
             </div>
 
             {/* Help Modal */}
@@ -304,7 +346,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                         </div>
 
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
-                            Stuck on finding the differences? Share this puzzle with your friends and family! They might spot what you missed. Take a screenshot and share it via social media or messaging apps.
+                            Stuck on finding the differences? Share this puzzle with your friends and family! They might spot what you missed.
                         </p>
 
                         {/* Share Options */}
@@ -342,11 +384,6 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
                             </button>
                         </div>
 
-                        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                                💡 Tip: Take a screenshot and send it to friends via your favorite messaging apps!
-                            </p>
-                        </div>
                     </div>
                 </div>
             )}
