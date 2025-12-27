@@ -15,6 +15,17 @@ import { saveGameRecord } from '@/lib/gameRecords';
 import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
 
+// Interface for header stats
+interface HeaderStats {
+    progress: number;
+    timeElapsed: number;
+    combo: number;
+    hintsUsed: number;
+    maxHints: number;
+    onHint: () => void;
+    onSOS: () => void;
+}
+
 // Calculate star rating based on performance
 function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     const { timeElapsed, accuracy, hintsUsed } = stats;
@@ -61,6 +72,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const [level, setLevel] = useState<LevelWithCategory | null>(null);
     const [loading, setLoading] = useState(true);
     const [isFromDailyChallenge, setIsFromDailyChallenge] = useState(false);
+    const [headerStats, setHeaderStats] = useState<HeaderStats | null>(null);
 
     // Check if user came from daily challenge page
     useEffect(() => {
@@ -168,10 +180,10 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
             <StructuredData data={[getGameSchema(level), getBreadcrumbSchema(breadcrumbItems)]} />
             <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col">
                 {/* Game Header with Breadcrumb */}
-                <div className="bg-gray-100 dark:bg-gray-800 p-4 shadow-md">
+                <div className="bg-gray-100 dark:bg-gray-800 p-2 md:p-1 shadow-md">
                     <div className="w-full max-w-7xl mx-auto">
                         <div className="flex items-center justify-between">
-                            {/* Breadcrumb Navigation with Title and Badge */}
+                            {/* Left: Breadcrumb Navigation with Title and Badge */}
                             <div className="flex items-center gap-3">
                                 <Link href="/games" className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium">
                                     Games
@@ -191,15 +203,106 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                 </span>
                             </div>
                             
-                            {/* Empty space for layout balance */}
-                            <div></div>
+                            {/* Center: Time and Combo (Desktop Only) */}
+                            {headerStats && (
+                                <div className="hidden md:flex items-center gap-4">
+                                    {/* Timer */}
+                                    <div className="flex items-center gap-2 text-gray-900 dark:text-white">
+                                        <span className="text-xl">⏱️</span>
+                                        <span className="text-xl font-mono font-bold">
+                                            {Math.floor(headerStats.timeElapsed / 60)}:{(headerStats.timeElapsed % 60).toString().padStart(2, '0')}
+                                        </span>
+                                    </div>
+
+                                    {/* Combo (if > 1) */}
+                                    {headerStats.combo > 1 && (
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-xl">🔥</span>
+                                            <span className="text-lg font-bold text-orange-600 dark:text-orange-400">×{headerStats.combo}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* Right: Game Progress and Tools (Desktop Only) */}
+                            {headerStats && (
+                                <div className="hidden md:flex items-center gap-4">
+                                    {/* Circular Progress */}
+                                    <div className="relative w-15 h-15">
+                                        <svg className="w-15 h-15 transform -rotate-90" viewBox="0 0 60 60">
+                                            <circle
+                                                cx="30"
+                                                cy="30"
+                                                r="24"
+                                                fill="transparent"
+                                                stroke="currentColor"
+                                                strokeWidth="5"
+                                                className="text-gray-300 dark:text-gray-600"
+                                            />
+                                            <circle
+                                                cx="30"
+                                                cy="30"
+                                                r="24"
+                                                fill="transparent"
+                                                stroke="currentColor"
+                                                strokeWidth="5"
+                                                strokeLinecap="round"
+                                                className="text-emerald-500 transition-all duration-500"
+                                                style={{
+                                                    strokeDasharray: `${2 * Math.PI * 24}`,
+                                                    strokeDashoffset: `${2 * Math.PI * 24 * (1 - headerStats.progress / 100)}`
+                                                }}
+                                            />
+                                        </svg>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="text-center">
+                                                <div className="text-base font-bold text-gray-900 dark:text-white">
+                                                    {Math.floor(headerStats.progress * level.differences.length / 100)}
+                                                </div>
+                                                <div className="text-xs text-gray-600 dark:text-gray-400 leading-none">
+                                                    / {level.differences.length}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Hint Button */}
+                                    <button
+                                        onClick={headerStats.onHint}
+                                        disabled={headerStats.hintsUsed >= headerStats.maxHints}
+                                        className={`relative w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 ${
+                                            headerStats.hintsUsed >= headerStats.maxHints
+                                                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+                                                : 'bg-yellow-400 text-white hover:bg-yellow-500 hover:scale-110 hover:shadow-lg hover:shadow-yellow-300/50 cursor-pointer'
+                                        }`}
+                                    >
+                                        <span>💡</span>
+                                        {headerStats.maxHints - headerStats.hintsUsed > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                                {headerStats.maxHints - headerStats.hintsUsed}
+                                            </span>
+                                        )}
+                                    </button>
+
+                                    {/* SOS Button */}
+                                    <button
+                                        onClick={headerStats.onSOS}
+                                        className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 text-white hover:scale-110 hover:shadow-lg cursor-pointer"
+                                        style={{ backgroundColor: '#ff690078' }}
+                                        onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff6900aa'}
+                                        onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff690078'}
+                                    >
+                                        <span>🆘</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
             {/* Game Area */}
             <div className="flex-grow flex items-center justify-center p-4">
-                <GameCanvas level={level} onComplete={handleComplete} />
+                <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} />
             </div>
 
             {/* Simplified Completion Modal */}

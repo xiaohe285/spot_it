@@ -15,13 +15,24 @@ export interface GameStats {
     maxCombo: number;
 }
 
+interface HeaderStats {
+    progress: number;
+    timeElapsed: number;
+    combo: number;
+    hintsUsed: number;
+    maxHints: number;
+    onHint: () => void;
+    onSOS: () => void;
+}
+
 interface GameCanvasProps {
     level: LevelWithCategory;
     onComplete: (stats: GameStats) => void;
     maxHints?: number;
+    onHeaderUpdate?: (stats: HeaderStats) => void;
 }
 
-export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanvasProps) {
+export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate }: GameCanvasProps) {
     // Calculate max hints: should not be >= number of differences
     const actualMaxHints = Math.min(maxHints, level.differences.length - 1);
 
@@ -86,6 +97,22 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
             return () => clearTimeout(timer);
         }
     }, [combo]);
+
+    // Update header stats
+    useEffect(() => {
+        if (onHeaderUpdate) {
+            const progress = (foundDifferences.length / level.differences.length) * 100;
+            onHeaderUpdate({
+                progress,
+                timeElapsed,
+                combo,
+                hintsUsed,
+                maxHints: actualMaxHints,
+                onHint: handleHint,
+                onSOS: handleAskForHelp,
+            });
+        }
+    }, [foundDifferences.length, timeElapsed, combo, hintsUsed, level.differences.length, actualMaxHints, onHeaderUpdate]);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -235,8 +262,8 @@ export default function GameCanvas({ level, onComplete, maxHints = 3 }: GameCanv
 
     return (
         <div className="flex flex-col gap-4 w-full max-w-7xl mx-auto">
-            {/* Game HUD */}
-            <div className="bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex justify-between items-center shadow-lg">
+            {/* Game HUD - Mobile Only */}
+            <div className="md:hidden bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex justify-between items-center shadow-lg">
                 {/* Left Side - Status Area */}
                 <div className="flex items-center gap-4">
                     {/* Circular Progress */}
