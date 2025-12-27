@@ -301,7 +301,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                 </div>
 
             {/* Game Area */}
-            <div className="flex-grow flex items-center justify-center p-4">
+            <div className="flex-grow flex items-center justify-center p-2">
                 <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} />
             </div>
 
