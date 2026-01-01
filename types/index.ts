@@ -16,3 +16,16 @@ export interface User {
   score: number;
   completedLevels: string[];
 }
+
+export interface Article {
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  coverImage: string;
+  date: string;
+  author: string;
+  category: string;
+  tags: string[];
+  readingTime: number;
+}
