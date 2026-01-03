@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS themes (
   
   -- Basic Information
   title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
   description TEXT,
   cover TEXT NOT NULL, -- Cover image URL
   
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS themes (
 CREATE INDEX IF NOT EXISTS idx_themes_published ON themes(published);
 CREATE INDEX IF NOT EXISTS idx_themes_created_at ON themes(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_themes_title ON themes(title);
+CREATE INDEX IF NOT EXISTS idx_themes_slug ON themes(slug);
 
 -- =====================================================
 -- 2. Add theme_id to levels table
@@ -81,10 +83,12 @@ CREATE OR REPLACE TRIGGER set_updated_at_themes
 -- =====================================================
 
 -- View for themes with level count
+DROP VIEW IF EXISTS themes_with_stats CASCADE;
 CREATE OR REPLACE VIEW themes_with_stats AS
 SELECT
   t.id,
   t.title,
+  t.slug,
   t.description,
   t.cover,
   t.seo_title,
@@ -160,10 +164,11 @@ LEFT JOIN themes t ON l.theme_id = t.id;
 
 /*
 -- Sample themes
-INSERT INTO themes (title, description, cover, seo_title, seo_description, published)
+INSERT INTO themes (title, slug, description, cover, seo_title, seo_description, published)
 VALUES 
   (
     'Christmas Special',
+    'christmas-special',
     'Festive holiday-themed puzzles with Santa, reindeer, and winter wonderland scenes.',
     'https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=1200&h=600&fit=crop',
     'Christmas Spot the Difference Games | Holiday Puzzles',
@@ -172,6 +177,7 @@ VALUES
   ),
   (
     'Halloween Mysteries',
+    'halloween-mysteries',
     'Spooky and fun Halloween puzzles featuring ghosts, pumpkins, and haunted houses.',
     'https://images.unsplash.com/photo-1509557965875-b88c97052f0e?w=1200&h=600&fit=crop',
     'Halloween Spot the Difference | Spooky Puzzle Games',
@@ -180,6 +186,7 @@ VALUES
   ),
   (
     'Ocean Adventures',
+    'ocean-adventures',
     'Underwater themed puzzles with marine life, coral reefs, and ocean treasures.',
     'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=600&fit=crop',
     'Ocean Spot the Difference | Underwater Puzzle Adventures',
@@ -188,6 +195,7 @@ VALUES
   ),
   (
     'Space Exploration',
+    'space-exploration',
     'Journey through space with astronauts, planets, and alien encounters.',
     'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&h=600&fit=crop',
     'Space Spot the Difference | Astronaut Puzzle Games',

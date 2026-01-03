@@ -19,7 +19,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
 
             <div className="flex flex-wrap gap-4 mb-12">
                 {[
-                    { name: 'Special Themes', href: '/games/themes', color: 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-300' },
+                    { name: 'Special Themes', href: '/themes', color: 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-300' },
                     { name: 'By Difficulty', href: '/games/difficulty', color: 'bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300' },
                 ].map((cat) => (
                     <Link
