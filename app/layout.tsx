@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: "Spot the Difference - Free Online Puzzle Games",
     template: "%s | Spot the Difference",
   },
-  description: "Play the best Spot the Difference games online. Challenge your brain with daily puzzles for adults and kids. Find hidden differences and improve your observation skills!",
+  description: "Play Spot the Difference games online — no download needed. Simple, interactive puzzles with easy, medium, and hard levels. Train your brain and spot hidden differences daily!",
   keywords: ["spot the difference", "find the difference", "puzzle games", "brain games", "observation games", "free online games", "daily puzzles"],
   authors: [{ name: "Spot the Difference" }],
   creator: "Spot the Difference",
