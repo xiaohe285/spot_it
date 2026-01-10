@@ -104,16 +104,16 @@ export default function Header() {
                                 <div className="hidden md:flex items-center gap-4">
                                     <button
                                         onClick={() => handleAuthClick('login')}
-                                        className="cursor-pointer px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                        className="cursor-pointer px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                                     >
                                         Login
                                     </button>
-                                    <button
+                                    {/* <button
                                         onClick={() => handleAuthClick('signup')}
                                         className="cursor-pointer px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5"
                                     >
                                         Sign Up
-                                    </button>
+                                    </button> */}
                                 </div>
 
                                 {/* Mobile: Show single combined button */}

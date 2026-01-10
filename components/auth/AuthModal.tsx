@@ -92,7 +92,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all"
           aria-label="Close"
         >
-          <span className="text-xl font-bold">×</span>
+          <span className="text-xl font-bold cursor-pointer">×</span>
         </button>
 
         {/* Header */}
@@ -174,7 +174,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-orange-500/30"
+            className="cursor-pointer w-full py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-orange-500/30"
           >
             {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : 'Create Account'}
           </button>
@@ -186,7 +186,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
             {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={switchMode}
-              className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
+              className="cursor-pointer text-purple-600 dark:text-purple-400 font-semibold hover:underline"
             >
               {mode === 'login' ? 'Sign Up' : 'Sign In'}
             </button>
