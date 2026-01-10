@@ -13,6 +13,7 @@ export default async function GuidesPage({
 
   return (
     <ArticleListClient
+      key={currentPage}
       initialArticles={articles}
       currentPage={currentPage}
       totalPages={totalPages}

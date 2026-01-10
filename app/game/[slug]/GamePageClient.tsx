@@ -72,28 +72,39 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const [level, setLevel] = useState<LevelWithCategory | null>(null);
     const [loading, setLoading] = useState(true);
     const [isFromDailyChallenge, setIsFromDailyChallenge] = useState(false);
+    const [isFromHomepage, setIsFromHomepage] = useState(false);
     const [headerStats, setHeaderStats] = useState<HeaderStats | null>(null);
 
-    // Check if user came from daily challenge page
+    // Check if user came from daily challenge page or homepage
     useEffect(() => {
         if (typeof window !== 'undefined') {
             // Primary method: Check URL search params
             const urlParams = new URLSearchParams(window.location.search);
             const fromParam = urlParams.get('from');
-            
+
             // Secondary method: Check referrer as fallback
             const referrer = document.referrer;
-            
+
             console.log('GamePageClient - URL from param:', fromParam);
             console.log('GamePageClient - Referrer:', referrer);
-            
+
+            // Check if from daily challenge
             const isFromDaily = fromParam === 'daily' ||
-                              referrer.includes('/daily/today') || 
+                              referrer.includes('/daily/today') ||
                               referrer.includes('/daily/archive') ||
                               Boolean(referrer.match(/\/daily\/\d{4}\/\d{1,2}\/\d{1,2}/));
-            
+
             console.log('GamePageClient - Is from daily challenge:', isFromDaily);
             setIsFromDailyChallenge(isFromDaily);
+
+            // Check if from homepage
+            const isFromHome = fromParam === 'home' ||
+                             referrer === 'https://spotdiffs.com/' ||
+                             referrer.endsWith('spotdiffs.com/') ||
+                             (referrer.includes('spotdiffs.com') && !referrer.includes('/games') && !referrer.includes('/daily'));
+
+            console.log('GamePageClient - Is from homepage:', isFromHome);
+            setIsFromHomepage(isFromHome);
         }
     }, []);
 
@@ -412,9 +423,9 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             <button
                                 onClick={() => {
                                     console.log('Next Level clicked - isFromDailyChallenge:', isFromDailyChallenge);
-                                    // If user came from daily challenge, redirect to games page
-                                    // to avoid going back to today's challenge (which can only be played once)
-                                    if (isFromDailyChallenge) {
+                                    console.log('Next Level clicked - isFromHomepage:', isFromHomepage);
+                                    // If user came from daily challenge or homepage, redirect to games page
+                                    if (isFromDailyChallenge || isFromHomepage) {
                                         console.log('Redirecting to /games');
                                         router.push('/games');
                                     } else {
@@ -424,7 +435,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                 }}
                                 className="cursor-pointer w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/50 transform hover:scale-[1.02]"
                             >
-                                {isFromDailyChallenge ? 'Browse More Games →' : 'Next Level →'}
+                                {(isFromDailyChallenge || isFromHomepage) ? 'Browse More Games →' : 'Next Level →'}
                             </button>
                         </div>
                     </div>

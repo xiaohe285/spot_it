@@ -65,7 +65,7 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
               </div>
             )}
 
-            <div 
+            <div
               className="prose prose-lg dark:prose-invert max-w-none
                 prose-headings:text-gray-800 dark:prose-headings:text-gray-100
                 prose-p:text-gray-600 dark:prose-p:text-gray-300
@@ -89,7 +89,15 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
                 [&>ul]:mb-4 [&>ul]:ml-6
                 [&>ol]:mb-4 [&>ol]:ml-6
                 [&>blockquote]:my-6
-                [&>pre]:my-6"
+                [&>pre]:my-6
+                [&_table]:w-full [&_table]:my-8 [&_table]:border-collapse [&_table]:rounded-xl [&_table]:overflow-hidden [&_table]:shadow-lg [&_table]:border [&_table]:border-gray-200 [&_table]:dark:border-gray-700
+                [&_thead]:bg-gradient-to-r [&_thead]:from-purple-50 [&_thead]:to-blue-50 [&_thead]:dark:from-purple-900/30 [&_thead]:dark:to-blue-900/30
+                [&_th]:text-left [&_th]:font-bold [&_th]:text-sm [&_th]:uppercase [&_th]:tracking-wider [&_th]:text-gray-700 [&_th]:dark:text-gray-200 [&_th]:px-6 [&_th]:py-4 [&_th]:border-b-2 [&_th]:border-purple-200 [&_th]:dark:border-purple-700
+                [&_tbody_tr]:border-b [&_tbody_tr]:border-gray-200 [&_tbody_tr]:dark:border-gray-700 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150
+                [&_tbody_tr:last-child]:border-b-0
+                [&_tbody_tr:hover]:bg-purple-50/50 [&_tbody_tr:hover]:dark:bg-purple-900/10
+                [&_td]:px-6 [&_td]:py-4 [&_td]:text-gray-700 [&_td]:dark:text-gray-300 [&_td]:leading-relaxed
+                [&_tbody_tr:nth-child(even)]:bg-gray-50/50 [&_tbody_tr:nth-child(even)]:dark:bg-gray-800/30"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
 

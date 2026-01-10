@@ -49,7 +49,7 @@ export default async function Home() {
             <div className="flex justify-center lg:justify-end">
               {todaysChallenge ? (
                 <Link
-                  href={`/game/${todaysChallenge.level.slug}`}
+                  href={`/game/${todaysChallenge.level.slug}?from=home`}
                   className="group relative w-full max-w-md"
                 >
                   <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-yellow-400/50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-yellow-400">
@@ -146,7 +146,7 @@ export default async function Home() {
           {popularGames && popularGames.map((game) => (
             <Link
               key={game.id}
-              href={`/game/${game.slug}`}
+              href={`/game/${game.slug}?from=home`}
               className="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
             >
               {/* Game Image */}
@@ -206,7 +206,7 @@ export default async function Home() {
           {featuredGames && featuredGames.map((game) => (
             <Link
               key={game.id}
-              href={`/game/${game.slug}`}
+              href={`/game/${game.slug}?from=home`}
               className="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
             >
               {/* Game Image */}
@@ -271,7 +271,7 @@ export default async function Home() {
               title: "Special Themes",
               desc: "Seasonal and thematic collections.",
               color: "from-pink-500 to-rose-400",
-              href: "/games/themes"
+              href: "/themes"
             }
           ].map((cat) => (
             <Link
