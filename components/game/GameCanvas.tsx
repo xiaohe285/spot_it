@@ -416,7 +416,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUp
             )}
 
             {/* Game Images */}
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col md:flex-row gap-2 justify-center items-center">
                 {/* Image 1 */}
                 <div className={`relative w-full aspect-square cursor-crosshair group bg-gray-100 dark:bg-gray-900 rounded-lg ${
                     level.mode === 'single' ? 'max-w-2xl mx-auto' : 'md:w-1/2'

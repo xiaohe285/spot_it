@@ -8,6 +8,9 @@ export interface Level {
   difficulty: 'Easy' | 'Hard' | 'Expert';
   category: 'Adults' | 'Kids' | 'Themes';
   mode?: 'compare' | 'single'; // 游戏模式，默认为compare
+  description?: string; // 游戏介绍
+  average_time?: number; // 平均完成时间（秒）
+  average_score?: number; // 平均得分
 }
 
 export interface User {

@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { saveGameRecord } from '@/lib/gameRecords';
 import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
+import GameTabs from '@/components/game/GameTabs';
 
 // Interface for header stats
 interface HeaderStats {
@@ -315,6 +316,13 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
             <div className="flex-grow flex items-center justify-center p-1">
                 <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} />
             </div>
+
+            {/* Game Tabs - Description and Stats (Desktop Only) */}
+            <GameTabs
+                description={level.description}
+                averageTime={level.average_time}
+                averageScore={level.average_score}
+            />
 
             {/* Simplified Completion Modal */}
             {isComplete && stats && (
