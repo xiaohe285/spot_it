@@ -46,7 +46,7 @@ export default function ArticleListClient({
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
             Game Guides & Tutorials
           </h1>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -133,7 +133,7 @@ export default function ArticleListClient({
                   href={hasPrevPage ? `/guides?page=${currentPage - 1}` : '#'}
                   className={`p-2 rounded-lg transition-all ${
                     hasPrevPage
-                      ? 'bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900 text-purple-600 dark:text-purple-400'
+                      ? 'bg-white dark:bg-gray-800 hover:bg-orange-100 dark:hover:bg-orange-900 text-orange-600 dark:text-orange-400'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                   }`}
                   aria-disabled={!hasPrevPage}
@@ -146,7 +146,7 @@ export default function ArticleListClient({
                     <>
                       <Link
                         href="/guides?page=1"
-                        className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900 text-gray-700 dark:text-gray-300 transition-all"
+                        className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-orange-100 dark:hover:bg-orange-900 text-gray-700 dark:text-gray-300 transition-all"
                       >
                         1
                       </Link>
@@ -162,8 +162,8 @@ export default function ArticleListClient({
                       href={`/guides?page=${number}`}
                       className={`px-3 py-2 rounded-lg transition-all ${
                         currentPage === number
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900 text-gray-700 dark:text-gray-300'
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-white dark:bg-gray-800 hover:bg-orange-100 dark:hover:bg-orange-900 text-gray-700 dark:text-gray-300'
                       }`}
                     >
                       {number}
@@ -177,7 +177,7 @@ export default function ArticleListClient({
                       )}
                       <Link
                         href={`/guides?page=${totalPages}`}
-                        className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900 text-gray-700 dark:text-gray-300 transition-all"
+                        className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-orange-100 dark:hover:bg-orange-900 text-gray-700 dark:text-gray-300 transition-all"
                       >
                         {totalPages}
                       </Link>
@@ -189,7 +189,7 @@ export default function ArticleListClient({
                   href={hasNextPage ? `/guides?page=${currentPage + 1}` : '#'}
                   className={`p-2 rounded-lg transition-all ${
                     hasNextPage
-                      ? 'bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900 text-purple-600 dark:text-purple-400'
+                      ? 'bg-white dark:bg-gray-800 hover:bg-orange-100 dark:hover:bg-orange-900 text-orange-600 dark:text-orange-400'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                   }`}
                   aria-disabled={!hasNextPage}
