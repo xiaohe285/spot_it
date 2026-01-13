@@ -1,15 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 
 export default function Header() {
     const { user, loading, signOut } = useAuth();
+    const router = useRouter();
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e: FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
 
     const handleAuthClick = (mode: 'login' | 'signup') => {
         setAuthMode(mode);
@@ -52,6 +62,25 @@ export default function Header() {
                     </nav>
 
                     <div className="flex items-center gap-3">
+                        {/* Search Box - Desktop Only */}
+                        <form onSubmit={handleSearch} className="hidden lg:block relative mr-2">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search games..."
+                                className="w-48 pl-4 pr-9 py-1.5 text-sm rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 dark:focus:border-orange-400 focus:ring-1 focus:ring-orange-500/20 hover:border-orange-400 dark:hover:border-orange-400 transition-all"
+                            />
+                            <button
+                                type="submit"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+                            >
+                                <svg className="w-4 h-4 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </form>
+
                         {/* Mobile Games link - show only on mobile when user is not logged in */}
                         {!user && (
                             <Link

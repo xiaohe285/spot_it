@@ -11,6 +11,9 @@ interface LevelDB {
   differences: { x: number; y: number; radius: number }[];
   difficulty: 'Easy' | 'Hard' | 'Expert';
   category: 'Adults' | 'Kids' | 'Themes';
+  description?: string;
+  average_time?: number;
+  average_score?: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -26,6 +29,9 @@ function convertDBToLevel(dbLevel: LevelDB): Level {
     differences: dbLevel.differences,
     difficulty: dbLevel.difficulty,
     category: dbLevel.category,
+    description: dbLevel.description,
+    average_time: dbLevel.average_time,
+    average_score: dbLevel.average_score,
   };
 }
 
@@ -174,4 +180,61 @@ export async function getLevelsByDifficulty(difficulty: 'Easy' | 'Hard' | 'Exper
   }
 
   return data.map(convertDBToLevel);
+}
+
+/**
+ * Search levels by query string (searches in title and description)
+ */
+export async function searchLevels(query: string, page: number = 1, pageSize: number = 24): Promise<{
+  levels: Level[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
+  const supabase = await createClient();
+
+  // Calculate range for pagination
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  // Build the query - search in title and description (case-insensitive, partial match)
+  const searchPattern = `%${query}%`;
+
+  // Fetch total count
+  const { count, error: countError } = await supabase
+    .from('levels')
+    .select('*', { count: 'exact', head: true })
+    .or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`);
+
+  if (countError) {
+    console.error('Error fetching search count:', countError);
+    throw new Error(`Failed to fetch search count: ${countError.message}`);
+  }
+
+  const total = count || 0;
+
+  // Fetch paginated data
+  const { data, error } = await supabase
+    .from('levels')
+    .select('*')
+    .or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error('Error searching levels:', error);
+    throw new Error(`Failed to search levels: ${error.message}`);
+  }
+
+  const levels = data ? data.map(convertDBToLevel) : [];
+  const totalPages = Math.ceil(total / pageSize);
+
+  return {
+    levels,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  };
 }
