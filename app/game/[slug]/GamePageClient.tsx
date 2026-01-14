@@ -410,7 +410,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         )}
 
                         {/* Share Buttons - Simplified */}
-                        <div className="flex gap-2 mb-5 cursor-pointer">
+                        {/* <div className="flex gap-2 mb-5 cursor-pointer">
                             <button
                                 onClick={handleShareTwitter}
                                 className="cursor-pointer flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-sm font-semibold transition-all border border-blue-500/30"
@@ -424,7 +424,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             >
                                  🔄 Replay
                             </button>
-                        </div>
+                        </div> */}
 
                         {/* Action Buttons - Emphasized Primary */}
                         <div className="space-y-2">
