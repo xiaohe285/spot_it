@@ -63,6 +63,39 @@ function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     return Math.max(1, Math.min(3, Math.round(stars * 2) / 2)); // Return 1, 1.5, 2, 2.5, or 3
 }
 
+function CountUp({ end, duration = 1500 }: { end: number; duration?: number }) {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        let startTime: number | null = null;
+        let animationFrame: number;
+
+        const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = timestamp - startTime;
+            const percentage = Math.min(progress / duration, 1);
+            
+            // Easing function (easeOutExpo)
+            const easeOut = (x: number): number => {
+                return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+            };
+
+            setCount(Math.floor(easeOut(percentage) * end));
+
+            if (progress < duration) {
+                animationFrame = requestAnimationFrame(animate);
+            } else {
+                setCount(end);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [end, duration]);
+
+    return <>{count.toLocaleString()}</>;
+}
+
 export default function GamePage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
     const router = useRouter();
@@ -327,11 +360,20 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
             {/* Simplified Completion Modal */}
             {isComplete && stats && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm p-4">
-                    <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 rounded-3xl max-w-lg w-full shadow-2xl border-2 border-yellow-500/30 relative">
+                    <style jsx global>{`
+                        @keyframes popIn {
+                            0% { opacity: 0; transform: scale(0.8); }
+                            100% { opacity: 1; transform: scale(1); }
+                        }
+                        .animate-pop-in {
+                            animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                        }
+                    `}</style>
+                    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-6 rounded-3xl max-w-lg w-full shadow-2xl border-2 border-gray-200 dark:border-yellow-500/30 relative animate-pop-in">
                         {/* Close Button */}
                         <button
                             onClick={() => setIsComplete(false)}
-                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white transition-all hover:scale-110 z-10"
+                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all hover:scale-110 z-10"
                             aria-label="Close"
                         >
                             <span className="text-xl font-bold">×</span>
@@ -339,8 +381,8 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
 
                         {/* Header with Performance Message */}
                         <div className="text-center mb-5">
-                            <div className="text-4xl mb-2">🎉</div>
-                            <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                            <div className="text-4xl mb-2 animate-bounce">🎉</div>
+                            <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-orange-500 to-pink-600 dark:from-yellow-400 dark:to-orange-500 bg-clip-text text-transparent">
                                 {stars === 3 && "🏆 Perfect! You're a true master!"}
                                 {stars === 2.5 && "✨ Amazing performance!"}
                                 {stars === 2 && "👍 Great job!"}
@@ -350,17 +392,19 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         </div>
 
                         {/* Score and Stars Combined */}
-                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-5 text-center mb-4">
-                            <div className="text-sm text-purple-200 uppercase tracking-wide font-semibold mb-1">Total Score</div>
-                            <div className="text-5xl font-black mb-3">{stats.score.toLocaleString()}</div>
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-100 dark:from-purple-900 dark:to-blue-900 rounded-2xl p-5 text-center mb-4 shadow-inner">
+                            <div className="text-sm text-amber-800/70 dark:text-purple-200 uppercase tracking-wide font-semibold mb-1">Total Score</div>
+                            <div className="text-5xl font-black mb-3 text-amber-900 dark:text-white">
+                                <CountUp end={stats.score} />
+                            </div>
                             <div className="flex justify-center gap-1">
                                 {[...Array(3)].map((_, i) => {
                                     if (i < fullStars) {
-                                        return <span key={i} className="text-4xl">⭐</span>;
+                                        return <span key={i} className="text-4xl drop-shadow-md animate-pop-in" style={{ animationDelay: `${i * 100 + 200}ms`, opacity: 0 }}>⭐</span>;
                                     } else if (i === fullStars && hasHalfStar) {
-                                        return <span key={i} className="text-4xl opacity-50">⭐</span>;
+                                        return <span key={i} className="text-4xl opacity-50 drop-shadow-md animate-pop-in" style={{ animationDelay: `${i * 100 + 180}ms`, opacity: 0 }}>⭐</span>;
                                     } else {
-                                        return <span key={i} className="text-4xl text-gray-700">⭐</span>;
+                                        return <span key={i} className="text-4xl text-gray-400 dark:text-gray-700 animate-pop-in" style={{ animationDelay: `${i * 100 + 150}ms`, opacity: 0 }}>⭐</span>;
                                     }
                                 })}
                             </div>
@@ -369,62 +413,48 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         {/* Key Stats - 3 Items Only */}
                         <div className="grid grid-cols-3 gap-3 mb-4">
                             {/* Time */}
-                            <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                                <span className="text-2xl block mb-1">⏱️</span>
-                                <div className="text-lg font-bold">
+                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-100 dark:border-gray-700">
+                                <div className="text-lg font-bold text-gray-900 dark:text-white">
                                     {Math.floor(stats.timeElapsed / 60)}:{(stats.timeElapsed % 60).toString().padStart(2, '0')}
                                 </div>
-                                <div className="text-xs text-gray-400 mt-1">Time</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Time</div>
                             </div>
 
                             {/* Accuracy */}
-                            <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                                <span className="text-2xl block mb-1">🎯</span>
-                                <div className="text-lg font-bold">{stats.accuracy.toFixed(1)}%</div>
-                                <div className="text-xs text-gray-400 mt-1">Accuracy</div>
+                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-100 dark:border-gray-700">
+                                <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.accuracy.toFixed(1)}%</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Accuracy</div>
                             </div>
 
                             {/* Max Combo or Hints */}
-                            <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                                <span className="text-2xl block mb-1">{stats.hintsUsed > 0 ? '💡' : '🔥'}</span>
-                                <div className="text-lg font-bold">
+                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-100 dark:border-gray-700">
+                                <div className="text-lg font-bold text-gray-900 dark:text-white">
                                     {stats.hintsUsed > 0 ? stats.hintsUsed : `${stats.maxCombo}x`}
                                 </div>
-                                <div className="text-xs text-gray-400 mt-1">{stats.hintsUsed > 0 ? 'Hints' : 'Combo'}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    {stats.hintsUsed > 0 ? 'Hints Used' : 'Max Combo'}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Earned Badges - Compact */}
+                        {/* Earned Badges */}
                         {earnedBadges.length > 0 && (
-                            <div className="mb-4 p-3 bg-yellow-900/20 rounded-xl border border-yellow-700/30">
+                            <div className="bg-gray-50 dark:bg-gray-800/30 border border-yellow-500/20 rounded-xl p-3 mb-5">
                                 <div className="flex items-center justify-center gap-3 flex-wrap">
-                                    <span className="text-sm font-semibold text-yellow-400">🎖️ Earned:</span>
-                                    {earnedBadges.map((badge) => (
-                                        <div key={badge.id} className="flex items-center gap-1.5">
+                                    <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">🎖️ Earned:</span>
+                                    {earnedBadges.map((badge, index) => (
+                                        <div 
+                                            key={badge.id} 
+                                            className="flex items-center gap-1.5 animate-pop-in"
+                                            style={{ animationDelay: `${index * 150 + 100}ms`, opacity: 0 }}
+                                        >
                                             <span className="text-xl">{badge.icon}</span>
-                                            <span className="text-sm font-bold">{badge.name}</span>
+                                            <span className="text-sm font-bold text-gray-900 dark:text-white">{badge.name}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
-
-                        {/* Share Buttons - Simplified */}
-                        {/* <div className="flex gap-2 mb-5 cursor-pointer">
-                            <button
-                                onClick={handleShareTwitter}
-                                className="cursor-pointer flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-sm font-semibold transition-all border border-blue-500/30"
-                            >
-                                <span>𝕏</span>
-                                <span>Share</span>
-                            </button>
-                            <button
-                                onClick={() => window.location.reload()}
-                                className="cursor-pointer flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-700/50 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-semibold transition-all border border-gray-600"
-                            >
-                                 🔄 Replay
-                            </button>
-                        </div> */}
 
                         {/* Action Buttons - Emphasized Primary */}
                         <div className="space-y-2">
@@ -441,7 +471,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                         router.back();
                                     }
                                 }}
-                                className="cursor-pointer w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/50 transform hover:scale-[1.02]"
+                                className="cursor-pointer w-full py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:from-orange-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-orange-500/50 transform hover:scale-[1.02]"
                             >
                                 {(isFromDailyChallenge || isFromHomepage) ? 'Browse More Games →' : 'Next Level →'}
                             </button>
