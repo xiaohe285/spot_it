@@ -32,3 +32,27 @@ export interface Article {
   tags: string[];
   readingTime: number;
 }
+
+export interface TilePuzzle {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  imageUrl: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  totalPlays?: number;
+  averageScore?: number;
+  averageTime?: number;
+  published?: boolean;
+  featured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TilePuzzleStats {
+  stars: number; // 1-3 stars
+  timeElapsed: number;
+  moves: number;
+  gridSize: number;
+}
