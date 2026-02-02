@@ -7,17 +7,19 @@ interface TilePuzzlePlayPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
+export async function generateMetadata({ params }: TilePuzzlePlayPageProps): Promise<Metadata> {
+  return {
+    robots: {
       index: false,
       follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
-  },
-};
+  };
+}
 
 export default async function TilePuzzlePlayPage({ params }: TilePuzzlePlayPageProps) {
   const { slug } = await params;
