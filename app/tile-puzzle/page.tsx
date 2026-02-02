@@ -1,7 +1,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Metadata } from 'next';
 import { getTilePuzzles } from '@/lib/db/tile-puzzles';
 import Pagination from '@/components/Pagination';
+
+export const metadata: Metadata = {
+  title: 'Tile Puzzle Games - Challenge Your Mind with Grid Puzzles',
+  description: 'Play free online tile puzzle games! Arrange grid pieces to reveal beautiful images. Choose from 3x3, 4x4, and 5x5 grids. Challenge yourself with our collection of sliding tile puzzles.',
+  keywords: 'tile puzzle, sliding puzzle, grid puzzle, jigsaw puzzle, brain games, puzzle games online, free puzzle games',
+  openGraph: {
+    title: 'Tile Puzzle Games - Challenge Your Mind',
+    description: 'Play free online tile puzzle games! Arrange grid pieces to reveal beautiful images.',
+    type: 'website',
+  },
+};
 
 interface TilePuzzlePageProps {
   searchParams: Promise<{ page?: string }>;

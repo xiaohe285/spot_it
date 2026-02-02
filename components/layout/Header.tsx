@@ -59,8 +59,8 @@ export default function Header() {
                         <Link href="/streak" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Streak
                         </Link>
-                        <Link href="/arrow-escape" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
-                            Arrow Escape
+                        <Link href="/tile-puzzle" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
+                            Tile Puzzles
                         </Link>
                     </nav>
 
