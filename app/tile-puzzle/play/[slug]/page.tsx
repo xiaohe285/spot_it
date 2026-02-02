@@ -1,10 +1,23 @@
 import { notFound } from 'next/navigation';
 import { getTilePuzzleBySlug } from '@/lib/db/tile-puzzles';
 import TilePuzzleGameClient from '@/components/tile-puzzle/TilePuzzleGameClient';
+import { Metadata } from 'next';
 
 interface TilePuzzlePlayPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
 
 export default async function TilePuzzlePlayPage({ params }: TilePuzzlePlayPageProps) {
   const { slug } = await params;
