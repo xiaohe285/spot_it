@@ -63,7 +63,19 @@ function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     return Math.max(1, Math.min(3, Math.round(stars * 2) / 2)); // Return 1, 1.5, 2, 2.5, or 3
 }
 
-function CountUp({ end, duration = 1500 }: { end: number; duration?: number }) {
+function CountUp({
+    end,
+    duration = 1500,
+    decimals = 0,
+    suffix = '',
+    format,
+}: {
+    end: number;
+    duration?: number;
+    decimals?: number;
+    suffix?: string;
+    format?: (value: number) => string;
+}) {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
@@ -74,13 +86,14 @@ function CountUp({ end, duration = 1500 }: { end: number; duration?: number }) {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
             const percentage = Math.min(progress / duration, 1);
-            
+
             // Easing function (easeOutExpo)
             const easeOut = (x: number): number => {
                 return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
             };
 
-            setCount(Math.floor(easeOut(percentage) * end));
+            const value = easeOut(percentage) * end;
+            setCount(value);
 
             if (progress < duration) {
                 animationFrame = requestAnimationFrame(animate);
@@ -93,7 +106,13 @@ function CountUp({ end, duration = 1500 }: { end: number; duration?: number }) {
         return () => cancelAnimationFrame(animationFrame);
     }, [end, duration]);
 
-    return <>{count.toLocaleString()}</>;
+    if (format) {
+        return <>{format(count)}</>;
+    }
+
+    const factor = Math.pow(10, decimals);
+    const rounded = Math.round(count * factor) / factor;
+    return <>{rounded.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</>;
 }
 
 export default function GamePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -203,8 +222,6 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     };
 
     const stars = stats ? calculateStars(stats, level) : 0;
-    const fullStars = Math.floor(stars);
-    const hasHalfStar = stars % 1 !== 0;
 
     const handleShareTwitter = () => {
         if (!stats) return;
@@ -373,7 +390,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         {/* Close Button */}
                         <button
                             onClick={() => setIsComplete(false)}
-                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all hover:scale-110 z-10"
+                            className="absolute -top-3 -right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all hover:scale-110 cursor-pointer z-10 shadow-md ring-2 ring-white dark:ring-gray-900"
                             aria-label="Close"
                         >
                             <span className="text-xl font-bold">×</span>
@@ -381,7 +398,6 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
 
                         {/* Header with Performance Message */}
                         <div className="text-center mb-5">
-                            <div className="text-4xl mb-2 animate-bounce">🎉</div>
                             <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-orange-500 to-pink-600 dark:from-yellow-400 dark:to-orange-500 bg-clip-text text-transparent">
                                 {stars === 3 && "🏆 Perfect! You're a true master!"}
                                 {stars === 2.5 && "✨ Amazing performance!"}
@@ -391,57 +407,51 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             </h2>
                         </div>
 
-                        {/* Score and Stars Combined */}
-                        <div className="bg-gradient-to-br from-amber-50 to-orange-100 dark:from-purple-900 dark:to-blue-900 rounded-2xl p-5 text-center mb-4 shadow-inner">
-                            <div className="text-sm text-amber-800/70 dark:text-purple-200 uppercase tracking-wide font-semibold mb-1">Total Score</div>
-                            <div className="text-5xl font-black mb-3 text-amber-900 dark:text-white">
+                        {/* Score and Key Stats Combined (stars removed) */}
+                        <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 dark:from-purple-900 dark:to-blue-900 rounded-2xl p-5 text-center mb-6 shadow-inner border border-amber-200/60 dark:border-purple-500/20">
+                            {/* "Total Score" label centered on the top border */}
+                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-900 px-3 text-sm font-semibold text-amber-800/70 dark:text-purple-200 uppercase tracking-wide whitespace-nowrap">
+                                Total Score
+                            </span>
+                            <div className="text-5xl font-black mb-4 mt-2 text-amber-900 dark:text-white">
                                 <CountUp end={stats.score} />
                             </div>
-                            <div className="flex justify-center gap-1">
-                                {[...Array(3)].map((_, i) => {
-                                    if (i < fullStars) {
-                                        return <span key={i} className="text-4xl drop-shadow-md animate-pop-in" style={{ animationDelay: `${i * 100 + 200}ms`, opacity: 0 }}>⭐</span>;
-                                    } else if (i === fullStars && hasHalfStar) {
-                                        return <span key={i} className="text-4xl opacity-50 drop-shadow-md animate-pop-in" style={{ animationDelay: `${i * 100 + 180}ms`, opacity: 0 }}>⭐</span>;
-                                    } else {
-                                        return <span key={i} className="text-4xl text-gray-400 dark:text-gray-700 animate-pop-in" style={{ animationDelay: `${i * 100 + 150}ms`, opacity: 0 }}>⭐</span>;
-                                    }
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Key Stats - 3 Items Only */}
-                        <div className="grid grid-cols-3 gap-3 mb-4">
-                            {/* Time */}
-                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-100 dark:border-gray-700">
-                                <div className="text-lg font-bold text-gray-900 dark:text-white">
-                                    {Math.floor(stats.timeElapsed / 60)}:{(stats.timeElapsed % 60).toString().padStart(2, '0')}
+                            {/* Key Stats - 3 Items Only (moved here, replacing stars) */}
+                            <div className="grid grid-cols-3 gap-3">
+                                {/* Time */}
+                                <div className="bg-white/70 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-200/60 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-white">
+                                        {Math.floor(stats.timeElapsed / 60)}:{(stats.timeElapsed % 60).toString().padStart(2, '0')}
+                                    </div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Time</div>
                                 </div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Time</div>
-                            </div>
 
-                            {/* Accuracy */}
-                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-100 dark:border-gray-700">
-                                <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.accuracy.toFixed(1)}%</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Accuracy</div>
-                            </div>
-
-                            {/* Max Combo or Hints */}
-                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-100 dark:border-gray-700">
-                                <div className="text-lg font-bold text-gray-900 dark:text-white">
-                                    {stats.hintsUsed > 0 ? stats.hintsUsed : `${stats.maxCombo}x`}
+                                {/* Accuracy */}
+                                <div className="bg-white/70 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-200/60 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.accuracy.toFixed(1)}%</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Accuracy</div>
                                 </div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    {stats.hintsUsed > 0 ? 'Hints Used' : 'Max Combo'}
+
+                                {/* Max Combo or Hints */}
+                                <div className="bg-white/70 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-200/60 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-white">
+                                        {stats.hintsUsed > 0 ? stats.hintsUsed : `${stats.maxCombo}x`}
+                                    </div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        {stats.hintsUsed > 0 ? 'Hints Used' : 'Max Combo'}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Earned Badges */}
                         {earnedBadges.length > 0 && (
-                            <div className="bg-gray-50 dark:bg-gray-800/30 border border-yellow-500/20 rounded-xl p-3 mb-5">
-                                <div className="flex items-center justify-center gap-3 flex-wrap">
-                                    <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">🎖️ Earned:</span>
+                            <div className="relative bg-gray-50 dark:bg-gray-800/30 border border-yellow-500/20 rounded-xl p-3 mb-5">
+                                {/* "Badge Earned" label centered on the top border */}
+                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-900 px-3 text-sm font-semibold text-yellow-600 dark:text-yellow-400 whitespace-nowrap">
+                                    Badge Earned
+                                </span>
+                                <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
                                     {earnedBadges.map((badge, index) => (
                                         <div 
                                             key={badge.id} 
