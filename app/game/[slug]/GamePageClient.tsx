@@ -410,7 +410,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         {/* Score and Key Stats Combined (stars removed) */}
                         <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 dark:from-purple-900 dark:to-blue-900 rounded-2xl p-5 text-center mb-6 shadow-inner border border-amber-200/60 dark:border-purple-500/20">
                             {/* "Total Score" label centered on the top border */}
-                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-900 px-3 text-sm font-semibold text-amber-800/70 dark:text-purple-200 uppercase tracking-wide whitespace-nowrap">
+                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 dark:from-purple-500 dark:to-blue-500 px-4 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap shadow-md ring-2 ring-white dark:ring-gray-900">
                                 Total Score
                             </span>
                             <div className="text-5xl font-black mb-4 mt-2 text-amber-900 dark:text-white">
@@ -448,8 +448,8 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         {earnedBadges.length > 0 && (
                             <div className="relative bg-gray-50 dark:bg-gray-800/30 border border-yellow-500/20 rounded-xl p-3 mb-5">
                                 {/* "Badge Earned" label centered on the top border */}
-                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-900 px-3 text-sm font-semibold text-yellow-600 dark:text-yellow-400 whitespace-nowrap">
-                                    Badge Earned
+                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-amber-500 dark:from-yellow-400 dark:to-amber-400 px-4 py-1 rounded-full text-xs font-bold text-white whitespace-nowrap shadow-md ring-2 ring-white dark:ring-gray-900">
+                                    Badges Earned
                                 </span>
                                 <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
                                     {earnedBadges.map((badge, index) => (
