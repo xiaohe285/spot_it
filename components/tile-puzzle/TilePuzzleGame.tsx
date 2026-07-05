@@ -198,8 +198,6 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
             moves: finalStats.moves,
             gridSize,
           }}
-          puzzleTitle={puzzle.title}
-          onPlayAgain={startGame}
         />
       )}
     </div>
