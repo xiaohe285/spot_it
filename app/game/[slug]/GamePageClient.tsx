@@ -408,36 +408,36 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                         </div>
 
                         {/* Score and Key Stats Combined (stars removed) */}
-                        <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 dark:from-purple-900 dark:to-blue-900 rounded-2xl p-5 text-center mb-6 shadow-inner border border-amber-200/60 dark:border-purple-500/20">
+                        <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-5 text-center mb-6 shadow-inner border border-amber-200/60 dark:border-amber-500/20">
                             {/* "Total Score" label centered on the top border */}
-                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 dark:from-purple-500 dark:to-blue-500 px-4 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap shadow-md ring-2 ring-white dark:ring-gray-900">
+                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap shadow-md ring-2 ring-white dark:ring-gray-900">
                                 Total Score
                             </span>
-                            <div className="text-5xl font-black mb-4 mt-2 text-amber-900 dark:text-white">
+                            <div className="text-5xl font-black mb-4 mt-2 text-amber-900 dark:text-amber-300">
                                 <CountUp end={stats.score} />
                             </div>
                             {/* Key Stats - 3 Items Only (moved here, replacing stars) */}
                             <div className="grid grid-cols-3 gap-3">
                                 {/* Time */}
-                                <div className="bg-white/70 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-200/60 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="text-lg font-bold text-gray-900 dark:text-white">
+                                <div className="bg-white/70 dark:bg-amber-900/30 rounded-lg p-3 text-center border border-gray-200/60 dark:border-amber-500/30 shadow-sm hover:shadow-md dark:hover:bg-amber-900/40 transition-all">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-amber-100">
                                         {Math.floor(stats.timeElapsed / 60)}:{(stats.timeElapsed % 60).toString().padStart(2, '0')}
                                     </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Time</div>
+                                    <div className="text-xs text-gray-500 dark:text-amber-200/60 mt-1">Time</div>
                                 </div>
 
                                 {/* Accuracy */}
-                                <div className="bg-white/70 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-200/60 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="text-lg font-bold text-gray-900 dark:text-white">{stats.accuracy.toFixed(1)}%</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Accuracy</div>
+                                <div className="bg-white/70 dark:bg-amber-900/30 rounded-lg p-3 text-center border border-gray-200/60 dark:border-amber-500/30 shadow-sm hover:shadow-md dark:hover:bg-amber-900/40 transition-all">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-amber-100">{stats.accuracy.toFixed(1)}%</div>
+                                    <div className="text-xs text-gray-500 dark:text-amber-200/60 mt-1">Accuracy</div>
                                 </div>
 
                                 {/* Max Combo or Hints */}
-                                <div className="bg-white/70 dark:bg-gray-800/50 rounded-lg p-3 text-center border border-gray-200/60 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="text-lg font-bold text-gray-900 dark:text-white">
+                                <div className="bg-white/70 dark:bg-amber-900/30 rounded-lg p-3 text-center border border-gray-200/60 dark:border-amber-500/30 shadow-sm hover:shadow-md dark:hover:bg-amber-900/40 transition-all">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-amber-100">
                                         {stats.hintsUsed > 0 ? stats.hintsUsed : `${stats.maxCombo}x`}
                                     </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <div className="text-xs text-gray-500 dark:text-amber-200/60 mt-1">
                                         {stats.hintsUsed > 0 ? 'Hints Used' : 'Max Combo'}
                                     </div>
                                 </div>
