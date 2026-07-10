@@ -29,7 +29,7 @@ export default function LeaderboardPage() {
             setLoading(true);
             setError(null);
 
-            const { data, error } = await getGlobalLeaderboard(100);
+            const { data, error } = await getGlobalLeaderboard(50);
 
             if (error) {
                 setError('Failed to load leaderboard');
