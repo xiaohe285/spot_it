@@ -20,28 +20,25 @@ interface GlobalLeaderboardEntry {
 const medalStyles = {
     1: {
         card: 'from-amber-50 via-yellow-50 to-orange-100 border-amber-200 dark:from-amber-950/50 dark:via-yellow-950/30 dark:to-orange-950/50 dark:border-amber-800/60 md:scale-105',
-        ribbon: 'from-red-600 via-red-500 to-red-700',
-        medal: 'from-yellow-200 via-amber-400 to-yellow-700 border-yellow-300 shadow-amber-300/50',
-        ring: 'border-amber-200/80',
         badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-200',
         score: 'text-blue-600 dark:text-blue-300',
     },
     2: {
         card: 'from-slate-50 via-blue-50 to-indigo-100 border-slate-200 dark:from-slate-900 dark:via-blue-950/40 dark:to-indigo-950/50 dark:border-slate-700',
-        ribbon: 'from-blue-700 via-blue-500 to-indigo-800',
-        medal: 'from-slate-100 via-slate-300 to-slate-600 border-slate-200 shadow-slate-300/50',
-        ring: 'border-slate-100/80',
         badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200',
         score: 'text-blue-600 dark:text-blue-300',
     },
     3: {
         card: 'from-orange-50 via-rose-50 to-amber-100 border-orange-200 dark:from-orange-950/40 dark:via-rose-950/30 dark:to-amber-950/40 dark:border-orange-800/60',
-        ribbon: 'from-emerald-800 via-green-600 to-emerald-900',
-        medal: 'from-orange-200 via-amber-600 to-orange-900 border-orange-300 shadow-orange-300/50',
-        ring: 'border-orange-100/80',
         badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900/60 dark:text-orange-200',
         score: 'text-blue-600 dark:text-blue-300',
     },
+} as const;
+
+const medalSpritePositions = {
+    1: '50% 50%',
+    2: '0% 50%',
+    3: '100% 50%',
 } as const;
 
 function getPlayerName(player: GlobalLeaderboardEntry) {
@@ -56,6 +53,10 @@ function getTopPlayerOrder(rank: number) {
     if (rank === 1) return 'md:order-2';
     if (rank === 2) return 'md:order-1';
     return 'md:order-3';
+}
+
+function getMedalSpritePosition(rank: number) {
+    return medalSpritePositions[rank as 1 | 2 | 3];
 }
 
 export default function LeaderboardPage() {
@@ -146,20 +147,12 @@ export default function LeaderboardPage() {
                                                     user?.id === player.id ? 'ring-2 ring-purple-400 dark:ring-purple-500' : ''
                                                 }`}
                                             >
-                                                <div className="absolute left-8 top-0 flex gap-2 opacity-95">
-                                                    <div className={`h-16 w-6 -translate-y-2 rotate-[-12deg] rounded-b-md bg-gradient-to-b ${style.ribbon}`} />
-                                                    <div className={`h-16 w-6 -translate-y-2 rotate-[12deg] rounded-b-md bg-gradient-to-b ${style.ribbon}`} />
-                                                </div>
-                                                <div className="absolute right-5 top-5 rounded-full bg-white/60 px-3 py-1 text-xs font-bold text-gray-600 shadow-sm backdrop-blur dark:bg-black/20 dark:text-gray-200">
-                                                    #{player.rank}
-                                                </div>
-
                                                 <div className="relative z-10 flex h-full flex-col justify-between gap-4 md:flex-row md:items-center">
-                                                    <div className="relative mx-auto flex h-36 w-36 shrink-0 items-center justify-center md:mx-0">
-                                                        <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${style.medal} shadow-2xl`} />
-                                                        <div className="absolute inset-3 rounded-full border-4 border-white/40" />
-                                                        <div className={`absolute inset-6 rounded-full border-2 ${style.ring}`} />
-                                                        <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white/80 bg-gradient-to-br from-orange-500 to-pink-500 shadow-inner">
+                                                    <div
+                                                        className="relative -mt-5 mx-auto h-[204px] w-36 shrink-0 md:mx-0"
+                                                        aria-label={`Rank ${player.rank} medal`}
+                                                    >
+                                                        <div className="absolute left-1/2 top-[61%] h-28 w-28 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-gradient-to-br from-orange-500 to-pink-500 shadow-inner">
                                                             {player.avatar_url ? (
                                                                 <img
                                                                     src={player.avatar_url}
@@ -172,12 +165,17 @@ export default function LeaderboardPage() {
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className="absolute bottom-3 flex h-7 w-7 items-center justify-center rounded-full border border-white/70 bg-black/20 text-sm font-black text-white shadow-sm">
-                                                            {player.rank}
-                                                        </div>
+                                                        <div
+                                                            className="absolute inset-0 bg-contain bg-no-repeat drop-shadow-2xl"
+                                                            style={{
+                                                                backgroundImage: "url('/golden_900.png')",
+                                                                backgroundPosition: getMedalSpritePosition(player.rank),
+                                                                backgroundSize: '300% 100%',
+                                                            }}
+                                                        />
                                                     </div>
 
-                                                    <div className="text-center md:text-left">
+                                                    <div className="min-w-[120px] text-center md:text-left">
                                                         <div className="mb-2 flex flex-wrap items-center justify-center gap-2 md:justify-start">
                                                             <h2 className="text-lg font-black text-gray-950 dark:text-white">
                                                                 {getPlayerName(player)}
@@ -188,15 +186,15 @@ export default function LeaderboardPage() {
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className={`font-mono text-3xl font-black tracking-tight ${style.score}`}>
+                                                        <div className={`font-mono text-[1.2rem] font-black leading-tight tracking-tight ${style.score}`}>
                                                             {(player.total_score || 0).toLocaleString()}
                                                         </div>
                                                         <div className="mb-4 text-sm font-medium text-gray-600 dark:text-gray-300">Points</div>
                                                         <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-                                                            <span className={`rounded-full px-3 py-1 text-xs font-bold ${style.badge}`}>
+                                                            <span className={`inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold ${style.badge}`}>
                                                                 {player.total_games_played || 0} Games
                                                             </span>
-                                                            <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-gray-600 shadow-sm dark:bg-black/20 dark:text-gray-200">
+                                                            <span className="inline-flex whitespace-nowrap rounded-full bg-white/70 px-3 py-1 text-[0.65rem] font-bold text-gray-600 shadow-sm dark:bg-black/20 dark:text-gray-200">
                                                                 Star Avg {player.avg_stars?.toFixed(1) || '0.0'}
                                                             </span>
                                                         </div>
@@ -206,6 +204,7 @@ export default function LeaderboardPage() {
                                         );
                                     })}
                                 </div>
+                            )}
 
                             {remainingPlayers.length > 0 && (
                                 <div>
