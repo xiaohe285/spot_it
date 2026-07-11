@@ -141,13 +141,14 @@ export async function getLevelLeaderboard(
 
 // Get global leaderboard
 export async function getGlobalLeaderboard(
-  limit: number = 100
+  limit: number = 50
 ): Promise<{ data: LeaderboardEntry[] | null; error: Error | null }> {
   const supabase = createClient();
 
   const { data, error } = await supabase
     .from('global_leaderboard')
     .select('*')
+    .gt('total_score', 0)
     .limit(limit);
 
   return { data, error };
