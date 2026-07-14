@@ -1,22 +1,20 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { TilePuzzleStats } from '@/types';
 
 interface TilePuzzleCompletionModalProps {
   isOpen: boolean;
   onClose: () => void;
   stats: TilePuzzleStats;
-  puzzleTitle: string;
-  onPlayAgain: () => void;
 }
 
 export default function TilePuzzleCompletionModal({
   isOpen,
   onClose,
   stats,
-  puzzleTitle,
-  onPlayAgain
 }: TilePuzzleCompletionModalProps) {
+  const router = useRouter();
   if (!isOpen) return null;
 
   const formatTime = (seconds: number) => {
@@ -74,7 +72,7 @@ export default function TilePuzzleCompletionModal({
 
   const handleNextLevel = () => {
     onClose();
-    onPlayAgain();
+    router.push('/tile-puzzle');
   };
 
   return (
@@ -129,7 +127,7 @@ export default function TilePuzzleCompletionModal({
           {/* Action Button */}
           <button
             onClick={handleNextLevel}
-            className="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-pink-600 transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-orange-500/50 flex items-center justify-center gap-2"
+            className="cursor-pointer w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-pink-600 transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-orange-500/50 flex items-center justify-center gap-2"
           >
             Next Level
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
