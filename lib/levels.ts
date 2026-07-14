@@ -245,6 +245,108 @@ export async function getLevelsByDifficultyPaginated(
   };
 }
 
+// =====================================================
+// Difference Count Browsing
+// =====================================================
+
+export interface DifferenceCountGroup {
+  count: number;
+  gameCount: number;
+  coverImage: string;
+  difficulty: 'Easy' | 'Hard' | 'Expert';
+}
+
+function getDominantDifficulty(
+  levels: LevelWithCategory[]
+): 'Easy' | 'Hard' | 'Expert' {
+  const tallies: Record<'Easy' | 'Hard' | 'Expert', number> = {
+    Easy: 0,
+    Hard: 0,
+    Expert: 0,
+  };
+  for (const level of levels) {
+    tallies[level.difficulty] += 1;
+  }
+  return (Object.entries(tallies) as ['Easy' | 'Hard' | 'Expert', number][])
+    .sort((a, b) => b[1] - a[1])[0][0];
+}
+
+/** Group published levels by number of differences (for hub page cards). */
+export async function getDifferenceCountStats(): Promise<{
+  data: DifferenceCountGroup[] | null;
+  error: Error | null;
+}> {
+  const { data: levels, error } = await getAllLevels();
+
+  if (error || !levels) {
+    return { data: null, error };
+  }
+
+  const groups = new Map<number, LevelWithCategory[]>();
+  for (const level of levels) {
+    const n = level.differences?.length ?? 0;
+    if (n < 1) continue;
+    const list = groups.get(n) || [];
+    list.push(level);
+    groups.set(n, list);
+  }
+
+  const data: DifferenceCountGroup[] = Array.from(groups.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([count, groupLevels]) => ({
+      count,
+      gameCount: groupLevels.length,
+      coverImage: groupLevels[0].image_url_1,
+      difficulty: getDominantDifficulty(groupLevels),
+    }));
+
+  return { data, error: null };
+}
+
+/** Paginated levels that have exactly `differenceCount` differences. */
+export async function getLevelsByDifferenceCountPaginated(
+  differenceCount: number,
+  page: number = 1,
+  pageSize: number = 24
+): Promise<{
+  data: LevelWithCategory[] | null;
+  error: Error | null;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
+  const { data: levels, error } = await getAllLevels();
+
+  if (error || !levels) {
+    return {
+      data: null,
+      error,
+      total: 0,
+      page,
+      pageSize,
+      totalPages: 0,
+    };
+  }
+
+  const filtered = levels.filter(
+    (level) => (level.differences?.length ?? 0) === differenceCount
+  );
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / pageSize) || 0;
+  const from = (page - 1) * pageSize;
+  const data = filtered.slice(from, from + pageSize);
+
+  return {
+    data,
+    error: null,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  };
+}
+
 export async function getFeaturedLevels(
   limit: number = 4
 ): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
