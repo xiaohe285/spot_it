@@ -105,7 +105,7 @@ export default async function DifferencesCountPage({
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
           {count} Differences Games
         </h1>
-        <span className="text-sm px-4 py-2 rounded-full text-white bg-gradient-to-r from-orange-500 to-pink-500">
+        <span className="text-sm px-4 py-2 rounded-full text-green-800 dark:text-green-100 bg-green-100 dark:bg-green-900/40">
           {total} {total === 1 ? 'Game' : 'Games'}
         </span>
       </div>
@@ -155,11 +155,6 @@ export default async function DifferencesCountPage({
                   </div>
                 </div>
                 <div className="p-6">
-                  {level.category_name && (
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">
-                      {level.category_name}
-                    </div>
-                  )}
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 transition-colors">
                     {level.title}
                   </h2>
