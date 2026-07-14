@@ -5,6 +5,7 @@ import { searchLevels } from '@/lib/db/levels';
 import { Level } from '@/types';
 import Pagination from '@/components/Pagination';
 import SearchBox from '@/components/SearchBox';
+import FeedbackButton from '@/components/feedback/FeedbackButton';
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -115,6 +116,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               browse all games
             </Link>
           </p>
+          <FeedbackButton searchQuery={query} />
         </div>
       ) : (
         <>
