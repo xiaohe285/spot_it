@@ -2,22 +2,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { DifferenceCountGroup } from '@/lib/levels';
 
-const difficultyConfig = {
-  Easy: {
-    stars: 1,
-    label: 'Easy',
-    accent: 'bg-green-500',
-  },
-  Hard: {
-    stars: 2,
-    label: 'Hard',
-    accent: 'bg-orange-500',
-  },
-  Expert: {
-    stars: 3,
-    label: 'Expert',
-    accent: 'bg-red-600',
-  },
+const difficultyBadgeClass = {
+  Easy: 'bg-green-500',
+  Hard: 'bg-orange-500',
+  Expert: 'bg-red-600',
 } as const;
 
 const descriptions: Record<number, string> = {
@@ -45,7 +33,6 @@ interface DifferenceCountCardProps {
 
 export default function DifferenceCountCard({ group }: DifferenceCountCardProps) {
   const { count, gameCount, coverImage, difficulty } = group;
-  const config = difficultyConfig[difficulty];
   const href = `/games/differences/${count}`;
 
   return (
@@ -60,14 +47,10 @@ export default function DifferenceCountCard({ group }: DifferenceCountCardProps)
         />
         <div className="absolute inset-0 bg-black/45 group-hover:bg-black/50 transition-colors" />
 
-        <div className="absolute top-4 left-4 z-10">
-          <span className="inline-flex items-center gap-1.5 pl-0 pr-3 py-1 rounded-full bg-black/70 backdrop-blur text-white text-sm font-semibold overflow-hidden">
-            <span className={`w-1.5 self-stretch ${config.accent}`} aria-hidden />
-            <span className="pl-2 text-amber-400 tracking-tight" aria-hidden>
-              {'★'.repeat(config.stars)}
-            </span>
-            <span>{config.label}</span>
-          </span>
+        <div
+          className={`absolute top-4 right-4 z-10 px-3 py-1 rounded-full text-sm font-bold text-white shadow-sm ${difficultyBadgeClass[difficulty]}`}
+        >
+          {difficulty}
         </div>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4">
