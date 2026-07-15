@@ -56,11 +56,11 @@ export default function Header() {
                         <Link href="/leaderboard" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Leaderboard
                         </Link>
-                        <Link href="/streak" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
-                            Streak
-                        </Link>
                         <Link href="/tile-puzzle" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Tile Puzzles
+                        </Link>
+                        <Link href="/mahjongg-solitaire" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
+                            Mahjongg Solitaire
                         </Link>
                     </nav>
 
@@ -120,6 +120,12 @@ export default function Header() {
                                         </p>
                                     </div>
                                     <div className="py-2">
+                                        <Link
+                                            href="/streak"
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            Streak
+                                        </Link>
                                         <button
                                             onClick={signOut}
                                             className="cursor-pointer w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
@@ -206,12 +212,19 @@ export default function Header() {
                             >
                                 Leaderboard
                             </Link>
-                            <Link 
-                                href="/streak" 
+                            <Link
+                                href="/tile-puzzle"
                                 className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
-                                Streak
+                                Tile Puzzles
+                            </Link>
+                            <Link
+                                href="/mahjongg-solitaire"
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Mahjongg Solitaire
                             </Link>
                             
                             {!user && (
@@ -242,6 +255,13 @@ export default function Header() {
                                     <div className="px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white">
                                         {user.user_metadata?.display_name || user.email?.split('@')[0]}
                                     </div>
+                                    <Link
+                                        href="/streak"
+                                        className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Streak
+                                    </Link>
                                     <button
                                         onClick={() => {
                                             signOut();
