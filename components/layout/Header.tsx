@@ -59,6 +59,9 @@ export default function Header() {
                         <Link href="/tile-puzzle" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Tile Puzzles
                         </Link>
+                        <Link href="/mahjongg-solitaire" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
+                            Mahjongg Solitaire
+                        </Link>
                     </nav>
 
                     <div className="flex items-center gap-3">
@@ -208,6 +211,20 @@ export default function Header() {
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Leaderboard
+                            </Link>
+                            <Link
+                                href="/tile-puzzle"
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Tile Puzzles
+                            </Link>
+                            <Link
+                                href="/mahjongg-solitaire"
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Mahjongg Solitaire
                             </Link>
                             
                             {!user && (
