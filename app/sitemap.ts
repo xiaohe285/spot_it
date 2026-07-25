@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getAllLevels, getAllCategories } from '@/lib/levels';
+import { getAllLevels, getAllCategories, getDifferenceCountStats } from '@/lib/levels';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://spotdiffs.com';
@@ -20,6 +20,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         {
             url: `${baseUrl}/games/difficulty`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/games/differences`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,
@@ -68,5 +74,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     })) || [];
 
-    return [...staticRoutes, ...levelRoutes, ...categoryRoutes];
+    // Difference-count browse pages
+    const { data: differenceGroups } = await getDifferenceCountStats();
+    const differenceRoutes: MetadataRoute.Sitemap = differenceGroups?.map((group) => ({
+        url: `${baseUrl}/games/differences/${group.count}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.75,
+    })) || [];
+
+    return [...staticRoutes, ...levelRoutes, ...categoryRoutes, ...differenceRoutes];
 }
