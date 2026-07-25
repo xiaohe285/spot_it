@@ -21,6 +21,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                 {[
                     { name: 'Special Themes', href: '/themes', color: 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-300' },
                     { name: 'By Difficulty', href: '/games/difficulty', color: 'bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300' },
+                    { name: 'By Differences', href: '/games/differences', color: 'bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-300' },
                 ].map((cat) => (
                     <Link
                         key={cat.name}
