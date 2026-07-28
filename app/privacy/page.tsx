@@ -26,7 +26,7 @@ export default function PrivacyPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Privacy Policy</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Last Updated: November 23, 2025</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-8">Last Updated: July 25, 2026</p>
 
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <section className="mb-8">
@@ -74,6 +74,11 @@ export default function PrivacyPage() {
               <li>Pages visited and time spent on pages</li>
               <li>Referring website addresses</li>
             </ul>
+
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">2.4 Purchase Information</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              When you buy a printable product, we receive limited transaction information from PayPal, such as the PayPal order ID, payment status, amount, currency, and purchased product. Payment credentials and full card details are entered with and processed by PayPal; SpotDiffs does not receive or store them.
+            </p>
           </section>
 
           <section className="mb-8">
@@ -111,6 +116,11 @@ export default function PrivacyPage() {
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">4.3 Image Services</h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               We use third-party image hosting services to deliver game images. These services may collect limited technical information necessary to deliver images to your device.
+            </p>
+
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">4.4 PayPal</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              We use PayPal to create and capture payments for digital products. PayPal processes payment information under its own privacy terms. We use the transaction confirmation to create a time-limited, signed download link and to provide purchase support.
             </p>
           </section>
 

@@ -25,6 +25,42 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+@media (hover: hover) {
+  .printable-filter-pill--active:hover {
+    background-color: #bff3d7 !important;
+  }
+
+  .printable-filter-pill--active:has(.printable-filter-clear:hover) {
+    background-color: #e4fff2 !important;
+  }
+
+  .printable-filter-clear:hover > span {
+    background-color: #d9f3e7 !important;
+  }
+
+  .printable-filter-pill--inactive:hover {
+    background-color: #e4e4e5 !important;
+  }
+}
+
+@media (hover: hover) and (prefers-color-scheme: dark) {
+  .printable-filter-pill--active:hover {
+    background-color: #065f46 !important;
+  }
+
+  .printable-filter-pill--active:has(.printable-filter-clear:hover) {
+    background-color: #064e3b !important;
+  }
+
+  .printable-filter-clear:hover > span {
+    background-color: #047857 !important;
+  }
+
+  .printable-filter-pill--inactive:hover {
+    background-color: #1e293b !important;
+  }
+}
+
 /* Custom animations for game */
 @keyframes score-popup {
   0% {

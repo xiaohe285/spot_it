@@ -46,9 +46,12 @@ export default function Header() {
                         SpotDiffs
                     </Link>
 
-                    <nav className="hidden md:flex items-center gap-8">
+                    <nav className="hidden md:flex items-center gap-5">
                         <Link href="/games" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Games
+                        </Link>
+                        <Link href="/printables" className="text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 font-medium transition-colors">
+                            Printables
                         </Link>
                         <Link href="/daily/today" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Daily Challenge
@@ -197,6 +200,13 @@ export default function Header() {
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Daily Challenge
+                            </Link>
+                            <Link
+                                href="/printables"
+                                className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-orange-600 dark:hover:text-orange-400 font-medium transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Printable PDFs
                             </Link>
                             <Link 
                                 href="/guides" 
