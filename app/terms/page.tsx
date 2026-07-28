@@ -26,7 +26,7 @@ export default function TermsPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Terms of Service</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Last Updated: November 23, 2025</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-8">Last Updated: July 25, 2026</p>
 
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <section className="mb-8">
@@ -83,6 +83,14 @@ export default function TermsPage() {
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">3.3 Account Termination</h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               You may delete your account at any time through your account settings. Upon deletion, your personal data will be removed in accordance with our Privacy Policy. We reserve the right to retain certain information for legal compliance or legitimate business purposes.
+            </p>
+
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">3.4 Printable Digital Products</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              Printable products are digital PDF files; no physical item is shipped. Paid orders are processed by PayPal, and access is provided only after PayPal confirms a completed payment. Product pages state the price, file format, page count, and included content before checkout.
+            </p>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              Each download grants a limited, non-exclusive license for one household or one classroom. You may print copies for that permitted use, but you may not resell, redistribute, upload, sublicense, or commercially republish the PDF or its contents. Digital delivery and refund terms are described in our <a href="/refund-policy" className="text-purple-600 dark:text-purple-400 hover:underline">Digital Delivery & Refund Policy</a>.
             </p>
           </section>
 
