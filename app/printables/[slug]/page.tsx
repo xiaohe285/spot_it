@@ -8,6 +8,7 @@ import {
   BusFront,
   Check,
   ChevronDown,
+  ChevronLeft,
   CloudRain,
   Download,
   Eye,
@@ -197,7 +198,7 @@ export default async function PrintableProductPage({
   };
 
   return (
-    <main className="min-h-screen bg-[#fffdf9] py-5 dark:bg-slate-950 md:py-8">
+    <main className="min-h-screen bg-gradient-to-b from-orange-50/70 via-white to-white py-6 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950 md:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -205,11 +206,19 @@ export default async function PrintableProductPage({
         }}
       />
 
-      <div className="mx-auto max-w-[1580px] px-4 md:px-6">
-        <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(440px,0.92fr)] xl:gap-8">
+      <div className="mx-auto max-w-7xl px-4">
+        <Link
+          href="/printables"
+          className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-slate-600 transition-colors hover:text-orange-600 dark:text-slate-300"
+        >
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          All printables
+        </Link>
+
+        <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(400px,0.9fr)] xl:gap-8">
           <section
             aria-label="Printable previews"
-            className="flex h-full flex-col rounded-[2rem] border border-[#eee5da] bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.07)] dark:border-slate-800 dark:bg-slate-900 sm:p-6"
+            className="flex h-full flex-col rounded-[2rem] border border-orange-100 bg-white p-4 shadow-[0_24px_70px_rgba(249,115,22,0.08)] dark:border-slate-800 dark:bg-slate-900 sm:p-6"
           >
             <PrintableGallery
               images={product.previewImages}
@@ -225,30 +234,30 @@ export default async function PrintableProductPage({
               ].map(([Icon, label]) => (
                 <div
                   key={String(label)}
-                  className="flex min-h-13 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-center text-sm font-extrabold text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="flex min-h-13 items-center justify-center gap-2 rounded-full border border-orange-100 bg-orange-50/60 px-3 py-2 text-center text-sm font-extrabold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 >
-                  <Icon className="h-5 w-5 shrink-0 text-slate-900 dark:text-white" aria-hidden="true" />
+                  <Icon className="h-5 w-5 shrink-0 text-orange-500 dark:text-orange-400" aria-hidden="true" />
                   <span>{String(label)}</span>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="flex h-full flex-col rounded-[2rem] border border-[#eee5da] bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.07)] dark:border-slate-800 dark:bg-slate-900 md:p-9 xl:p-11">
-            <p className="text-xs font-black uppercase tracking-[0.13em] text-[#ff5200] dark:text-orange-400 sm:text-sm">
+          <section className="flex h-full flex-col rounded-[2rem] border border-orange-100 bg-white p-6 shadow-[0_24px_70px_rgba(249,115,22,0.08)] dark:border-slate-800 dark:bg-slate-900 md:p-8 lg:p-10">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400 sm:text-sm">
               {audienceLabel} printable · {product.audience}
             </p>
-            <h1 className="mt-4 text-4xl font-black leading-[1.08] tracking-[-0.035em] text-[#101827] dark:text-white md:text-5xl xl:text-[3.35rem]">
+            <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 dark:text-white md:text-5xl md:leading-[1.08]">
               {product.title}
             </h1>
-            <p className="mt-4 text-base font-extrabold text-[#249451] dark:text-emerald-400 sm:text-lg">
+            <p className="mt-3 text-base font-bold text-emerald-600 dark:text-emerald-400 sm:text-lg">
               From the {product.title} collection
             </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
+            <p className="mt-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
               {product.shortDescription}
             </p>
 
-            <ul className="mt-6 grid gap-x-7 gap-y-4 text-base font-extrabold text-[#172033] dark:text-slate-100 sm:grid-cols-2">
+            <ul className="mt-6 grid gap-x-7 gap-y-4 text-base font-extrabold text-slate-900 dark:text-slate-100 sm:grid-cols-2">
               {[
                 `${product.puzzleCount} colorful puzzles`,
                 `${product.totalPages} printable pages`,
@@ -256,7 +265,7 @@ export default async function PrintableProductPage({
                 "Instant PDF delivery",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#2dbb75] text-white">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
                     <Check className="h-4 w-4 stroke-[3]" aria-hidden="true" />
                   </span>
                   {item}
@@ -269,7 +278,7 @@ export default async function PrintableProductPage({
               className="mt-10 scroll-mt-24"
             >
               <div className="mb-6">
-                <p className="text-5xl font-black tracking-tight text-[#101827] dark:text-white">
+                <p className="text-4xl font-black tracking-tight text-slate-950 dark:text-white md:text-5xl">
                   {priceLabel}
                 </p>
                 <p className="mt-2 text-sm font-medium leading-6 text-slate-500 dark:text-slate-400">
@@ -321,7 +330,7 @@ export default async function PrintableProductPage({
                         embedded
                       />
                       {product.isPremiumIncluded && (
-                        <div className="mt-6 flex flex-col gap-4 rounded-[1.25rem] border border-[#f1d5b8] bg-[#fffaf3] p-5 dark:border-slate-700 dark:bg-slate-800/70 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-orange-100 bg-orange-50/60 p-5 dark:border-slate-700 dark:bg-slate-800/70 sm:flex-row sm:items-center sm:justify-between">
                           <div>
                             <p className="flex items-start gap-2 text-base font-black leading-5 text-slate-950 dark:text-white">
                               <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
@@ -349,7 +358,7 @@ export default async function PrintableProductPage({
 
         <section
           aria-label="Download benefits"
-          className="mt-6 grid overflow-hidden rounded-[1.4rem] border border-[#eedfce] bg-white px-4 py-2 shadow-[0_12px_35px_rgba(15,23,42,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-6 grid overflow-hidden rounded-2xl border border-orange-100 bg-white px-4 py-2 shadow-[0_12px_35px_rgba(249,115,22,0.06)] dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-2 lg:grid-cols-4"
         >
           {[
             [Download, "Instant download", "Get your files right away"],
@@ -369,7 +378,7 @@ export default async function PrintableProductPage({
                       : ""
               }`}
             >
-              <Icon className="h-7 w-7 shrink-0 text-slate-900 dark:text-white" aria-hidden="true" />
+              <Icon className="h-7 w-7 shrink-0 text-orange-500 dark:text-orange-400" aria-hidden="true" />
               <div>
                 <p className="text-base font-extrabold text-slate-900 dark:text-white">
                   {String(title)}
@@ -382,8 +391,8 @@ export default async function PrintableProductPage({
           ))}
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-center text-2xl font-black text-slate-950 dark:text-white">
+        <section className="mt-12">
+          <h2 className="text-center text-2xl font-black tracking-tight text-slate-950 dark:text-white">
             What this pack helps practice
           </h2>
           <div className="mx-auto mt-5 grid max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -408,8 +417,8 @@ export default async function PrintableProductPage({
           </div>
         </section>
 
-        <section className="mt-7">
-          <h2 className="text-center text-2xl font-black text-slate-950 dark:text-white">
+        <section className="mt-8">
+          <h2 className="text-center text-2xl font-black tracking-tight text-slate-950 dark:text-white">
             Perfect for
           </h2>
           <div className="mx-auto mt-4 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
@@ -427,10 +436,10 @@ export default async function PrintableProductPage({
 
         <section
           id="item-details"
-          className="mt-8 grid scroll-mt-24 gap-4 lg:grid-cols-[1.3fr_0.7fr]"
+          className="mt-12 grid scroll-mt-24 gap-4 lg:grid-cols-[1.3fr_0.7fr]"
         >
           <article className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-7">
-            <h2 className="text-2xl font-black text-slate-950 dark:text-white">
+            <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white">
               Everything included
             </h2>
             <div className="mt-5 grid gap-6 sm:grid-cols-[0.8fr_1.2fr]">
@@ -488,7 +497,7 @@ export default async function PrintableProductPage({
 
           <div className="overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <section className="p-5 md:p-7">
-              <h2 className="text-2xl font-black text-slate-950 dark:text-white">
+              <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white">
                 Printing made easy
               </h2>
               <ul className="mt-5 space-y-4">
@@ -511,7 +520,7 @@ export default async function PrintableProductPage({
             </section>
 
             <section className="border-t border-orange-100 p-5 dark:border-slate-800 md:p-7">
-              <h2 className="text-xl font-black text-slate-950 dark:text-white">
+              <h2 className="text-xl font-black tracking-tight text-slate-950 dark:text-white">
                 Frequently asked questions
               </h2>
               <div className="mt-4 divide-y divide-slate-200 rounded-xl border border-slate-200 dark:divide-slate-700 dark:border-slate-700">
@@ -553,11 +562,11 @@ export default async function PrintableProductPage({
           </div>
         </section>
 
-        <section className="relative mt-4 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 px-6 py-6 dark:border-orange-900/60 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 md:px-10">
+        <section className="relative mt-6 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 px-6 py-6 dark:border-orange-900/60 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 md:px-10">
           <div className="pointer-events-none absolute -left-8 -top-10 h-32 w-32 rounded-full bg-orange-200/45 blur-2xl dark:bg-orange-900/20" />
           <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-2xl font-black text-slate-950 dark:text-white">
+              <p className="text-2xl font-black tracking-tight text-slate-950 dark:text-white">
                 Ready for a screen-free activity?
               </p>
               <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
@@ -577,7 +586,7 @@ export default async function PrintableProductPage({
           </div>
         </section>
 
-        <p className="mx-auto mt-5 max-w-3xl pb-2 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
+        <p className="mx-auto mt-6 max-w-3xl pb-2 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
           Digital product only; no physical item is shipped. By downloading, you
           agree to the{" "}
           <Link href="/terms" className="underline hover:text-orange-600">
