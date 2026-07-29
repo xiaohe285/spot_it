@@ -37,7 +37,7 @@ export default function PrintableGallery({
   return (
     <div>
       <div
-        className="relative overflow-hidden rounded-[1.4rem] bg-gradient-to-br from-[#fbf2e8] via-[#f8f5ed] to-[#eef5e8] dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
+        className="relative overflow-hidden rounded-[1.4rem] bg-gradient-to-br from-orange-50 via-amber-50/70 to-rose-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800"
       >
         <div className="relative aspect-[4/5] sm:aspect-[1.12]">
           <Image
@@ -69,7 +69,7 @@ export default function PrintableGallery({
               key={`${image.url}-${index}`}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`relative aspect-square w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-[#f8f8f6] p-1.5 transition sm:w-20 ${
+              className={`relative aspect-square w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-slate-50 p-1.5 transition sm:w-20 ${
                 activeIndex === index
                   ? "border-orange-500 shadow-[0_4px_14px_rgba(249,115,22,0.16)]"
                   : "border-slate-100 hover:border-orange-200 dark:border-slate-700 dark:bg-slate-800"
