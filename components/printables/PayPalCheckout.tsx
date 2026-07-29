@@ -355,7 +355,7 @@ export default function PayPalCheckout({
         <button
           type="button"
           onClick={() => setCheckoutExpanded(true)}
-          className="flex min-h-[4.6rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.15rem] bg-[#ff5a00] px-6 py-4 text-lg font-black text-white shadow-[0_12px_25px_rgba(255,90,0,0.22)] transition hover:bg-[#ed5200] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+          className="flex min-h-[4.6rem] w-full cursor-pointer items-center justify-center gap-3 rounded-[1.15rem] bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4 text-lg font-black text-white shadow-lg shadow-orange-200/60 transition hover:from-orange-600 hover:to-pink-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:shadow-none"
         >
           Get the Printable Pack — {priceLabel}
           <Download className="h-6 w-6" aria-hidden="true" />
