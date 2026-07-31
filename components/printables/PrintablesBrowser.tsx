@@ -283,71 +283,91 @@ export default function PrintablesBrowser({
           </button>
         </div>
 
-        <section className="relative my-8 overflow-hidden rounded-[1.75rem] bg-slate-950 px-6 py-7 text-white shadow-[0_18px_45px_rgba(15,23,42,0.18)] md:px-8">
+        <section className="relative my-8 overflow-hidden rounded-[1.75rem] border border-orange-200/80 bg-gradient-to-br from-orange-100/80 via-orange-50 to-pink-100/70 p-2 text-slate-950 shadow-[0_20px_55px_rgba(249,115,22,0.14)] ring-1 ring-white/80 dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 dark:text-white dark:shadow-[0_18px_45px_rgba(15,23,42,0.18)] dark:ring-white/5 sm:p-3">
           <div
-            className="pointer-events-none absolute -right-12 -top-20 h-56 w-56 rounded-full bg-pink-500/20 blur-3xl"
+            className="pointer-events-none absolute -right-12 -top-20 h-56 w-56 rounded-full bg-pink-300/40 blur-3xl dark:bg-pink-500/20"
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-orange-500/20 blur-3xl"
+            className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-orange-300/40 blur-3xl dark:bg-orange-500/20"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute right-[18%] top-5 h-20 w-20 rounded-full border border-orange-300/40"
             aria-hidden="true"
           />
 
-          <div className="relative grid gap-7 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
+          <div className="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-stretch">
+            <div className="rounded-[1.35rem] border border-white/80 bg-white/65 p-5 shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-white/[0.035] md:p-6">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-pink-500 shadow-lg shadow-orange-950/30">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-300/50 dark:shadow-orange-950/30">
                   <Crown className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-orange-300">
-                  {premiumPlan.title}
-                </p>
-                <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold text-slate-100 backdrop-blur">
-                  {premiumPlan.badge}
-                </span>
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-300">
+                    {premiumPlan.title}
+                  </p>
+                  <span className="mt-1 inline-flex rounded-full border border-orange-200 bg-white px-2.5 py-0.5 text-[10px] font-bold text-slate-600 shadow-sm dark:border-white/15 dark:bg-white/10 dark:text-slate-200 dark:shadow-none">
+                    {premiumPlan.badge}
+                  </span>
+                </div>
               </div>
 
-              <h2 className="mt-4 max-w-2xl text-2xl font-black tracking-tight md:text-3xl">
-                One purchase. A full year of printable puzzles.
+              <h2 className="mt-5 max-w-2xl text-2xl font-black leading-tight tracking-tight md:text-[2rem]">
+                One purchase. {premiumPlan.accessDays} days of printable puzzles.
               </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                 Unlock every Premium-included PDF today, plus new Premium
                 releases added during your access period.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold text-slate-200">
-                <span className="inline-flex items-center gap-2">
-                  <Download className="h-4 w-4 text-orange-300" aria-hidden="true" />
-                  Instant downloads
-                </span>
-                <span className="inline-flex items-center gap-2">
-                  <CalendarDays className="h-4 w-4 text-pink-300" aria-hidden="true" />
-                  {premiumPlan.accessDays} days of access
-                </span>
-                <span className="inline-flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-300" aria-hidden="true" />
-                  No auto-renewal
-                </span>
+              <div className="mt-5 grid gap-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 sm:grid-cols-3">
+                {[
+                  [Download, "Instant downloads", "text-orange-500 dark:text-orange-300"],
+                  [
+                    CalendarDays,
+                    `${premiumPlan.accessDays} days of access`,
+                    "text-pink-500 dark:text-pink-300",
+                  ],
+                  [ShieldCheck, "No auto-renewal", "text-emerald-600 dark:text-emerald-300"],
+                ].map(([Icon, label, iconColor]) => (
+                  <span
+                    key={String(label)}
+                    className="inline-flex min-h-11 items-center gap-2.5 rounded-xl border border-white bg-white/85 px-3 py-2.5 shadow-[0_5px_16px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/[0.06] dark:shadow-none"
+                  >
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800">
+                      <Icon className={`h-4 w-4 ${String(iconColor)}`} aria-hidden="true" />
+                    </span>
+                    {String(label)}
+                  </span>
+                ))}
               </div>
             </div>
 
-            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:flex-col lg:items-stretch">
-              <div className="text-left sm:text-right lg:text-center">
-                <p className="text-xs font-semibold text-slate-400">
+            <aside className="flex flex-col justify-between rounded-[1.35rem] border border-orange-200 bg-white p-5 shadow-[0_14px_35px_rgba(249,115,22,0.16)] dark:border-white/10 dark:bg-slate-900 dark:shadow-none">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-orange-600 dark:text-orange-300">
+                  Full Premium access
+                </p>
+                <p className="mt-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
                   One-time payment
                 </p>
-                <p className="text-3xl font-black">
+                <p className="mt-0.5 text-4xl font-black tracking-tight text-slate-950 dark:text-white">
                   {formatPrintablePrice(premiumPlan)}
                 </p>
+                <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  Every current Premium pack, plus new releases during access.
+                </p>
               </div>
+
               <Link
                 href="/printables/premium"
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-orange-950/30 transition-all hover:from-orange-400 hover:to-pink-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                className="mt-5 inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-orange-200/70 transition-all hover:-translate-y-0.5 hover:from-orange-600 hover:to-pink-600 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:shadow-orange-950/30 dark:hover:from-orange-400 dark:hover:to-pink-400 dark:focus-visible:ring-orange-300 dark:focus-visible:ring-offset-slate-900"
               >
                 <Sparkles className="h-4 w-4" aria-hidden="true" />
                 Explore Premium
               </Link>
-            </div>
+            </aside>
           </div>
         </section>
 
