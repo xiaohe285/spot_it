@@ -250,42 +250,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Printable PDF Store */}
-      <section className="container mx-auto px-4">
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600 p-8 text-white shadow-xl md:p-12">
-          <div className="grid items-center gap-8 lg:grid-cols-[1fr_auto]">
-            <div>
-              <span className="inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-bold backdrop-blur-sm">
-                New • Printable PDF games
-              </span>
-              <h2 className="mt-5 text-3xl font-black md:text-5xl">
-                Take the puzzles off-screen
-              </h2>
-              <p className="mt-4 max-w-2xl text-lg leading-8 text-white/85">
-                Download original spot-the-difference worksheets with answer
-                keys for kids, classrooms, adults, and family game time. Start
-                with the free printable pack.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link
-                href="/printables"
-                className="rounded-xl bg-white px-7 py-3 text-center font-bold text-orange-600 shadow-lg transition hover:bg-orange-50"
-              >
-                Browse printable PDFs
-              </Link>
-              <Link
-                href="/api/printables/download/free-printable-starter-pack"
-                prefetch={false}
-                className="rounded-xl border border-white/40 bg-white/10 px-7 py-3 text-center font-bold text-white backdrop-blur-sm transition hover:bg-white/20"
-              >
-                Get the free pack
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Categories Section */}
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Choose Your Challenge</h2>
