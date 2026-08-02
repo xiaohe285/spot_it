@@ -46,7 +46,7 @@ export default function Header() {
                         SpotDiffs
                     </Link>
 
-                    <nav className="hidden md:flex items-center gap-8">
+                    <nav className="hidden md:flex items-center gap-5">
                         <Link href="/games" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors">
                             Games
                         </Link>
