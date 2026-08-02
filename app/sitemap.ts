@@ -1,8 +1,15 @@
 import { MetadataRoute } from 'next';
 import { getAllLevels, getAllCategories, getDifferenceCountStats } from '@/lib/levels';
+import { getPrintableCatalog } from '@/lib/db/printables';
+import {
+    buildPrintableBrowsePath,
+    parsePrintableFilterSegments,
+} from '@/lib/printableFilters';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://spotdiffs.com';
+    const printableCatalog = await getPrintableCatalog();
+    const printableProducts = printableCatalog.products;
 
     // Static routes
     const staticRoutes: MetadataRoute.Sitemap = [
@@ -54,7 +61,60 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'weekly',
             priority: 0.6,
         },
+        {
+            url: `${baseUrl}/printables`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/printables/premium`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.85,
+        },
+        {
+            url: `${baseUrl}/refund-policy`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.4,
+        },
     ];
+
+    const printableRoutes: MetadataRoute.Sitemap = printableProducts.map((product) => ({
+        url: `${baseUrl}/printables/${product.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: product.priceCents === 0 ? 0.85 : 0.8,
+    }));
+
+    // Curated, keyword-backed filter landing pages. Do not enumerate every
+    // possible combination; canonical routes still work for all valid filters.
+    const printableFilterRoutes: MetadataRoute.Sitemap = [
+        ['free'],
+        ['kids'],
+        ['preschool'],
+        ['adults-teens'],
+        ['hard'],
+        ['kids', 'animals'],
+        ['kids', 'seasonal'],
+        ['worksheets'],
+        ['senior-activities'],
+    ].map((segments) => {
+        const { selected } = parsePrintableFilterSegments(
+            segments,
+            printableCatalog.filterGroups,
+        );
+        return {
+            url: `${baseUrl}${buildPrintableBrowsePath(
+                selected,
+                printableCatalog.filterGroups,
+            )}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+        };
+    });
 
     // Fetch all published levels from database
     const { data: levels } = await getAllLevels();
@@ -83,5 +143,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.75,
     })) || [];
 
-    return [...staticRoutes, ...levelRoutes, ...categoryRoutes, ...differenceRoutes];
+    return [
+        ...staticRoutes,
+        ...printableRoutes,
+        ...printableFilterRoutes,
+        ...levelRoutes,
+        ...categoryRoutes,
+        ...differenceRoutes,
+    ];
 }
