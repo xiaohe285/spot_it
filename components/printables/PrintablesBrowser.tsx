@@ -35,7 +35,7 @@ import {
   type SelectedPrintableFilters,
 } from "@/lib/printableFilters";
 
-type SortOption = "relevance" | "popular" | "newest" | "price-low" | "pages";
+type SortOption = "popular" | "newest" | "price-low" | "pages";
 
 export default function PrintablesBrowser({
   products,
@@ -52,7 +52,7 @@ export default function PrintablesBrowser({
   const [selected, setOptimisticSelected] = useOptimistic(initialSelected);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [allFiltersOpen, setAllFiltersOpen] = useState(false);
-  const [sort, setSort] = useState<SortOption>("relevance");
+  const [sort, setSort] = useState<SortOption>("newest");
 
   const selectedCount = Object.values(selected).reduce(
     (count, values) => count + values.length,
@@ -77,9 +77,8 @@ export default function PrintablesBrowser({
           return b.totalPages - a.totalPages;
         default:
           return (
-            b.salesCount +
-            b.keywordSignals.length * 50 -
-            (a.salesCount + a.keywordSignals.length * 50)
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime()
           );
       }
     });
@@ -143,9 +142,8 @@ export default function PrintablesBrowser({
                 onChange={(event) => setSort(event.target.value as SortOption)}
                 className="appearance-none rounded-xl border border-slate-300 bg-white py-2.5 pl-4 pr-10 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               >
-                <option value="relevance">Relevance</option>
-                <option value="popular">Most popular</option>
                 <option value="newest">Newest</option>
+                <option value="popular">Most popular</option>
                 <option value="price-low">Price: low to high</option>
                 <option value="pages">Most pages</option>
               </select>

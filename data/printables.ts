@@ -69,7 +69,6 @@ export type PrintableProduct = {
   previewImages: PrintablePreviewImage[];
   badge: string;
   features: string[];
-  keywordSignals: string[];
   isPremiumIncluded: boolean;
   salesCount: number;
   publishedAt: string;
@@ -321,10 +320,6 @@ export const printableProducts: PrintableProduct[] = [
       "US Letter and A4-friendly printing",
       "Instant PDF download with a free account",
     ],
-    keywordSignals: [
-      '"free printable spot the difference" - 140 US searches/month',
-      '"spot the difference worksheets pdf free download" - 70/month',
-    ],
     isPremiumIncluded: false,
     salesCount: 860,
     publishedAt: "2026-07-25T00:00:00.000Z",
@@ -366,10 +361,6 @@ export const printableProducts: PrintableProduct[] = [
       "12 complete answer keys",
       "Five differences on every puzzle",
       "Personal and single-classroom license",
-    ],
-    keywordSignals: [
-      '"spot the difference for kids" - 390 US searches/month',
-      '"preschool spot the difference" keyword family - steady demand',
     ],
     isPremiumIncluded: true,
     salesCount: 342,
@@ -413,10 +404,6 @@ export const printableProducts: PrintableProduct[] = [
       "Seven differences on every puzzle",
       "Print repeatedly for one household or classroom",
     ],
-    keywordSignals: [
-      '"spot the difference worksheets" - 480 US searches/month',
-      "Seasonal and classroom bundles show strong Etsy review signals",
-    ],
     isPremiumIncluded: true,
     salesCount: 514,
     publishedAt: "2026-07-25T00:00:00.000Z",
@@ -458,10 +445,6 @@ export const printableProducts: PrintableProduct[] = [
       "30 complete answer keys",
       "Ten subtle differences per puzzle",
       "Great for adults, teens, and senior groups",
-    ],
-    keywordSignals: [
-      '"adult spot the difference printable" - 110 US searches/month',
-      '"spot the difference hard printable" - 140/month',
     ],
     isPremiumIncluded: true,
     salesCount: 268,
