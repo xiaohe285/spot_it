@@ -54,11 +54,7 @@ export default function FreePrintableDownload({
           <button
             type="button"
             onClick={() => setAuthOpen(true)}
-            className={`flex w-full cursor-pointer items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-pink-500 px-6 font-black text-white shadow-lg shadow-orange-200/60 transition hover:from-orange-600 hover:to-pink-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:shadow-none ${
-              embedded
-                ? "min-h-[4.6rem] rounded-[1.15rem] py-4 text-lg"
-                : "min-h-12 rounded-xl py-3 text-sm"
-            }`}
+            className="flex min-h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-orange-200/60 transition hover:from-orange-600 hover:to-pink-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:shadow-none"
           >
             <LogIn className="h-5 w-5" aria-hidden="true" />
             Log in to Download

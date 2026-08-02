@@ -68,7 +68,6 @@ type ProductRow = {
   preview_images: PrintablePreviewImage[];
   badge: string;
   features: string[];
-  keyword_signals: string[];
   is_premium_included: boolean;
   sales_count: number;
   published_at: string;
@@ -188,7 +187,6 @@ function mapProduct(row: ProductRow): PrintableProduct {
         ],
     badge: row.badge,
     features: row.features ?? [],
-    keywordSignals: row.keyword_signals ?? [],
     isPremiumIncluded: row.is_premium_included,
     salesCount: row.sales_count,
     publishedAt: row.published_at,
@@ -251,7 +249,7 @@ export const getPrintableCatalog = cache(async (): Promise<PrintableCatalog> => 
             currency, audience, difficulty, puzzle_count, answer_key_count,
             total_pages, differences_per_puzzle, preview_image_url,
             preview_images, badge,
-            features, keyword_signals, is_premium_included, sales_count,
+            features, is_premium_included, sales_count,
             published_at,
             printable_product_filters (
               printable_filter_options (
@@ -267,6 +265,7 @@ export const getPrintableCatalog = cache(async (): Promise<PrintableCatalog> => 
         `,
       )
       .eq("published", true)
+      .order("published_at", { ascending: false })
       .order("display_order", { ascending: true }),
     supabase
       .from("printable_filter_groups")

@@ -113,7 +113,6 @@ CREATE TABLE IF NOT EXISTS public.printable_products (
     CHECK (jsonb_typeof(preview_images) = 'array'),
   badge TEXT NOT NULL DEFAULT '',
   features JSONB NOT NULL DEFAULT '[]'::jsonb CHECK (jsonb_typeof(features) = 'array'),
-  keyword_signals JSONB NOT NULL DEFAULT '[]'::jsonb CHECK (jsonb_typeof(keyword_signals) = 'array'),
   is_premium_included BOOLEAN NOT NULL DEFAULT FALSE,
   sales_count INTEGER NOT NULL DEFAULT 0 CHECK (sales_count >= 0),
   display_order INTEGER NOT NULL DEFAULT 0,
@@ -123,9 +122,11 @@ CREATE TABLE IF NOT EXISTS public.printable_products (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Remove the legacy presentation-only field from existing installations.
+-- Remove legacy fields that are no longer used by the printable catalog.
 ALTER TABLE public.printable_products
   DROP COLUMN IF EXISTS accent;
+ALTER TABLE public.printable_products
+  DROP COLUMN IF EXISTS keyword_signals;
 ALTER TABLE public.printable_products
   ADD COLUMN IF NOT EXISTS preview_images JSONB NOT NULL DEFAULT '[]'::jsonb
     CHECK (jsonb_typeof(preview_images) = 'array');
@@ -550,8 +551,7 @@ INSERT INTO public.printable_products (
   id, slug, title, short_description, description, price_cents, currency,
   audience, difficulty, puzzle_count, answer_key_count, total_pages,
   differences_per_puzzle, preview_image_url, preview_images, badge, features,
-  keyword_signals, is_premium_included, sales_count, display_order, published,
-  published_at
+  is_premium_included, sales_count, display_order, published, published_at
 )
 VALUES
   (
@@ -565,7 +565,6 @@ VALUES
     '[{"url":"/printables/previews/free-printable-starter-pack.png","alt":"Sample Sunny Park spot the difference puzzle page"},{"url":"/printables/previews/free-printable-starter-pack-answer.png","alt":"Sample Sunny Park answer key page"},{"url":"/printables/previews/free-printable-starter-pack-cover.png","alt":"Cover of the Free Printable Starter Pack"}]'::jsonb,
     'Free',
     '["3 original full-page puzzles","3 clearly marked answer keys","US Letter and A4-friendly printing","Instant PDF download with a free account"]'::jsonb,
-    '["\"free printable spot the difference\" - 140 US searches/month","\"spot the difference worksheets pdf free download\" - 70/month"]'::jsonb,
     FALSE, 860, 10, TRUE, '2026-07-25T00:00:00Z'
   ),
   (
@@ -579,7 +578,6 @@ VALUES
     '[{"url":"/printables/previews/preschool-animal-adventures.png","alt":"Cover of Preschool Animal Adventures"}]'::jsonb,
     'Best for little learners',
     '["12 original preschool-friendly puzzles","12 complete answer keys","Five differences on every puzzle","Personal and single-classroom license"]'::jsonb,
-    '["\"spot the difference for kids\" - 390 US searches/month","\"preschool spot the difference\" keyword family - steady demand"]'::jsonb,
     TRUE, 342, 20, TRUE, '2026-07-25T00:00:00Z'
   ),
   (
@@ -593,7 +591,6 @@ VALUES
     '[{"url":"/printables/previews/classroom-seasons-bundle.png","alt":"Cover of the Classroom Seasons Bundle"}]'::jsonb,
     'Best value',
     '["20 seasonal and classroom puzzles","20 complete answer keys","Seven differences on every puzzle","Print repeatedly for one household or classroom"]'::jsonb,
-    '["\"spot the difference worksheets\" - 480 US searches/month","Seasonal and classroom bundles show strong Etsy review signals"]'::jsonb,
     TRUE, 514, 30, TRUE, '2026-07-25T00:00:00Z'
   ),
   (
@@ -607,7 +604,6 @@ VALUES
     '[{"url":"/printables/previews/adult-hard-visual-challenge.png","alt":"Cover of the Adult Hard Visual Challenge"}]'::jsonb,
     'Most challenging',
     '["30 original high-density puzzles","30 complete answer keys","Ten subtle differences per puzzle","Great for adults, teens, and senior groups"]'::jsonb,
-    '["\"adult spot the difference printable\" - 110 US searches/month","\"spot the difference hard printable\" - 140/month"]'::jsonb,
     TRUE, 268, 40, TRUE, '2026-07-25T00:00:00Z'
   )
 ON CONFLICT (slug) DO UPDATE SET
@@ -625,7 +621,6 @@ ON CONFLICT (slug) DO UPDATE SET
   preview_images = EXCLUDED.preview_images,
   badge = EXCLUDED.badge,
   features = EXCLUDED.features,
-  keyword_signals = EXCLUDED.keyword_signals,
   is_premium_included = EXCLUDED.is_premium_included,
   sales_count = EXCLUDED.sales_count,
   display_order = EXCLUDED.display_order,
