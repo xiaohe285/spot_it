@@ -5,13 +5,14 @@ import {
   Braces,
   CheckCircle2,
   ImageIcon,
+  Layers,
   MousePointer2,
   Plus,
   Printer,
   RotateCcw,
   Trash2,
 } from "lucide-react";
-import { MouseEvent, useMemo, useState } from "react";
+import { MouseEvent, useMemo, useRef, useState } from "react";
 
 type Difference = {
   x: number;
@@ -25,6 +26,16 @@ type ImageState = {
 };
 
 type Difficulty = "Easy" | "Medium" | "Hard" | "Expert";
+
+type EditorLevel = {
+  id: number;
+  imageUrl1: string;
+  imageUrl2: string;
+  jsonValue: string;
+  defaultRadius: number;
+  difficulty: Difficulty;
+  imageStates: [ImageState, ImageState];
+};
 
 const difficultyStars: Record<Difficulty, number> = {
   Easy: 2,
@@ -41,6 +52,21 @@ const sampleDifferences: Difference[] = [
 ];
 
 const initialJson = JSON.stringify(sampleDifferences, null, 2);
+
+function createEditorLevel(id: number, includeSample = false): EditorLevel {
+  return {
+    id,
+    imageUrl1: "",
+    imageUrl2: "",
+    jsonValue: includeSample ? initialJson : "[]",
+    defaultRadius: 5,
+    difficulty: "Medium",
+    imageStates: [
+      { status: "idle", message: "" },
+      { status: "idle", message: "" },
+    ],
+  };
+}
 
 function parseDifferences(value: string):
   | { differences: Difference[]; error: null }
@@ -205,13 +231,18 @@ function PrintableHeader({
   count,
   difficulty,
   answerKey,
+  levelNumber,
+  totalLevels,
 }: {
   count: number;
   difficulty: Difficulty;
   answerKey: boolean;
+  levelNumber: number;
+  totalLevels: number;
 }) {
   const filledStars = difficultyStars[difficulty];
   const differenceLabel = count === 1 ? "Difference" : "Differences";
+  const levelPrefix = totalLevels > 1 ? `Puzzle ${levelNumber} of ${totalLevels} · ` : "";
 
   return (
     <div className="level-editor-sheet-header">
@@ -248,7 +279,11 @@ function PrintableHeader({
       </h2>
       <div className="level-editor-sheet-prompt">
         <span aria-hidden="true" />
-        <p>{answerKey ? `All ${count} ${differenceLabel.toLowerCase()} revealed` : "Can you find them all?"}</p>
+        <p>
+          {answerKey
+            ? `${levelPrefix}All ${count} ${differenceLabel.toLowerCase()} revealed`
+            : `${levelPrefix}Can you find them all?`}
+        </p>
         <span aria-hidden="true" />
       </div>
     </div>
@@ -287,19 +322,32 @@ function PrintableSheet({
   imageUrl2,
   differences,
   difficulty,
+  levelNumber,
+  totalLevels,
   answerKey = false,
 }: {
   imageUrl1: string;
   imageUrl2: string;
   differences: Difference[];
   difficulty: Difficulty;
+  levelNumber: number;
+  totalLevels: number;
   answerKey?: boolean;
 }) {
   const count = differences.length;
 
   return (
-    <section className="level-editor-sheet" aria-label={answerKey ? "Printable answer page" : "Printable puzzle page"}>
-      <PrintableHeader count={count} difficulty={difficulty} answerKey={answerKey} />
+    <section
+      className="level-editor-sheet"
+      aria-label={`${answerKey ? "Printable answer" : "Printable puzzle"} page for level ${levelNumber}`}
+    >
+      <PrintableHeader
+        count={count}
+        difficulty={difficulty}
+        answerKey={answerKey}
+        levelNumber={levelNumber}
+        totalLevels={totalLevels}
+      />
       <div className="level-editor-sheet-grid">
         <PrintableImage
           src={imageUrl1}
@@ -318,31 +366,50 @@ function PrintableSheet({
 }
 
 export default function LevelEditor() {
-  const [imageUrl1, setImageUrl1] = useState("");
-  const [imageUrl2, setImageUrl2] = useState("");
-  const [jsonValue, setJsonValue] = useState(initialJson);
-  const [defaultRadius, setDefaultRadius] = useState(5);
-  const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
-  const [imageStates, setImageStates] = useState<[ImageState, ImageState]>([
-    { status: "idle", message: "" },
-    { status: "idle", message: "" },
-  ]);
+  const [levels, setLevels] = useState<EditorLevel[]>(() => [createEditorLevel(1, true)]);
+  const [activeLevelId, setActiveLevelId] = useState(1);
+  const nextLevelId = useRef(2);
 
-  const parsed = useMemo(() => parseDifferences(jsonValue), [jsonValue]);
+  const activeLevelIndex = Math.max(0, levels.findIndex((level) => level.id === activeLevelId));
+  const activeLevel = levels[activeLevelIndex];
+  const parsed = useMemo(() => parseDifferences(activeLevel.jsonValue), [activeLevel.jsonValue]);
   const differences = parsed.differences ?? [];
 
-  const updateImageUrl = (index: 0 | 1, value: string) => {
-    if (index === 0) setImageUrl1(value);
-    else setImageUrl2(value);
+  const printableLevels = useMemo(
+    () =>
+      levels.map((level) => {
+        const result = parseDifferences(level.jsonValue);
+        return {
+          ...level,
+          differences: result.differences ?? [],
+          parseError: result.error,
+        };
+      }),
+    [levels],
+  );
 
-    setImageStates((current) => {
-      const next: [ImageState, ImageState] = [...current];
+  const updateLevel = (levelId: number, updater: (level: EditorLevel) => EditorLevel) => {
+    setLevels((current) => current.map((level) => (level.id === levelId ? updater(level) : level)));
+  };
+
+  const updateActiveLevel = (updater: (level: EditorLevel) => EditorLevel) => {
+    updateLevel(activeLevel.id, updater);
+  };
+
+  const updateImageUrl = (index: 0 | 1, value: string) => {
+    updateActiveLevel((level) => {
+      const next: [ImageState, ImageState] = [level.imageStates[0], level.imageStates[1]];
       next[index] = { status: "idle", message: "" };
-      return next;
+      return {
+        ...level,
+        imageUrl1: index === 0 ? value : level.imageUrl1,
+        imageUrl2: index === 1 ? value : level.imageUrl2,
+        imageStates: next,
+      };
     });
   };
 
-  const updateImageState = (index: 0 | 1, width?: number, height?: number) => {
+  const updateImageState = (levelId: number, index: 0 | 1, width?: number, height?: number) => {
     const nextState: ImageState =
       width === undefined || height === undefined
         ? { status: "error", message: "The image could not be loaded. Check the URL and access permissions." }
@@ -350,23 +417,23 @@ export default function LevelEditor() {
           ? { status: "ready", message: "2048 × 2048 px — ready" }
           : { status: "warning", message: `${width} × ${height} px — expected 2048 × 2048 px` };
 
-    setImageStates((current) => {
-      if (current[index].status === nextState.status && current[index].message === nextState.message) {
-        return current;
+    updateLevel(levelId, (level) => {
+      if (level.imageStates[index].status === nextState.status && level.imageStates[index].message === nextState.message) {
+        return level;
       }
-      const next: [ImageState, ImageState] = [...current];
+      const next: [ImageState, ImageState] = [level.imageStates[0], level.imageStates[1]];
       next[index] = nextState;
-      return next;
+      return { ...level, imageStates: next };
     });
   };
 
   const writeDifferences = (next: Difference[]) => {
-    setJsonValue(JSON.stringify(next, null, 2));
+    updateActiveLevel((level) => ({ ...level, jsonValue: JSON.stringify(next, null, 2) }));
   };
 
   const addDifference = (x: number, y: number) => {
     if (!parsed.differences) return;
-    writeDifferences([...parsed.differences, { x, y, radius: defaultRadius }]);
+    writeDifferences([...parsed.differences, { x, y, radius: activeLevel.defaultRadius }]);
   };
 
   const removeDifference = (index: number) => {
@@ -374,7 +441,29 @@ export default function LevelEditor() {
     writeDifferences(parsed.differences.filter((_, pointIndex) => pointIndex !== index));
   };
 
-  const canPrint = Boolean(imageUrl1.trim() && imageUrl2.trim() && parsed.differences);
+  const addLevel = () => {
+    const id = nextLevelId.current;
+    nextLevelId.current += 1;
+    setLevels((current) => [...current, createEditorLevel(id)]);
+    setActiveLevelId(id);
+  };
+
+  const removeLevel = (levelId: number) => {
+    if (levels.length === 1) return;
+
+    const removedIndex = levels.findIndex((level) => level.id === levelId);
+    const remaining = levels.filter((level) => level.id !== levelId);
+    setLevels(remaining);
+
+    if (activeLevelId === levelId) {
+      setActiveLevelId(remaining[Math.min(removedIndex, remaining.length - 1)].id);
+    }
+  };
+
+  const incompleteLevelCount = printableLevels.filter(
+    (level) => !level.imageUrl1.trim() || !level.imageUrl2.trim() || level.parseError,
+  ).length;
+  const canPrint = incompleteLevelCount === 0;
 
   return (
     <div className="level-editor-page min-h-screen bg-[#f3f5f8] text-slate-900">
@@ -385,17 +474,17 @@ export default function LevelEditor() {
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Spotdiffs creator tools</p>
               <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Puzzle level editor</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-                Add two square source images, mark the differences, then print the live two-page layout as a PDF.
+                Build multiple puzzles, mark each level&apos;s differences, then print every puzzle followed by every answer key.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => setJsonValue(initialJson)}
+                onClick={() => updateActiveLevel((level) => ({ ...level, jsonValue: initialJson }))}
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50"
               >
                 <RotateCcw size={16} />
-                Reset sample
+                Reset active points
               </button>
               <button
                 type="button"
@@ -413,14 +502,83 @@ export default function LevelEditor() {
         <div className="mx-auto grid max-w-[1500px] gap-6 px-5 py-6 sm:px-8 xl:grid-cols-[390px_minmax(0,1fr)]">
           <aside className="space-y-5 xl:sticky xl:top-5 xl:self-start">
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Layers size={19} className="text-emerald-700" />
+                  <h2 className="font-bold text-slate-900">1. Levels</h2>
+                </div>
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
+                  {levels.length}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {levels.map((level, index) => {
+                  const printableLevel = printableLevels[index];
+                  const isActive = level.id === activeLevel.id;
+                  return (
+                    <div
+                      key={level.id}
+                      className={`flex items-center gap-2 rounded-xl border p-1.5 transition ${
+                        isActive ? "border-emerald-300 bg-emerald-50" : "border-slate-200 bg-white"
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setActiveLevelId(level.id)}
+                        className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-2 py-1.5 text-left"
+                      >
+                        <span
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-black ${
+                            isActive ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {index + 1}
+                        </span>
+                        <span className="min-w-0">
+                          <strong className="block truncate text-sm text-slate-900">Level {index + 1}</strong>
+                          <small className={`block text-xs ${printableLevel.parseError ? "text-red-600" : "text-slate-500"}`}>
+                            {printableLevel.parseError
+                              ? "Invalid difference JSON"
+                              : `${printableLevel.differences.length} differences`}
+                          </small>
+                        </span>
+                      </button>
+                      {levels.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeLevel(level.id)}
+                          aria-label={`Remove level ${index + 1}`}
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={addLevel}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-emerald-400 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-100"
+              >
+                <Plus size={16} />
+                Add another level
+              </button>
+              <p className="mt-3 text-center text-xs font-medium text-slate-500">
+                {levels.length} puzzle {levels.length === 1 ? "page" : "pages"} + {levels.length} answer {levels.length === 1 ? "page" : "pages"} = {levels.length * 2} PDF pages
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <ImageIcon size={19} className="text-emerald-700" />
-                <h2 className="font-bold text-slate-900">1. Source images</h2>
+                <h2 className="font-bold text-slate-900">2. Level {activeLevelIndex + 1} images</h2>
               </div>
               <div className="space-y-4">
                 {[
-                  { label: "Image A URL", value: imageUrl1, index: 0 as const },
-                  { label: "Image B URL", value: imageUrl2, index: 1 as const },
+                  { label: "Image A URL", value: activeLevel.imageUrl1, index: 0 as const },
+                  { label: "Image B URL", value: activeLevel.imageUrl2, index: 1 as const },
                 ].map((field) => (
                   <label key={field.label} className="block text-sm font-semibold text-slate-700">
                     {field.label}
@@ -432,7 +590,7 @@ export default function LevelEditor() {
                       spellCheck={false}
                       className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
                     />
-                    <ImageStatusMessage state={imageStates[field.index]} />
+                    <ImageStatusMessage state={activeLevel.imageStates[field.index]} />
                   </label>
                 ))}
               </div>
@@ -442,8 +600,10 @@ export default function LevelEditor() {
               <label className="mt-4 block text-sm font-semibold text-slate-700">
                 Print difficulty
                 <select
-                  value={difficulty}
-                  onChange={(event) => setDifficulty(event.target.value as Difficulty)}
+                  value={activeLevel.difficulty}
+                  onChange={(event) =>
+                    updateActiveLevel((level) => ({ ...level, difficulty: event.target.value as Difficulty }))
+                  }
                   className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
                 >
                   <option value="Easy">Easy</option>
@@ -458,15 +618,17 @@ export default function LevelEditor() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Braces size={19} className="text-emerald-700" />
-                  <h2 className="font-bold text-slate-900">2. Difference points</h2>
+                  <h2 className="font-bold text-slate-900">3. Level {activeLevelIndex + 1} differences</h2>
                 </div>
                 <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
                   {differences.length} points
                 </span>
               </div>
               <textarea
-                value={jsonValue}
-                onChange={(event) => setJsonValue(event.target.value)}
+                value={activeLevel.jsonValue}
+                onChange={(event) =>
+                  updateActiveLevel((level) => ({ ...level, jsonValue: event.target.value }))
+                }
                 spellCheck={false}
                 aria-label="Difference points JSON"
                 className={`min-h-72 w-full resize-y rounded-xl border bg-slate-950 p-4 font-mono text-[13px] leading-5 text-slate-100 outline-none transition ${
@@ -495,10 +657,12 @@ export default function LevelEditor() {
                     min={0.1}
                     max={50}
                     step={0.5}
-                    value={defaultRadius}
+                    value={activeLevel.defaultRadius}
                     onChange={(event) => {
                       const value = Number(event.target.value);
-                      if (Number.isFinite(value) && value > 0 && value <= 50) setDefaultRadius(value);
+                      if (Number.isFinite(value) && value > 0 && value <= 50) {
+                        updateActiveLevel((level) => ({ ...level, defaultRadius: value }));
+                      }
                     }}
                     className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold outline-none focus:border-emerald-500"
                   />
@@ -541,7 +705,7 @@ export default function LevelEditor() {
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-950">Interactive answer preview</h2>
+                  <h2 className="text-lg font-bold text-slate-950">Level {activeLevelIndex + 1} answer preview</h2>
                   <p className="mt-1 text-sm text-slate-500">Click Image B to append a point using the radius set on the left.</p>
                 </div>
                 <span className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
@@ -553,23 +717,23 @@ export default function LevelEditor() {
                 <div>
                   <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Image A</div>
                   <PreviewImage
-                    src={imageUrl1.trim()}
+                    src={activeLevel.imageUrl1.trim()}
                     alt="First source preview"
                     differences={differences}
-                    onImageLoad={(width, height) => updateImageState(0, width, height)}
-                    onImageError={() => updateImageState(0)}
+                    onImageLoad={(width, height) => updateImageState(activeLevel.id, 0, width, height)}
+                    onImageError={() => updateImageState(activeLevel.id, 0)}
                   />
                 </div>
                 <div>
                   <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Image B · click to add</div>
                   <PreviewImage
-                    src={imageUrl2.trim()}
+                    src={activeLevel.imageUrl2.trim()}
                     alt="Second source preview"
                     differences={differences}
                     interactive
                     onAddDifference={addDifference}
-                    onImageLoad={(width, height) => updateImageState(1, width, height)}
-                    onImageError={() => updateImageState(1)}
+                    onImageLoad={(width, height) => updateImageState(activeLevel.id, 1, width, height)}
+                    onImageError={() => updateImageState(activeLevel.id, 1)}
                   />
                 </div>
               </div>
@@ -578,10 +742,16 @@ export default function LevelEditor() {
             <div>
               <div className="mb-3 flex items-end justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-950">Two-page print preview</h2>
-                  <p className="mt-1 text-sm text-slate-500">A4 / US Letter landscape · page 1 puzzle · page 2 answer key</p>
+                  <h2 className="text-lg font-bold text-slate-950">{levels.length * 2}-page print preview</h2>
+                  <p className="mt-1 text-sm text-slate-500">
+                    A4 / US Letter landscape · all {levels.length} puzzle pages first · then all {levels.length} answer keys
+                  </p>
                 </div>
-                {!canPrint && <span className="text-xs font-semibold text-amber-700">Add both image URLs to enable printing</span>}
+                {!canPrint && (
+                  <span className="text-xs font-semibold text-amber-700">
+                    Complete {incompleteLevelCount} {incompleteLevelCount === 1 ? "level" : "levels"} to enable printing
+                  </span>
+                )}
               </div>
             </div>
           </main>
@@ -589,8 +759,29 @@ export default function LevelEditor() {
       </section>
 
       <div className="level-editor-print-root mx-auto max-w-[1500px] space-y-8 px-5 pb-12 sm:px-8">
-        <PrintableSheet imageUrl1={imageUrl1.trim()} imageUrl2={imageUrl2.trim()} differences={differences} difficulty={difficulty} />
-        <PrintableSheet imageUrl1={imageUrl1.trim()} imageUrl2={imageUrl2.trim()} differences={differences} difficulty={difficulty} answerKey />
+        {printableLevels.map((level, index) => (
+          <PrintableSheet
+            key={`puzzle-${level.id}`}
+            imageUrl1={level.imageUrl1.trim()}
+            imageUrl2={level.imageUrl2.trim()}
+            differences={level.differences}
+            difficulty={level.difficulty}
+            levelNumber={index + 1}
+            totalLevels={levels.length}
+          />
+        ))}
+        {printableLevels.map((level, index) => (
+          <PrintableSheet
+            key={`answer-${level.id}`}
+            imageUrl1={level.imageUrl1.trim()}
+            imageUrl2={level.imageUrl2.trim()}
+            differences={level.differences}
+            difficulty={level.difficulty}
+            levelNumber={index + 1}
+            totalLevels={levels.length}
+            answerKey
+          />
+        ))}
       </div>
     </div>
   );
