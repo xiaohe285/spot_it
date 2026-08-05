@@ -113,7 +113,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <p className="text-gray-500 dark:text-gray-500 text-lg mb-6">
             Try different keywords or{' '}
             <Link href="/games" className="text-purple-600 hover:underline">
-              browse all games
+              browse all spot-the-difference games
             </Link>
           </p>
           <FeedbackButton searchQuery={query} />
