@@ -11,6 +11,8 @@ interface DragState {
   offsetY: number;
   startX: number;
   startY: number;
+  canvasLeft: number;
+  canvasTop: number;
 }
 
 interface TilePuzzleCanvasProps {
@@ -18,23 +20,28 @@ interface TilePuzzleCanvasProps {
   gridSize: number;
   onComplete: (stats: { moves: number; timeElapsed: number }) => void;
   onMoveCountChange: (moves: number) => void;
+  onSuccessfulGroup: (connectionCount: number, isComplete: boolean) => void;
 }
 
 export default function TilePuzzleCanvas({
   imageUrl,
   gridSize,
   onComplete,
-  onMoveCountChange
+  onMoveCountChange,
+  onSuccessfulGroup,
 }: TilePuzzleCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [grid, setGrid] = useState<number[][]>([]); // grid[row][col] = contentId
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [moves, setMoves] = useState(0);
-  const startTimeRef = useRef(Date.now());
+  const [availableWidth, setAvailableWidth] = useState(600);
+  const [celebratingContentIds, setCelebratingContentIds] = useState<Set<number>>(new Set());
+  const startTimeRef = useRef(0);
+  const celebrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Calculate sizes
   const { containerSize, tileSize } = useMemo(() => {
-    const containerWidth = Math.min(600, typeof window !== 'undefined' ? window.innerWidth - 32 : 600);
+    const containerWidth = Math.min(600, availableWidth);
     const calculatedTileSize = Math.floor(containerWidth / gridSize);
     const calculatedContainerSize = calculatedTileSize * gridSize;
 
@@ -45,7 +52,21 @@ export default function TilePuzzleCanvas({
       },
       tileSize: calculatedTileSize
     };
-  }, [gridSize]);
+  }, [availableWidth, gridSize]);
+
+  useEffect(() => {
+    const updateAvailableWidth = () => {
+      setAvailableWidth(Math.max(240, Math.min(600, window.innerWidth - 80)));
+    };
+
+    updateAvailableWidth();
+    window.addEventListener('resize', updateAvailableWidth);
+    return () => window.removeEventListener('resize', updateAvailableWidth);
+  }, []);
+
+  useEffect(() => () => {
+    if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
+  }, []);
 
   // Notify parent of move count changes
   useEffect(() => {
@@ -54,38 +75,42 @@ export default function TilePuzzleCanvas({
 
   // Initialize grid with shuffled content
   useEffect(() => {
-    const totalCells = gridSize * gridSize;
-    const contentIds = Array.from({ length: totalCells }, (_, i) => i);
+    const initializeTimer = window.setTimeout(() => {
+      const totalCells = gridSize * gridSize;
+      const contentIds = Array.from({ length: totalCells }, (_, i) => i);
 
-    // Shuffle using Fisher-Yates algorithm
-    for (let i = contentIds.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [contentIds[i], contentIds[j]] = [contentIds[j], contentIds[i]];
-    }
-
-    // Convert to 2D grid
-    const initialGrid: number[][] = [];
-    for (let r = 0; r < gridSize; r++) {
-      const row: number[] = [];
-      for (let c = 0; c < gridSize; c++) {
-        row.push(contentIds[r * gridSize + c]);
+      // Shuffle using Fisher-Yates algorithm
+      for (let i = contentIds.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [contentIds[i], contentIds[j]] = [contentIds[j], contentIds[i]];
       }
-      initialGrid.push(row);
-    }
 
-    setGrid(initialGrid);
-    startTimeRef.current = Date.now();
+      // Convert to 2D grid
+      const initialGrid: number[][] = [];
+      for (let r = 0; r < gridSize; r++) {
+        const row: number[] = [];
+        for (let c = 0; c < gridSize; c++) {
+          row.push(contentIds[r * gridSize + c]);
+        }
+        initialGrid.push(row);
+      }
+
+      setGrid(initialGrid);
+      startTimeRef.current = Date.now();
+    }, 0);
+
+    return () => window.clearTimeout(initializeTimer);
   }, [gridSize]);
 
   // Find all cells that form correct groups based on relative positioning
-  const getCorrectGroups = useCallback((): Map<string, { row: number; col: number }[]> => {
+  const getCorrectGroups = useCallback((currentGrid: number[][] = grid): Map<string, { row: number; col: number }[]> => {
     const groups = new Map<string, { row: number; col: number }[]>();
     const visited = new Set<string>();
 
     // Check if two adjacent cells should be grouped (relative position is correct)
     const shouldBeGrouped = (r1: number, c1: number, r2: number, c2: number): boolean => {
-      const content1 = grid[r1]?.[c1];
-      const content2 = grid[r2]?.[c2];
+      const content1 = currentGrid[r1]?.[c1];
+      const content2 = currentGrid[r2]?.[c2];
 
       if (content1 === undefined || content2 === undefined) return false;
 
@@ -155,6 +180,34 @@ export default function TilePuzzleCanvas({
     return groups;
   }, [grid, gridSize]);
 
+  const getCorrectConnections = useCallback((currentGrid: number[][]) => {
+    const connections = new Set<string>();
+    const directions = [
+      { dr: 0, dc: 1 },
+      { dr: 1, dc: 0 },
+    ];
+
+    currentGrid.forEach((row, r) => {
+      row.forEach((contentId, c) => {
+        directions.forEach(({ dr, dc }) => {
+          const neighbor = currentGrid[r + dr]?.[c + dc];
+          if (neighbor === undefined) return;
+
+          const contentRow = Math.floor(contentId / gridSize);
+          const contentCol = contentId % gridSize;
+          const neighborRow = Math.floor(neighbor / gridSize);
+          const neighborCol = neighbor % gridSize;
+
+          if (neighborRow - contentRow === dr && neighborCol - contentCol === dc) {
+            connections.add(`${contentId}:${neighbor}`);
+          }
+        });
+      });
+    });
+
+    return connections;
+  }, [gridSize]);
+
   // Get the group that contains a specific cell
   const getGroupForCell = useCallback((row: number, col: number): { row: number; col: number }[] => {
     const groups = getCorrectGroups();
@@ -170,16 +223,17 @@ export default function TilePuzzleCanvas({
   }, [getCorrectGroups]);
 
   // Check completion
-  const checkCompletion = useCallback((currentGrid: number[][]) => {
+  const checkCompletion = useCallback((currentGrid: number[][], moveCount: number) => {
     const allCorrect = currentGrid.every((row, r) =>
       row.every((contentId, c) => contentId === r * gridSize + c)
     );
 
     if (allCorrect) {
       const timeElapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-      onComplete({ moves, timeElapsed });
+      onComplete({ moves: moveCount, timeElapsed });
     }
-  }, [gridSize, moves, onComplete]);
+    return allCorrect;
+  }, [gridSize, onComplete]);
 
   // Handle drag start
   const handleDragStart = useCallback((e: React.MouseEvent | React.TouchEvent, row: number, col: number) => {
@@ -203,6 +257,8 @@ export default function TilePuzzleCanvas({
       offsetY: clientY - rect.top - row * tileSize,
       startX: clientX,
       startY: clientY,
+      canvasLeft: rect.left,
+      canvasTop: rect.top,
     });
   }, [getGroupForCell, tileSize]);
 
@@ -278,6 +334,11 @@ export default function TilePuzzleCanvas({
     if (newMinRow + groupHeight > gridSize) newMinRow = gridSize - groupHeight;
     if (newMinCol + groupWidth > gridSize) newMinCol = gridSize - groupWidth;
 
+    if (newMinRow === minRow && newMinCol === minCol) {
+      setDragState(null);
+      return;
+    }
+
     // Build sets for old and new positions
     const oldPositions = new Set(groupCells.map(c => `${c.row},${c.col}`));
     const newPositions = new Set<string>();
@@ -333,12 +394,30 @@ export default function TilePuzzleCanvas({
       newGrid[r][c] = displacedContent[index];
     });
 
+    const previousConnections = getCorrectConnections(grid);
+    const nextConnections = getCorrectConnections(newGrid);
+    const newConnections = [...nextConnections].filter(connection => !previousConnections.has(connection));
+    const nextMoves = moves + 1;
+
     setGrid(newGrid);
-    setMoves(prev => prev + 1);
+    setMoves(nextMoves);
     setDragState(null);
 
-    checkCompletion(newGrid);
-  }, [dragState, grid, gridSize, tileSize, checkCompletion]);
+    const isComplete = checkCompletion(newGrid, nextMoves);
+
+    if (newConnections.length > 0) {
+      const joinedContentIds = new Set(
+        newConnections.flatMap(connection => connection.split(':').map(Number))
+      );
+      setCelebratingContentIds(joinedContentIds);
+      onSuccessfulGroup(newConnections.length, isComplete);
+
+      if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
+      celebrationTimerRef.current = setTimeout(() => {
+        setCelebratingContentIds(new Set());
+      }, 700);
+    }
+  }, [dragState, grid, gridSize, moves, tileSize, checkCompletion, getCorrectConnections, onSuccessfulGroup]);
 
   // Setup event listeners
   useEffect(() => {
@@ -390,21 +469,29 @@ export default function TilePuzzleCanvas({
   return (
     <div
       ref={canvasRef}
-      className="relative mx-auto"
+      className="relative mx-auto overflow-hidden rounded-[1.1rem] bg-slate-200 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.45)] dark:bg-slate-800"
       style={{
         width: containerSize.width,
         height: containerSize.height,
         touchAction: 'none', // Prevent all touch gestures (scrolling, pinch-zoom, etc.)
       }}
     >
+      {celebratingContentIds.size > 0 && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="tile-join-toast pointer-events-none absolute left-1/2 top-4 z-[70] -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-4 py-2 text-sm font-extrabold text-white shadow-lg shadow-emerald-950/20"
+        >
+          Pieces joined!
+        </div>
+      )}
+
       {/* Grid cells */}
       {grid.map((row, r) =>
         row.map((contentId, c) => {
           const isInDraggingGroup = dragState?.groupCells.some(
             cell => cell.row === r && cell.col === c
           );
-
-          const isCorrect = contentId === r * gridSize + c;
 
           // Find which group this cell belongs to
           let currentGroup: { row: number; col: number }[] | null = null;
@@ -422,16 +509,13 @@ export default function TilePuzzleCanvas({
           let top = r * tileSize;
 
           if (isInDraggingGroup && dragState) {
-            const rect = canvasRef.current?.getBoundingClientRect();
-            if (rect) {
-              const offsetFromDraggedCell = {
-                row: r - dragState.cellRow,
-                col: c - dragState.cellCol,
-              };
+            const offsetFromDraggedCell = {
+              row: r - dragState.cellRow,
+              col: c - dragState.cellCol,
+            };
 
-              left = dragState.startX - rect.left - dragState.offsetX + offsetFromDraggedCell.col * tileSize;
-              top = dragState.startY - rect.top - dragState.offsetY + offsetFromDraggedCell.row * tileSize;
-            }
+            left = dragState.startX - dragState.canvasLeft - dragState.offsetX + offsetFromDraggedCell.col * tileSize;
+            top = dragState.startY - dragState.canvasTop - dragState.offsetY + offsetFromDraggedCell.row * tileSize;
           }
 
           const contentRow = Math.floor(contentId / gridSize);
@@ -444,9 +528,12 @@ export default function TilePuzzleCanvas({
           return (
             <div
               key={`${r}-${c}`}
-              className={`absolute cursor-move ${
+              aria-label={`Puzzle piece ${contentId + 1}`}
+              className={`absolute cursor-grab active:cursor-grabbing ${
                 isInDraggingGroup ? 'z-50' : 'z-10'
-              } ${!isInDraggingGroup ? 'transition-all duration-200' : ''}`}
+              } ${!isInDraggingGroup ? 'transition-all duration-200' : ''} ${
+                celebratingContentIds.has(contentId) ? 'tile-join-pop' : ''
+              }`}
               style={{
                 left,
                 top,

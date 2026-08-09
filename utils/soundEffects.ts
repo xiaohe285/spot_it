@@ -3,42 +3,55 @@ class SoundEffects {
   private audioContext: AudioContext | null = null;
   private enabled: boolean = true;
 
-  constructor() {
-    // Initialize AudioContext on first user interaction
-    if (typeof window !== 'undefined') {
-      this.audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+  private getAudioContext() {
+    if (typeof window === 'undefined') return null;
+
+    if (!this.audioContext) {
+      const AudioContextClass = window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      this.audioContext = new AudioContextClass();
     }
+
+    if (this.audioContext.state === 'suspended') {
+      void this.audioContext.resume();
+    }
+
+    return this.audioContext;
   }
 
   private playTone(frequency: number, duration: number, type: OscillatorType = 'sine') {
-    if (!this.enabled || !this.audioContext) return;
+    if (!this.enabled) return;
+    const audioContext = this.getAudioContext();
+    if (!audioContext) return;
 
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
     oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(audioContext.destination);
 
     oscillator.frequency.value = frequency;
     oscillator.type = type;
 
-    gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
 
-    oscillator.start(this.audioContext.currentTime);
-    oscillator.stop(this.audioContext.currentTime + duration);
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + duration);
   }
 
   // Success sound - finding a difference
   playSuccess() {
-    if (!this.audioContext) return;
+    if (!this.enabled) return;
+    const audioContext = this.getAudioContext();
+    if (!audioContext) return;
 
-    const now = this.audioContext.currentTime;
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
     oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(audioContext.destination);
 
     // Cheerful ascending tone
     oscillator.frequency.setValueAtTime(523.25, now); // C5
@@ -54,14 +67,16 @@ class SoundEffects {
 
   // Error sound - wrong click
   playError() {
-    if (!this.audioContext) return;
+    if (!this.enabled) return;
+    const audioContext = this.getAudioContext();
+    if (!audioContext) return;
 
-    const now = this.audioContext.currentTime;
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
     oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(audioContext.destination);
 
     // Descending tone
     oscillator.frequency.setValueAtTime(200, now);
@@ -77,23 +92,49 @@ class SoundEffects {
 
   // Combo sound - consecutive successes
   playCombo(comboLevel: number) {
-    if (!this.audioContext) return;
-
     const baseFreq = 400 + (comboLevel * 100); // Higher pitch for higher combos
 
     this.playTone(baseFreq, 0.15, 'square');
   }
 
+  // Soft two-note confirmation when puzzle pieces form a new correct group.
+  playTileJoin(connectionCount = 1) {
+    if (!this.enabled) return;
+    const audioContext = this.getAudioContext();
+    if (!audioContext) return;
+
+    const now = audioContext.currentTime;
+    const notes = connectionCount > 1 ? [659.25, 987.77] : [587.33, 783.99];
+
+    notes.forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      const startsAt = now + index * 0.075;
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(frequency, startsAt);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      gainNode.gain.setValueAtTime(0.0001, startsAt);
+      gainNode.gain.exponentialRampToValueAtTime(0.16, startsAt + 0.015);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, startsAt + 0.16);
+      oscillator.start(startsAt);
+      oscillator.stop(startsAt + 0.17);
+    });
+  }
+
   // Complete sound - level finished
   playComplete() {
-    if (!this.audioContext) return;
+    if (!this.enabled) return;
+    const audioContext = this.getAudioContext();
+    if (!audioContext) return;
 
-    const now = this.audioContext.currentTime;
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
     oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(audioContext.destination);
 
     // Victory fanfare
     const notes = [523.25, 659.25, 783.99, 1046.50]; // C5-E5-G5-C6
