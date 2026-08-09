@@ -1,37 +1,31 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { ArrowRight, RotateCcw, X } from 'lucide-react';
 import { TilePuzzleStats } from '@/types';
+import { calculateTilePuzzleScore } from '@/utils/tilePuzzleScoring';
 
 interface TilePuzzleCompletionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onReplay: () => void;
   stats: TilePuzzleStats;
 }
 
 export default function TilePuzzleCompletionModal({
   isOpen,
   onClose,
+  onReplay,
   stats,
 }: TilePuzzleCompletionModalProps) {
   const router = useRouter();
   if (!isOpen) return null;
+  const scoreBreakdown = calculateTilePuzzleScore(stats);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const calculateScore = () => {
-    // Base score from stars: 1000, 2000, or 3000
-    const baseScore = stats.stars * 1000;
-    // Subtract time penalty (5 points per second)
-    const timePenalty = stats.timeElapsed * 5;
-    // Subtract move penalty (10 points per move)
-    const movePenalty = stats.moves * 10;
-    // Calculate final score with minimum of 0
-    return Math.max(0, baseScore - timePenalty - movePenalty);
   };
 
   const getPerformanceMessage = () => {
@@ -76,23 +70,26 @@ export default function TilePuzzleCompletionModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-40">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl transform animate-in zoom-in-95 duration-300 relative">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tile-puzzle-complete-title"
+        className="relative w-full max-w-md rounded-[2rem] border border-white/60 bg-white p-6 shadow-2xl sm:p-8 dark:border-white/10 dark:bg-slate-900"
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="cursor-pointer absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          className="absolute right-4 top-4 grid h-9 w-9 cursor-pointer place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15 dark:hover:text-white"
           aria-label="Close"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <X className="h-5 w-5" aria-hidden="true" />
         </button>
 
         <div className="text-center">
           {/* Success Header */}
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 id="tile-puzzle-complete-title" className="mb-2 text-3xl font-black tracking-tight text-slate-950 dark:text-white">
             Puzzle Completed!
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -103,20 +100,20 @@ export default function TilePuzzleCompletionModal({
           {renderStars()}
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/40 p-4 rounded-xl">
+          <div className="mb-6 grid grid-cols-3 gap-2 sm:gap-4">
+            <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 p-3 sm:p-4 dark:from-purple-900/20 dark:to-purple-900/40">
               <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                {calculateScore()}
+                {scoreBreakdown.score}
               </div>
               <div className="text-sm text-purple-600 dark:text-purple-400">Score</div>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/40 p-4 rounded-xl">
+            <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-3 sm:p-4 dark:from-blue-900/20 dark:to-blue-900/40">
               <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
                 {formatTime(stats.timeElapsed)}
               </div>
               <div className="text-sm text-blue-600 dark:text-blue-400">Time</div>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/40 p-4 rounded-xl">
+            <div className="rounded-2xl bg-gradient-to-br from-green-50 to-green-100 p-3 sm:p-4 dark:from-green-900/20 dark:to-green-900/40">
               <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                 {stats.moves}
               </div>
@@ -124,16 +121,22 @@ export default function TilePuzzleCompletionModal({
             </div>
           </div>
 
-          {/* Action Button */}
-          <button
-            onClick={handleNextLevel}
-            className="cursor-pointer w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-pink-600 transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-orange-500/50 flex items-center justify-center gap-2"
-          >
-            Next Level
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <button
+              onClick={onReplay}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-extrabold text-white shadow-lg shadow-indigo-500/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              Play again
+            </button>
+            <button
+              onClick={handleNextLevel}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-slate-100 px-5 py-3 font-extrabold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+            >
+              More puzzles
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
