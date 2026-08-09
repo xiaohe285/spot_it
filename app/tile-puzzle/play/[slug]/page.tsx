@@ -7,7 +7,7 @@ interface TilePuzzlePlayPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: TilePuzzlePlayPageProps): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
   return {
     robots: {
       index: false,
@@ -31,8 +31,7 @@ export default async function TilePuzzlePlayPage({ params }: TilePuzzlePlayPageP
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Game Component with integrated header */}
+    <div className="min-h-[calc(100vh-4rem)]">
       <TilePuzzleGameClient puzzle={puzzle} />
     </div>
   );

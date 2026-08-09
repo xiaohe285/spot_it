@@ -81,6 +81,46 @@ body {
   animation: score-popup 1s ease-out forwards;
 }
 
+@keyframes tile-join-pop {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  38% {
+    filter: brightness(1.2) saturate(1.18);
+    transform: scale(1.025);
+  }
+}
+
+@keyframes tile-join-toast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -8px) scale(0.92);
+  }
+  22%, 74% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -5px) scale(0.98);
+  }
+}
+
+.tile-join-pop {
+  animation: tile-join-pop 620ms ease-out;
+}
+
+.tile-join-toast {
+  animation: tile-join-toast 700ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile-join-pop,
+  .tile-join-toast {
+    animation: none;
+  }
+}
+
 /* Level editor and browser-to-PDF template */
 .level-editor-image-frame {
   position: relative;
