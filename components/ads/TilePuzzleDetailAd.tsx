@@ -26,13 +26,13 @@ export default function TilePuzzleDetailAd() {
   return (
     <aside
       aria-label="Advertisement"
-      className="mx-auto min-h-[280px] w-full max-w-xl overflow-hidden rounded-3xl border border-white/90 bg-white/70 p-3 shadow-sm shadow-indigo-950/5 backdrop-blur xl:max-w-none dark:border-white/10 dark:bg-white/[0.04]"
+      className="mx-auto flex min-h-[280px] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-white/90 bg-white/70 p-3 shadow-sm shadow-indigo-950/5 backdrop-blur xl:h-full xl:max-w-none dark:border-white/10 dark:bg-white/[0.04]"
     >
       <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
         Advertisement
       </p>
       <ins
-        className="adsbygoogle"
+        className="adsbygoogle min-h-[240px] w-full flex-1"
         style={{ display: 'block' }}
         data-ad-client="ca-pub-3161682431818340"
         data-ad-slot="7180202151"
