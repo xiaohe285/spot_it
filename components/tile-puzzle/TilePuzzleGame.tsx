@@ -142,13 +142,13 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 px-4 py-2 sm:px-6 lg:grid-cols-[180px_minmax(0,1fr)_180px] lg:items-stretch lg:gap-3">
+      <main className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 px-4 py-2 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)_300px] lg:items-stretch lg:gap-3">
         <div className="hidden min-h-0 lg:flex">
           <TilePuzzleDetailAd />
         </div>
 
         <section aria-label="Puzzle board" className="mx-auto min-w-0 w-full">
-          <div className="overflow-hidden rounded-[1.75rem] border border-white/90 bg-white/80 shadow-[0_24px_70px_-30px_rgba(49,46,129,0.45)] backdrop-blur dark:border-white/10 dark:bg-white/[0.06]">
+          <div className="overflow-hidden rounded-lg border border-white/90 bg-white/80 shadow-[0_24px_70px_-30px_rgba(49,46,129,0.45)] backdrop-blur dark:border-white/10 dark:bg-white/[0.06]">
             <TilePuzzleCanvas
               key={gameKey}
               imageUrl={puzzle.imageUrl}
