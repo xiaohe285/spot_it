@@ -148,8 +148,12 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl items-stretch gap-5 px-4 py-5 sm:px-6 sm:py-7 xl:grid-cols-[minmax(0,660px)_minmax(280px,1fr)]">
-        <section aria-label="Puzzle board" className="min-w-0">
+      <main className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[180px_minmax(0,1fr)_180px] lg:items-stretch lg:gap-3">
+        <div className="hidden min-h-0 lg:flex">
+          <TilePuzzleDetailAd />
+        </div>
+
+        <section aria-label="Puzzle board" className="mx-auto min-w-0 w-full">
           <div className="rounded-[1.75rem] border border-white/90 bg-white/80 p-2.5 shadow-[0_24px_70px_-30px_rgba(49,46,129,0.45)] backdrop-blur dark:border-white/10 dark:bg-white/[0.06] sm:p-4">
             <div className="mb-3 flex items-center justify-between gap-3 px-1 sm:px-0">
               <div className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300">
@@ -173,7 +177,9 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
           </div>
         </section>
 
-        <TilePuzzleDetailAd />
+        <div className="mx-auto min-h-0 w-full max-w-xl lg:flex lg:max-w-none">
+          <TilePuzzleDetailAd />
+        </div>
       </main>
 
       {finalStats && (
