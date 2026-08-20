@@ -31,17 +31,18 @@ export default function TilePuzzleCanvas({
   onSuccessfulGroup,
 }: TilePuzzleCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [grid, setGrid] = useState<number[][]>([]); // grid[row][col] = contentId
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [moves, setMoves] = useState(0);
-  const [availableWidth, setAvailableWidth] = useState(600);
+  const [availableSize, setAvailableSize] = useState(600);
   const [celebratingContentIds, setCelebratingContentIds] = useState<Set<number>>(new Set());
   const startTimeRef = useRef(0);
   const celebrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Calculate sizes
   const { containerSize, tileSize } = useMemo(() => {
-    const containerWidth = Math.min(600, availableWidth);
+    const containerWidth = availableSize;
     const calculatedTileSize = Math.floor(containerWidth / gridSize);
     const calculatedContainerSize = calculatedTileSize * gridSize;
 
@@ -52,17 +53,27 @@ export default function TilePuzzleCanvas({
       },
       tileSize: calculatedTileSize
     };
-  }, [availableWidth, gridSize]);
+  }, [availableSize, gridSize]);
 
   useEffect(() => {
-    const updateAvailableWidth = () => {
-      setAvailableWidth(Math.max(240, Math.min(600, window.innerWidth - 80)));
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const updateAvailableSize = () => {
+      const width = wrapper.clientWidth;
+      const viewportRoom = window.innerHeight - wrapper.getBoundingClientRect().top - 8;
+      setAvailableSize(Math.max(240, Math.min(width, viewportRoom)));
     };
 
-    updateAvailableWidth();
-    window.addEventListener('resize', updateAvailableWidth);
-    return () => window.removeEventListener('resize', updateAvailableWidth);
-  }, []);
+    updateAvailableSize();
+    const observer = new ResizeObserver(updateAvailableSize);
+    observer.observe(wrapper);
+    window.addEventListener('resize', updateAvailableSize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateAvailableSize);
+    };
+  }, [grid.length]);
 
   useEffect(() => () => {
     if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
@@ -436,7 +447,9 @@ export default function TilePuzzleCanvas({
     }
   }, [dragState?.isDragging, handleDragMove, handleDragEnd]);
 
-  if (grid.length === 0) return null;
+  if (grid.length === 0) {
+    return <div ref={wrapperRef} className="flex w-full justify-center" />;
+  }
 
   const correctGroups = getCorrectGroups();
 
@@ -467,15 +480,16 @@ export default function TilePuzzleCanvas({
   };
 
   return (
-    <div
-      ref={canvasRef}
-      className="relative mx-auto overflow-hidden rounded-[1.1rem] bg-slate-200 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.45)] dark:bg-slate-800"
-      style={{
-        width: containerSize.width,
-        height: containerSize.height,
-        touchAction: 'none', // Prevent all touch gestures (scrolling, pinch-zoom, etc.)
-      }}
-    >
+    <div ref={wrapperRef} className="flex w-full justify-center">
+      <div
+        ref={canvasRef}
+        className="relative overflow-hidden bg-slate-200 dark:bg-slate-800"
+        style={{
+          width: containerSize.width,
+          height: containerSize.height,
+          touchAction: 'none', // Prevent all touch gestures (scrolling, pinch-zoom, etc.)
+        }}
+      >
       {celebratingContentIds.size > 0 && (
         <div
           role="status"
@@ -555,6 +569,7 @@ export default function TilePuzzleCanvas({
           );
         })
       )}
+      </div>
     </div>
   );
 }
