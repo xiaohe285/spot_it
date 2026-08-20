@@ -35,14 +35,14 @@ export default function TilePuzzleCanvas({
   const [grid, setGrid] = useState<number[][]>([]); // grid[row][col] = contentId
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [moves, setMoves] = useState(0);
-  const [availableWidth, setAvailableWidth] = useState(600);
+  const [availableSize, setAvailableSize] = useState(600);
   const [celebratingContentIds, setCelebratingContentIds] = useState<Set<number>>(new Set());
   const startTimeRef = useRef(0);
   const celebrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Calculate sizes
   const { containerSize, tileSize } = useMemo(() => {
-    const containerWidth = availableWidth;
+    const containerWidth = availableSize;
     const calculatedTileSize = Math.floor(containerWidth / gridSize);
     const calculatedContainerSize = calculatedTileSize * gridSize;
 
@@ -53,20 +53,26 @@ export default function TilePuzzleCanvas({
       },
       tileSize: calculatedTileSize
     };
-  }, [availableWidth, gridSize]);
+  }, [availableSize, gridSize]);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    const updateAvailableWidth = () => {
-      setAvailableWidth(Math.max(240, wrapper.clientWidth));
+    const updateAvailableSize = () => {
+      const width = wrapper.clientWidth;
+      const viewportRoom = window.innerHeight - wrapper.getBoundingClientRect().top - 8;
+      setAvailableSize(Math.max(240, Math.min(width, viewportRoom)));
     };
 
-    updateAvailableWidth();
-    const observer = new ResizeObserver(updateAvailableWidth);
+    updateAvailableSize();
+    const observer = new ResizeObserver(updateAvailableSize);
     observer.observe(wrapper);
-    return () => observer.disconnect();
+    window.addEventListener('resize', updateAvailableSize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateAvailableSize);
+    };
   }, [grid.length]);
 
   useEffect(() => () => {
@@ -477,7 +483,7 @@ export default function TilePuzzleCanvas({
     <div ref={wrapperRef} className="flex w-full justify-center">
       <div
         ref={canvasRef}
-        className="relative overflow-hidden rounded-[1.1rem] bg-slate-200 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.45)] dark:bg-slate-800"
+        className="relative overflow-hidden bg-slate-200 dark:bg-slate-800"
         style={{
           width: containerSize.width,
           height: containerSize.height,
