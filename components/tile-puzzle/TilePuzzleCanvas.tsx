@@ -23,6 +23,17 @@ interface TilePuzzleCanvasProps {
   onSuccessfulGroup: (connectionCount: number, isComplete: boolean) => void;
 }
 
+const GROUP_COLORS = [
+  { border: '#10b981', shadow: 'rgba(16, 185, 129, 0.42)' }, // emerald
+  { border: '#3b82f6', shadow: 'rgba(59, 130, 246, 0.42)' }, // blue
+  { border: '#f97316', shadow: 'rgba(249, 115, 22, 0.42)' }, // orange
+  { border: '#a855f7', shadow: 'rgba(168, 85, 247, 0.42)' }, // purple
+  { border: '#ec4899', shadow: 'rgba(236, 72, 153, 0.42)' }, // pink
+  { border: '#06b6d4', shadow: 'rgba(6, 182, 212, 0.42)' }, // cyan
+  { border: '#eab308', shadow: 'rgba(234, 179, 8, 0.42)' }, // yellow
+  { border: '#ef4444', shadow: 'rgba(239, 68, 68, 0.42)' }, // red
+] as const;
+
 export default function TilePuzzleCanvas({
   imageUrl,
   gridSize,
@@ -452,9 +463,32 @@ export default function TilePuzzleCanvas({
   }
 
   const correctGroups = getCorrectGroups();
+  const groupInfoByCell = new Map<string, {
+    cells: { row: number; col: number }[];
+    color: (typeof GROUP_COLORS)[number];
+  }>();
+
+  // Sort by the smallest content id so a group's color remains stable while it is moved.
+  const sortedGroups = Array.from(correctGroups.values()).sort((groupA, groupB) => {
+    const firstContentA = Math.min(...groupA.map(cell => grid[cell.row][cell.col]));
+    const firstContentB = Math.min(...groupB.map(cell => grid[cell.row][cell.col]));
+    return firstContentA - firstContentB;
+  });
+
+  sortedGroups.forEach((group, groupIndex) => {
+    const color = GROUP_COLORS[groupIndex % GROUP_COLORS.length];
+    group.forEach(cell => {
+      groupInfoByCell.set(`${cell.row},${cell.col}`, { cells: group, color });
+    });
+  });
 
   // Helper function to check if a cell is in a group and which borders should be shown
-  const getBorderStyle = (r: number, c: number, groupCells: { row: number; col: number }[] | null) => {
+  const getBorderStyle = (
+    r: number,
+    c: number,
+    groupCells: { row: number; col: number }[] | null,
+    groupColor: (typeof GROUP_COLORS)[number] | null,
+  ) => {
     if (!groupCells || groupCells.length <= 1) {
       // Not in a group, show all borders
       return {
@@ -472,10 +506,10 @@ export default function TilePuzzleCanvas({
     const hasLeft = !groupCells.some(cell => cell.row === r && cell.col === c - 1);
 
     return {
-      borderTop: hasTop ? '3px solid #22c55e' : 'none',
-      borderRight: hasRight ? '3px solid #22c55e' : 'none',
-      borderBottom: hasBottom ? '3px solid #22c55e' : 'none',
-      borderLeft: hasLeft ? '3px solid #22c55e' : 'none',
+      borderTop: hasTop ? `3px solid ${groupColor?.border ?? '#10b981'}` : 'none',
+      borderRight: hasRight ? `3px solid ${groupColor?.border ?? '#10b981'}` : 'none',
+      borderBottom: hasBottom ? `3px solid ${groupColor?.border ?? '#10b981'}` : 'none',
+      borderLeft: hasLeft ? `3px solid ${groupColor?.border ?? '#10b981'}` : 'none',
     };
   };
 
@@ -507,16 +541,9 @@ export default function TilePuzzleCanvas({
             cell => cell.row === r && cell.col === c
           );
 
-          // Find which group this cell belongs to
-          let currentGroup: { row: number; col: number }[] | null = null;
-          for (const group of correctGroups.values()) {
-            if (group.some(cell => cell.row === r && cell.col === c)) {
-              if (group.length > 1) {
-                currentGroup = group;
-              }
-              break;
-            }
-          }
+          const groupInfo = groupInfoByCell.get(`${r},${c}`);
+          const currentGroup = groupInfo?.cells ?? null;
+          const groupColor = groupInfo?.color ?? null;
 
           // Calculate position for dragging group
           let left = c * tileSize;
@@ -537,7 +564,7 @@ export default function TilePuzzleCanvas({
           const bgPosX = -(contentCol * tileSize);
           const bgPosY = -(contentRow * tileSize);
 
-          const borderStyle = getBorderStyle(r, c, currentGroup);
+          const borderStyle = getBorderStyle(r, c, currentGroup, groupColor);
 
           return (
             <div
@@ -558,9 +585,9 @@ export default function TilePuzzleCanvas({
                 backgroundPosition: `${bgPosX}px ${bgPosY}px`,
                 ...borderStyle,
                 boxShadow: isInDraggingGroup
-                  ? '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3)'
+                  ? `0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3), 0 0 0 2px ${groupColor?.shadow ?? 'rgba(99, 102, 241, 0.4)'}`
                   : currentGroup
-                  ? '0 0 0 1px rgba(34, 197, 94, 0.3)'
+                  ? `0 0 0 1px ${groupColor?.shadow ?? 'rgba(16, 185, 129, 0.3)'}`
                   : '0 2px 4px rgba(0, 0, 0, 0.1)',
               }}
               onMouseDown={(e) => handleDragStart(e, r, c)}
