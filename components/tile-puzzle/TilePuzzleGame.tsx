@@ -23,7 +23,7 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
   const [gridSize, setGridSize] = useState(3);
   const [gameStarted, setGameStarted] = useState(true);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [moves, setMoves] = useState(0);
+  const [, setMoves] = useState(0);
   const [gameKey, setGameKey] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -170,6 +170,8 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
           isOpen={showCompletionModal}
           onClose={() => setShowCompletionModal(false)}
           onReplay={startGame}
+          imageUrl={puzzle.imageUrl}
+          puzzleTitle={puzzle.title}
           stats={{
             stars: finalStats.stars,
             timeElapsed: finalStats.timeElapsed,
