@@ -108,6 +108,7 @@
 - title (TEXT)
 - description (TEXT)
 - image_url (TEXT)
+- difficulty (TEXT, Easy/Medium/Hard)
 - seo_title (TEXT)
 - seo_description (TEXT)
 - total_plays (INTEGER)
@@ -166,6 +167,7 @@ INSERT INTO tile_puzzles (
     title,
     description,
     image_url,
+    difficulty,
     published,
     featured
 ) VALUES (
@@ -173,6 +175,7 @@ INSERT INTO tile_puzzles (
     'Your Puzzle Title',
     'Description of your puzzle',
     'https://your-image-url.com/image.jpg',
+    'Medium',
     true,
     false
 );

@@ -34,6 +34,89 @@ const GROUP_COLORS = [
   { border: '#ef4444', shadow: 'rgba(239, 68, 68, 0.42)' }, // red
 ] as const;
 
+const MAX_INITIAL_SHUFFLE_RETRIES = 3;
+
+function shuffleContentIds(totalCells: number): number[] {
+  const contentIds = Array.from({ length: totalCells }, (_, index) => index);
+
+  for (let index = contentIds.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [contentIds[index], contentIds[randomIndex]] = [contentIds[randomIndex], contentIds[index]];
+  }
+
+  return contentIds;
+}
+
+function countInitiallyGroupedTiles(contentIds: number[], gridSize: number): number {
+  const visited = new Set<number>();
+  let groupedTileCount = 0;
+
+  const areCorrectNeighbors = (currentIndex: number, neighborIndex: number) => {
+    const contentId = contentIds[currentIndex];
+    const neighborContentId = contentIds[neighborIndex];
+    const currentRow = Math.floor(currentIndex / gridSize);
+    const currentCol = currentIndex % gridSize;
+    const neighborRow = Math.floor(neighborIndex / gridSize);
+    const neighborCol = neighborIndex % gridSize;
+    const correctRow = Math.floor(contentId / gridSize);
+    const correctCol = contentId % gridSize;
+    const correctNeighborRow = Math.floor(neighborContentId / gridSize);
+    const correctNeighborCol = neighborContentId % gridSize;
+
+    return correctNeighborRow - correctRow === neighborRow - currentRow
+      && correctNeighborCol - correctCol === neighborCol - currentCol;
+  };
+
+  const collectGroup = (startIndex: number) => {
+    const group: number[] = [];
+    const pending = [startIndex];
+
+    while (pending.length > 0) {
+      const currentIndex = pending.pop();
+      if (currentIndex === undefined || visited.has(currentIndex)) continue;
+
+      visited.add(currentIndex);
+      group.push(currentIndex);
+
+      const row = Math.floor(currentIndex / gridSize);
+      const col = currentIndex % gridSize;
+      const neighbors = [
+        [row - 1, col],
+        [row + 1, col],
+        [row, col - 1],
+        [row, col + 1],
+      ];
+
+      for (const [neighborRow, neighborCol] of neighbors) {
+        if (
+          neighborRow < 0
+          || neighborRow >= gridSize
+          || neighborCol < 0
+          || neighborCol >= gridSize
+        ) {
+          continue;
+        }
+
+        const neighborIndex = neighborRow * gridSize + neighborCol;
+        if (!visited.has(neighborIndex) && areCorrectNeighbors(currentIndex, neighborIndex)) {
+          pending.push(neighborIndex);
+        }
+      }
+    }
+
+    return group;
+  };
+
+  for (let index = 0; index < contentIds.length; index++) {
+    if (visited.has(index)) continue;
+
+    const group = collectGroup(index);
+    if (group.length > 1) groupedTileCount += group.length;
+  }
+
+  return groupedTileCount;
+}
+
 export default function TilePuzzleCanvas({
   imageUrl,
   gridSize,
@@ -99,12 +182,18 @@ export default function TilePuzzleCanvas({
   useEffect(() => {
     const initializeTimer = window.setTimeout(() => {
       const totalCells = gridSize * gridSize;
-      const contentIds = Array.from({ length: totalCells }, (_, i) => i);
+      const maxInitiallyGroupedTiles = totalCells / 3;
+      let contentIds = shuffleContentIds(totalCells);
 
-      // Shuffle using Fisher-Yates algorithm
-      for (let i = contentIds.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [contentIds[i], contentIds[j]] = [contentIds[j], contentIds[i]];
+      // Keep the opening board challenging when random placement happens to
+      // create too many correct groups. The initial shuffle may be retried
+      // up to three times, then the final result is used.
+      for (let retry = 0; retry < MAX_INITIAL_SHUFFLE_RETRIES; retry++) {
+        if (countInitiallyGroupedTiles(contentIds, gridSize) < maxInitiallyGroupedTiles) {
+          break;
+        }
+
+        contentIds = shuffleContentIds(totalCells);
       }
 
       // Convert to 2D grid

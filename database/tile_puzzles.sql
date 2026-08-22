@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS tile_puzzles (
     title TEXT NOT NULL,
     description TEXT,
     image_url TEXT NOT NULL,
+    difficulty TEXT NOT NULL DEFAULT 'Medium' CONSTRAINT tile_puzzles_difficulty_check CHECK (difficulty IN ('Easy', 'Medium', 'Hard')),
     seo_title TEXT,
     seo_description TEXT,
     total_plays INTEGER DEFAULT 0,
@@ -17,6 +18,35 @@ CREATE TABLE IF NOT EXISTS tile_puzzles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Add difficulty to databases created before this field existed.
+-- Existing and invalid values are normalized to the default before the constraint is applied.
+ALTER TABLE tile_puzzles
+    ADD COLUMN IF NOT EXISTS difficulty TEXT;
+
+UPDATE tile_puzzles
+SET difficulty = 'Medium'
+WHERE difficulty IS NULL
+   OR difficulty NOT IN ('Easy', 'Medium', 'Hard');
+
+ALTER TABLE tile_puzzles
+    ALTER COLUMN difficulty SET DEFAULT 'Medium',
+    ALTER COLUMN difficulty SET NOT NULL;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conrelid = 'public.tile_puzzles'::regclass
+          AND conname = 'tile_puzzles_difficulty_check'
+    ) THEN
+        ALTER TABLE tile_puzzles
+            ADD CONSTRAINT tile_puzzles_difficulty_check
+            CHECK (difficulty IN ('Easy', 'Medium', 'Hard'));
+    END IF;
+END;
+$$;
 
 -- Create index on slug for faster lookups
 CREATE INDEX IF NOT EXISTS idx_tile_puzzles_slug ON tile_puzzles(slug);
@@ -44,6 +74,9 @@ CREATE TRIGGER trigger_update_tile_puzzles_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_tile_puzzles_updated_at();
 
+-- Records a completed game and updates aggregate statistics atomically.
+p
+
 -- Insert sample data
 INSERT INTO tile_puzzles (slug, title, description, image_url, seo_title, seo_description, published, featured) VALUES
     ('mountain-landscape', 'Mountain Landscape', 'Beautiful mountain scenery with snow-capped peaks', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop', 'Mountain Landscape Tile Puzzle - Challenge Your Mind', 'Solve this beautiful mountain landscape tile puzzle. Test your skills with our interactive grid puzzle game.', true, true),
@@ -70,6 +103,7 @@ CREATE POLICY "Allow full access for authenticated users"
 COMMENT ON TABLE tile_puzzles IS 'Stores tile puzzle game data';
 COMMENT ON COLUMN tile_puzzles.slug IS 'URL-friendly identifier';
 COMMENT ON COLUMN tile_puzzles.image_url IS 'URL of the puzzle image';
+COMMENT ON COLUMN tile_puzzles.difficulty IS 'Puzzle difficulty: Easy, Medium, or Hard';
 COMMENT ON COLUMN tile_puzzles.total_plays IS 'Total number of times this puzzle has been played';
 COMMENT ON COLUMN tile_puzzles.average_score IS 'Average score across all completions';
 COMMENT ON COLUMN tile_puzzles.average_time IS 'Average completion time in seconds';
