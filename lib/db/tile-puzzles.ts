@@ -8,6 +8,7 @@ interface TilePuzzleDB {
   title: string;
   description?: string;
   image_url: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
   seo_title?: string;
   seo_description?: string;
   total_plays?: number;
@@ -27,6 +28,7 @@ function convertDBToTilePuzzle(dbPuzzle: TilePuzzleDB): TilePuzzle {
     title: dbPuzzle.title,
     description: dbPuzzle.description,
     imageUrl: dbPuzzle.image_url,
+    difficulty: dbPuzzle.difficulty,
     seoTitle: dbPuzzle.seo_title,
     seoDescription: dbPuzzle.seo_description,
     totalPlays: dbPuzzle.total_plays,
