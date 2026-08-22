@@ -82,7 +82,7 @@ export default function TilePuzzleCompletionModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="tile-puzzle-complete-title"
-        className="relative max-h-[calc(100dvh-1rem)] w-full max-w-[640px] overflow-y-auto rounded-[1.5rem] border border-white/70 bg-[#fffaf2] p-2 shadow-2xl shadow-slate-950/30 sm:max-h-[calc(100dvh-1.5rem)] sm:rounded-[2rem] sm:p-3 dark:border-white/10 dark:bg-[#172016]"
+        className="relative max-h-[calc(100dvh-1rem)] w-full max-w-[640px] overflow-x-hidden overflow-y-auto rounded-[1.5rem] border border-white/70 bg-[#fffaf2] p-2 shadow-2xl shadow-slate-950/30 sm:max-h-[calc(100dvh-1.5rem)] sm:rounded-[2rem] sm:p-3 dark:border-white/10 dark:bg-[#172016]"
       >
         <button
           type="button"
@@ -93,8 +93,8 @@ export default function TilePuzzleCompletionModal({
           <X className="h-6 w-6" aria-hidden="true" />
         </button>
 
-        <div className="grid gap-2 lg:grid-cols-[0.9fr_1.1fr] lg:gap-3">
-          <section className="flex flex-col justify-center px-2 pb-1 pt-9 text-center sm:px-5 lg:py-5 lg:text-left">
+        <div className="grid min-w-0 gap-2 lg:grid-cols-[0.9fr_1.1fr] lg:gap-3">
+          <section className="flex min-w-0 flex-col justify-center px-2 pb-1 pt-9 text-center sm:px-5 lg:py-5 lg:text-left">
             <p className="mb-1.5 flex items-center justify-center gap-2 text-sm font-bold text-emerald-700 sm:text-base lg:justify-start dark:text-emerald-300">
               <span aria-hidden="true">★</span>
               You completed the puzzle!
@@ -114,7 +114,7 @@ export default function TilePuzzleCompletionModal({
             </p>
           </section>
 
-          <section className="relative flex items-center justify-center px-1 pb-1 pt-0 sm:px-4 lg:pb-2 lg:pl-2 lg:pr-7 lg:pt-5">
+          <section className="relative flex min-w-0 items-center justify-center px-1 pb-1 pt-0 sm:px-4 lg:pb-2 lg:pl-2 lg:pr-7 lg:pt-5">
             <div className="relative flex h-[min(38vh,360px)] w-[min(38vh,360px)] max-w-full rotate-[1.5deg] flex-col rounded-[1rem] bg-white p-2 shadow-[0_18px_28px_-16px_rgba(71,52,28,0.5)] transition-transform hover:rotate-0 sm:rounded-[1.25rem] sm:p-2.5 dark:bg-slate-100">
               <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-md bg-white">
                 <Image
@@ -131,7 +131,7 @@ export default function TilePuzzleCompletionModal({
             </div>
           </section>
 
-          <section className="grid grid-cols-3 divide-x divide-slate-200/80 rounded-[1.25rem] bg-white/80 px-1.5 py-3 shadow-sm sm:px-4 sm:py-4 lg:col-span-2 dark:divide-white/10 dark:bg-white/[0.06]">
+          <section className="grid min-w-0 grid-cols-3 divide-x divide-slate-200/80 rounded-[1.25rem] bg-white/80 px-1.5 py-3 shadow-sm sm:px-4 sm:py-4 lg:col-span-2 dark:divide-white/10 dark:bg-white/[0.06]">
             <div className="flex flex-col items-center gap-2 px-2 text-center sm:px-4">
               <span className="grid h-9 w-9 place-items-center rounded-full bg-amber-100 text-amber-600 sm:h-10 sm:w-10 dark:bg-amber-400/15 dark:text-amber-300">
                 <Trophy className="h-5 w-5" aria-hidden="true" />
@@ -155,7 +155,7 @@ export default function TilePuzzleCompletionModal({
             </div>
           </section>
 
-          <section className="grid gap-2 sm:grid-cols-2 lg:col-span-2">
+          <section className="grid min-w-0 gap-2 sm:grid-cols-2 lg:col-span-2">
             <button
               type="button"
               onClick={handleNextPuzzle}
