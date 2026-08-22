@@ -58,6 +58,7 @@ INSERT INTO tile_puzzles (
     title,
     description,
     image_url,
+    difficulty,
     seo_title,
     seo_description,
     published,
@@ -67,6 +68,7 @@ INSERT INTO tile_puzzles (
     'Puzzle Title',
     'Puzzle description',
     'https://images.unsplash.com/photo-xxxxx',
+    'Medium',
     'SEO Title - Tile Puzzle',
     'SEO description for search engines',
     true,  -- published
