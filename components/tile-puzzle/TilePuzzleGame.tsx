@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import {
   ChevronDown,
@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { TilePuzzle } from '@/types';
 import { soundEffects } from '@/utils/soundEffects';
-import { calculateTilePuzzleStars } from '@/utils/tilePuzzleScoring';
+import { calculateTilePuzzleScore, calculateTilePuzzleStars } from '@/utils/tilePuzzleScoring';
 import TilePuzzleDetailAd from '@/components/ads/TilePuzzleDetailAd';
 import TilePuzzleCanvas from './TilePuzzleCanvas';
 import TilePuzzleCompletionModal from './TilePuzzleCompletionModal';
@@ -28,6 +28,17 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalStats, setFinalStats] = useState<{ stars: number; timeElapsed: number; moves: number } | null>(null);
+  const recordedGameKeyRef = useRef<number | null>(null);
+  const completionModalTimerRef = useRef<number | null>(null);
+
+  const clearCompletionModalTimer = useCallback(() => {
+    if (completionModalTimerRef.current !== null) {
+      clearTimeout(completionModalTimerRef.current);
+      completionModalTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => clearCompletionModalTimer, [clearCompletionModalTimer]);
 
   useEffect(() => {
     soundEffects.setEnabled(soundEnabled);
@@ -38,19 +49,56 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
 
     const interval = setInterval(() => {
       setTimeElapsed(previous => previous + 1);
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [gameStarted]);
 
+  const recordCompletion = useCallback(async (score: number, timeElapsed: number) => {
+    try {
+      const response = await fetch('/api/tile-puzzle/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: puzzle.slug,
+          score,
+          timeElapsed,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Completion request failed with status ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Unable to record tile puzzle completion:', error);
+    }
+  }, [puzzle.slug]);
+
   const handleComplete = useCallback((stats: { moves: number; timeElapsed: number }) => {
+    if (recordedGameKeyRef.current === gameKey) return;
+
     const stars = calculateTilePuzzleStars(stats.timeElapsed, stats.moves, gridSize);
+    const score = calculateTilePuzzleScore({
+      stars,
+      timeElapsed: stats.timeElapsed,
+      moves: stats.moves,
+      gridSize,
+    }).score;
+
+    recordedGameKeyRef.current = gameKey;
+    clearCompletionModalTimer();
     setFinalStats({ stars, timeElapsed: stats.timeElapsed, moves: stats.moves });
-    setShowCompletionModal(true);
+    setShowCompletionModal(false);
     setGameStarted(false);
 
     if (soundEnabled) soundEffects.playComplete();
-  }, [gridSize, soundEnabled]);
+    void recordCompletion(score, stats.timeElapsed);
+
+    completionModalTimerRef.current = window.setTimeout(() => {
+      completionModalTimerRef.current = null;
+      setShowCompletionModal(true);
+    }, 1000);
+  }, [clearCompletionModalTimer, gameKey, gridSize, recordCompletion, soundEnabled]);
 
   const handleSuccessfulGroup = useCallback((connectionCount: number, isComplete: boolean) => {
     if (soundEnabled && !isComplete) {
@@ -59,15 +107,19 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
   }, [soundEnabled]);
 
   const startGame = useCallback(() => {
+    clearCompletionModalTimer();
+    recordedGameKeyRef.current = null;
     setGameStarted(true);
     setTimeElapsed(0);
     setMoves(0);
     setGameKey(previous => previous + 1);
     setShowCompletionModal(false);
     setFinalStats(null);
-  }, []);
+  }, [clearCompletionModalTimer]);
 
   const handleGridSizeChange = useCallback((newSize: number) => {
+    clearCompletionModalTimer();
+    recordedGameKeyRef.current = null;
     setGridSize(newSize);
     setGameStarted(true);
     setTimeElapsed(0);
@@ -75,7 +127,7 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
     setGameKey(previous => previous + 1);
     setShowCompletionModal(false);
     setFinalStats(null);
-  }, []);
+  }, [clearCompletionModalTimer]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -147,7 +199,10 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
           <TilePuzzleDetailAd />
         </div>
 
-        <section aria-label="Puzzle board" className="mx-auto min-w-0 w-full">
+        <section
+          aria-label="Puzzle board"
+          className={gameStarted ? 'mx-auto min-w-0 w-full' : 'pointer-events-none mx-auto min-w-0 w-full'}
+        >
           <div className="overflow-hidden rounded-lg border border-white/90 bg-white/80 shadow-[0_24px_70px_-30px_rgba(49,46,129,0.45)] backdrop-blur dark:border-white/10 dark:bg-white/[0.06]">
             <TilePuzzleCanvas
               key={gameKey}

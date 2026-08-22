@@ -39,6 +39,7 @@ export interface TilePuzzle {
   title: string;
   description?: string;
   imageUrl: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
   seoTitle?: string;
   seoDescription?: string;
   totalPlays?: number;
