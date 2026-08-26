@@ -28,6 +28,14 @@ interface HeaderStats {
     onSOS: () => void;
 }
 
+const ratingBadgeStyles: Record<GameStats['rating'], string> = {
+    'S+': 'from-amber-400 via-orange-500 to-pink-500 shadow-orange-500/25 ring-orange-200/80 dark:ring-orange-400/40',
+    S: 'from-fuchsia-500 via-purple-500 to-indigo-500 shadow-purple-500/25 ring-purple-200/80 dark:ring-purple-400/40',
+    A: 'from-sky-400 via-blue-500 to-indigo-500 shadow-blue-500/25 ring-blue-200/80 dark:ring-blue-400/40',
+    B: 'from-emerald-400 via-teal-500 to-cyan-500 shadow-emerald-500/25 ring-emerald-200/80 dark:ring-emerald-400/40',
+    C: 'from-slate-400 via-slate-500 to-slate-600 shadow-slate-500/20 ring-slate-200/80 dark:ring-slate-400/40',
+};
+
 // Calculate star rating based on performance
 function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     const { timeElapsed, accuracy, hintsUsed } = stats;
@@ -433,8 +441,13 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                 <CountUp end={stats.score} />
                             </div>
                             <div className="mb-4 flex items-center justify-center gap-2">
-                                <span className="rounded-full bg-gray-900 px-3 py-1 text-sm font-black text-white dark:bg-amber-300 dark:text-gray-950">
-                                    {stats.rating} Rating
+                                <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-2 py-1.5 text-white shadow-lg ring-1 ring-inset ${ratingBadgeStyles[stats.rating]}`}>
+                                    <span className="rounded-full bg-white/20 px-2 py-0.5 text-sm font-black leading-none backdrop-blur-sm">
+                                        {stats.rating}
+                                    </span>
+                                    <span className="pr-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white/90">
+                                        Rating
+                                    </span>
                                 </span>
                                 <span className="text-sm font-semibold text-amber-800/80 dark:text-amber-200/80">
                                     Performance {stats.performance}/100
