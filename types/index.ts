@@ -1,3 +1,5 @@
+export type GameDifficulty = 'Easy' | 'Medium' | 'Hard' | 'Expert';
+
 export interface Level {
   id: string;
   slug: string;
@@ -5,7 +7,7 @@ export interface Level {
   imageUrl1: string;
   imageUrl2?: string; // 单图模式时可选
   differences: { x: number; y: number; radius: number }[];
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
   category: 'Adults' | 'Kids' | 'Themes';
   mode?: 'compare' | 'single'; // 游戏模式，默认为compare
   description?: string; // 游戏介绍

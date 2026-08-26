@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS levels (
   differences JSONB NOT NULL DEFAULT '[]'::jsonb,
 
   -- Game Settings
-  difficulty TEXT NOT NULL CHECK (difficulty IN ('Easy', 'Hard', 'Expert')),
+  difficulty TEXT NOT NULL CHECK (difficulty IN ('Easy', 'Medium', 'Hard', 'Expert')),
   display_order INTEGER DEFAULT 0,
 
   -- SEO Fields
@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS levels (
   total_plays INTEGER DEFAULT 0,
   average_score DECIMAL(10, 2) DEFAULT 0,
   average_time INTEGER DEFAULT 0, -- in seconds
+  target_time INTEGER, -- Stable target generated from difficulty + difference count
 
   -- Status
   published BOOLEAN DEFAULT true,
@@ -74,6 +75,66 @@ CREATE TABLE IF NOT EXISTS levels (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Existing installations may still have the original three-level constraint.
+ALTER TABLE levels ADD COLUMN IF NOT EXISTS target_time INTEGER;
+ALTER TABLE levels DROP CONSTRAINT IF EXISTS levels_difficulty_check;
+ALTER TABLE levels ADD CONSTRAINT levels_difficulty_check
+  CHECK (difficulty IN ('Easy', 'Medium', 'Hard', 'Expert'));
+
+CREATE OR REPLACE FUNCTION public.calculate_level_target_time(
+  p_difficulty TEXT,
+  p_total_differences INTEGER
+)
+RETURNS INTEGER AS $$
+  SELECT (
+    ROUND((
+      CASE p_difficulty
+        WHEN 'Easy' THEN 20 + GREATEST(p_total_differences, 1) * 12
+        WHEN 'Medium' THEN 22 + GREATEST(p_total_differences, 1) * 15
+        WHEN 'Hard' THEN 25 + GREATEST(p_total_differences, 1) * 18
+        WHEN 'Expert' THEN 30 + GREATEST(p_total_differences, 1) * 24
+        ELSE 20 + GREATEST(p_total_differences, 1) * 12
+      END
+    ) / 5.0) * 5
+  )::INTEGER;
+$$ LANGUAGE sql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION public.set_level_target_time()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.target_time IS NULL OR NEW.target_time <= 0 THEN
+    NEW.target_time := public.calculate_level_target_time(
+      NEW.difficulty,
+      jsonb_array_length(NEW.differences)
+    );
+  ELSIF TG_OP = 'UPDATE'
+    AND NEW.target_time IS NOT DISTINCT FROM OLD.target_time
+    AND (
+      NEW.difficulty IS DISTINCT FROM OLD.difficulty
+      OR NEW.differences IS DISTINCT FROM OLD.differences
+    ) THEN
+    NEW.target_time := public.calculate_level_target_time(
+      NEW.difficulty,
+      jsonb_array_length(NEW.differences)
+    );
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS set_level_target_time ON levels;
+CREATE TRIGGER set_level_target_time
+  BEFORE INSERT OR UPDATE ON levels
+  FOR EACH ROW EXECUTE FUNCTION public.set_level_target_time();
+
+UPDATE levels
+SET target_time = public.calculate_level_target_time(
+  difficulty,
+  jsonb_array_length(differences)
+)
+WHERE target_time IS NULL OR target_time <= 0;
 
 -- Add indexes for levels
 CREATE INDEX IF NOT EXISTS idx_levels_slug ON levels(slug);
@@ -196,7 +257,8 @@ SELECT
   c.id as category_id,
   c.slug as category_slug,
   c.name as category_name,
-  c.icon as category_icon
+  c.icon as category_icon,
+  l.target_time
 FROM levels l
 LEFT JOIN categories c ON l.category_id = c.id;
 

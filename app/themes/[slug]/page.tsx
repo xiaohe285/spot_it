@@ -28,7 +28,7 @@ export async function generateMetadata({
 
     // Use theme's SEO fields if available, otherwise use theme title and description
     const title = theme.seo_title || `${theme.title} - Spot the Difference Games Collection`;
-    const description = theme.seo_description || theme.description || `Explore ${theme.title} themed spot the difference puzzles. ${theme.level_count} challenging puzzles with ${theme.easy_levels} easy, ${theme.hard_levels} hard, and ${theme.expert_levels} expert levels.`;
+    const description = theme.seo_description || theme.description || `Explore ${theme.title} themed spot the difference puzzles. ${theme.level_count} challenging puzzles across easy, medium, hard, and expert levels.`;
 
     return {
         title,
@@ -116,6 +116,13 @@ export default async function ThemeDetailPage({ params, searchParams }: ThemeDet
                         <div className="flex items-center gap-2">
                             <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-bold">
                                 {theme.easy_levels} Easy
+                            </span>
+                        </div>
+                    )}
+                    {theme.medium_levels > 0 && (
+                        <div className="flex items-center gap-2">
+                            <span className="bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 px-3 py-1 rounded-full text-sm font-bold">
+                                {theme.medium_levels} Medium
                             </span>
                         </div>
                     )}

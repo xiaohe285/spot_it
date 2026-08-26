@@ -116,6 +116,17 @@ export default function HowToPlayPage() {
               <li>3 hints available</li>
             </ul>
 
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Medium</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              A balanced step up from Easy, with moderately subtle changes and richer scenes.
+            </p>
+            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
+              <li>4-6 differences per level</li>
+              <li>Moderately subtle visual changes</li>
+              <li>More detailed scenes</li>
+              <li>Up to 3 hints available</li>
+            </ul>
+
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Hard</h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               For experienced players who enjoy a challenge. Features more subtle differences and complex scenes.

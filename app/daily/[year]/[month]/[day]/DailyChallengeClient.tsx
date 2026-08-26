@@ -7,8 +7,9 @@ import GameCanvas, { GameStats } from '@/components/game/GameCanvas';
 import GameCompletionModal from '@/components/game/GameCompletionModal';
 import AuthModal from '@/components/auth/AuthModal';
 import { LevelWithCategory, getDailyChallengeByDate } from '@/lib/levels';
+import type { GameDifficulty } from '@/types';
 interface LevelForCalculation {
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
 }
 import { GameRecordCache } from '@/lib/gameRecordCache';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,11 +23,16 @@ interface DailyChallengeClientProps {
 // Calculate star rating based on performance (same as in GamePageClient)
 function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     const { timeElapsed, accuracy, hintsUsed } = stats;
-    const difficultyMultiplier = level.difficulty === 'Easy' ? 1 : level.difficulty === 'Hard' ? 1.3 : 1.6;
+    const difficultyMultiplier: Record<GameDifficulty, number> = {
+        Easy: 1,
+        Medium: 1.15,
+        Hard: 1.3,
+        Expert: 1.6,
+    };
 
     // Time threshold (seconds) - adjusted by difficulty
-    const excellentTime = 60 * difficultyMultiplier;
-    const goodTime = 120 * difficultyMultiplier;
+    const excellentTime = 60 * difficultyMultiplier[level.difficulty];
+    const goodTime = 120 * difficultyMultiplier[level.difficulty];
 
     let stars = 0;
 
@@ -93,7 +99,7 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                         image_url_1: mockLevel.imageUrl1,
                         image_url_2: mockLevel.imageUrl2,
                         differences: mockLevel.differences,
-                        difficulty: mockLevel.difficulty as 'Easy' | 'Hard' | 'Expert',
+                        difficulty: mockLevel.difficulty,
                         display_order: 0,
                         seo_title: null,
                         seo_description: null,
@@ -124,7 +130,7 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                     image_url_1: mockLevel.imageUrl1,
                     image_url_2: mockLevel.imageUrl2,
                     differences: mockLevel.differences,
-                    difficulty: mockLevel.difficulty as 'Easy' | 'Hard' | 'Expert',
+                    difficulty: mockLevel.difficulty,
                     display_order: 0,
                     seo_title: null,
                     seo_description: null,
@@ -305,6 +311,7 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                     <div className="flex items-center gap-4">
                         <div className={`px-3 py-2 rounded-full text-xs font-bold ${
                             level.difficulty === 'Easy' ? 'bg-green-500 text-white' :
+                            level.difficulty === 'Medium' ? 'bg-sky-500 text-white' :
                             level.difficulty === 'Hard' ? 'bg-orange-500 text-white' :
                             'bg-red-500 text-white'
                         }`}>

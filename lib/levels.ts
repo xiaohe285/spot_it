@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client';
+import type { GameDifficulty } from '@/types';
 
 export interface Category {
   id: string;
@@ -23,7 +24,7 @@ export interface Level {
   image_url_1: string;
   image_url_2?: string; // 单图模式时可选
   differences: { x: number; y: number; radius: number }[];
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
   mode?: 'compare' | 'single'; // 游戏模式，默认为compare
   display_order: number;
   seo_title: string | null;
@@ -31,6 +32,7 @@ export interface Level {
   total_plays: number;
   average_score: number;
   average_time: number;
+  target_time?: number | null;
   published: boolean;
   featured: boolean;
   created_at: string;
@@ -172,7 +174,7 @@ export async function getLevelsByCategoryPaginated(
 }
 
 export async function getLevelsByDifficulty(
-  difficulty: 'Easy' | 'Hard' | 'Expert'
+  difficulty: GameDifficulty
 ): Promise<{ data: LevelWithCategory[] | null; error: Error | null }> {
   const supabase = createClient();
 
@@ -187,7 +189,7 @@ export async function getLevelsByDifficulty(
 }
 
 export async function getLevelsByDifficultyPaginated(
-  difficulty: 'Easy' | 'Hard' | 'Expert',
+  difficulty: GameDifficulty,
   page: number = 1,
   pageSize: number = 24
 ): Promise<{
@@ -253,21 +255,22 @@ export interface DifferenceCountGroup {
   count: number;
   gameCount: number;
   coverImage: string;
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
 }
 
 function getDominantDifficulty(
   levels: LevelWithCategory[]
-): 'Easy' | 'Hard' | 'Expert' {
-  const tallies: Record<'Easy' | 'Hard' | 'Expert', number> = {
+): GameDifficulty {
+  const tallies: Record<GameDifficulty, number> = {
     Easy: 0,
+    Medium: 0,
     Hard: 0,
     Expert: 0,
   };
   for (const level of levels) {
     tallies[level.difficulty] += 1;
   }
-  return (Object.entries(tallies) as ['Easy' | 'Hard' | 'Expert', number][])
+  return (Object.entries(tallies) as [GameDifficulty, number][])
     .sort((a, b) => b[1] - a[1])[0][0];
 }
 

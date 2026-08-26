@@ -28,6 +28,20 @@ CREATE TABLE IF NOT EXISTS game_records (
   -- Earned Badges (stored as JSON array of badge IDs)
   badges_earned JSONB DEFAULT '[]'::jsonb,
 
+  -- Performance V1 scoring snapshot
+  target_time INTEGER NOT NULL DEFAULT 200,
+  found INTEGER NOT NULL DEFAULT 0,
+  total_differences INTEGER NOT NULL DEFAULT 1,
+  completion NUMERIC(4,3) NOT NULL DEFAULT 1,
+  t_score SMALLINT NOT NULL DEFAULT 0,
+  a_score SMALLINT NOT NULL DEFAULT 0,
+  h_score SMALLINT NOT NULL DEFAULT 0,
+  c_score SMALLINT NOT NULL DEFAULT 0,
+  performance SMALLINT NOT NULL DEFAULT 0,
+  rating TEXT NOT NULL DEFAULT 'C' CHECK (rating IN ('S+', 'S', 'A', 'B', 'C')),
+  is_new_pb BOOLEAN NOT NULL DEFAULT false,
+  score_contribution INTEGER NOT NULL DEFAULT 0,
+
   -- Timestamps
   played_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -128,15 +142,8 @@ CREATE POLICY "Users can insert their own game records"
   ON game_records FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
--- Users can update their own game records
-CREATE POLICY "Users can update their own game records"
-  ON game_records FOR UPDATE
-  USING (auth.uid() = user_id);
-
--- Users can delete their own game records
-CREATE POLICY "Users can delete their own game records"
-  ON game_records FOR DELETE
-  USING (auth.uid() = user_id);
+-- Game attempts are intentionally append-only. UPDATE/DELETE policies are not
+-- granted because removing a PB and resubmitting it would duplicate points.
 
 -- Profile Policies
 -- Profiles are viewable by everyone
@@ -177,14 +184,15 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Function to update profile stats when game record is inserted
+-- Function to update profile stats when game record is inserted. Replays are
+-- counted as plays, but only a new per-level PB contributes to total_score.
 CREATE OR REPLACE FUNCTION public.update_profile_stats()
 RETURNS TRIGGER AS $$
 BEGIN
   UPDATE profiles
   SET
     total_games_played = total_games_played + 1,
-    total_score = total_score + NEW.score,
+    total_score = total_score + NEW.score_contribution,
     total_stars = total_stars + NEW.stars,
     updated_at = NOW()
   WHERE id = NEW.user_id;

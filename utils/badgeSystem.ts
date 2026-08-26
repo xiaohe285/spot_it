@@ -1,8 +1,9 @@
 // Badge System for achievements
 import { GameStats } from '@/components/game/GameCanvas';
+import type { GameDifficulty } from '@/types';
 
 interface LevelForCalculation {
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
 }
 
 export interface Badge {
@@ -79,12 +80,15 @@ export function saveEarnedBadges(
   if (typeof window === 'undefined') return;
 
   const existingBadges = loadUserBadges();
-  const newRecords: BadgeRecord[] = badges.map((badge) => ({
-    badgeId: badge.id,
-    earnedAt: new Date().toISOString(),
-    levelSlug,
-    stats,
-  }));
+  const existingBadgeIds = new Set(existingBadges.map((badge) => badge.badgeId));
+  const newRecords: BadgeRecord[] = badges
+    .filter((badge) => !existingBadgeIds.has(badge.id))
+    .map((badge) => ({
+      badgeId: badge.id,
+      earnedAt: new Date().toISOString(),
+      levelSlug,
+      stats,
+    }));
 
   const updated = [...existingBadges, ...newRecords];
   localStorage.setItem('spot-it-badges', JSON.stringify(updated));

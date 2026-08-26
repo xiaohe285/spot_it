@@ -23,6 +23,7 @@ import { DailyChallengeArchiveItem, getDailyChallengeArchive } from '@/lib/level
 
 const difficultyStyles = {
     Easy: 'border-emerald-200/70 bg-emerald-500 text-white',
+    Medium: 'border-sky-200/70 bg-sky-500 text-white',
     Hard: 'border-orange-200/70 bg-orange-500 text-white',
     Expert: 'border-rose-200/70 bg-rose-500 text-white',
 };

@@ -5,20 +5,23 @@ import { notFound } from 'next/navigation';
 import { getLevelsByDifficultyPaginated } from '@/lib/levels';
 import Pagination from '@/components/Pagination';
 import Breadcrumb from '@/components/ui/Breadcrumb';
+import type { GameDifficulty } from '@/types';
 
 const siteUrl = 'https://spotdiffs.com';
 
-const VALID_DIFFICULTIES = ['easy', 'hard', 'expert'] as const;
+const VALID_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
 type DifficultySlug = typeof VALID_DIFFICULTIES[number];
 
-const difficultyMap: Record<DifficultySlug, 'Easy' | 'Hard' | 'Expert'> = {
+const difficultyMap: Record<DifficultySlug, GameDifficulty> = {
   easy: 'Easy',
+  medium: 'Medium',
   hard: 'Hard',
   expert: 'Expert',
 };
 
-const difficultyColors: Record<'Easy' | 'Hard' | 'Expert', string> = {
+const difficultyColors: Record<GameDifficulty, string> = {
   Easy: 'bg-green-500',
+  Medium: 'bg-sky-500',
   Hard: 'bg-orange-500',
   Expert: 'bg-red-600',
 };
@@ -40,12 +43,14 @@ export async function generateMetadata({ params }: { params: Promise<{ difficult
 
   const titleMap = {
     Easy: 'Spot the Difference Easy - Simple & Fun Puzzle Games',
+    Medium: 'Medium Spot the Difference - Balanced Puzzle Games',
     Hard: 'Spot the Difference Hard - Difficult & Challenging Puzzles',
     Expert: 'Hardest Spot the Difference - Expert Level Puzzles'
   };
 
   const descriptionMap = {
     Easy: 'Play easy spot the difference games perfect for beginners and casual players. Simple puzzles with clear differences to find. Start your puzzle journey today!',
+    Medium: 'Play medium spot the difference games with a balanced challenge. Sharpen your observation skills before taking on harder puzzles!',
     Hard: 'Challenge yourself with hard spot the difference puzzles. Difficult games designed for players seeking more complex visual challenges. Test your observation skills!',
     Expert: 'Take on the hardest spot the difference challenges available. Expert level puzzles for master puzzle solvers. Can you find all the hidden differences?'
   };

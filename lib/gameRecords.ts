@@ -16,6 +16,18 @@ export interface GameRecord {
   max_combo: number;
   stars: number;
   badges_earned: string[];
+  target_time: number;
+  found: number;
+  total_differences: number;
+  completion: number;
+  t_score: number;
+  a_score: number;
+  h_score: number;
+  c_score: number;
+  performance: number;
+  rating: GameStats['rating'];
+  is_new_pb: boolean;
+  score_contribution: number;
   played_at?: string;
   created_at?: string;
 }
@@ -76,6 +88,18 @@ export async function saveGameRecord(
     max_combo: stats.maxCombo,
     stars: stars,
     badges_earned: badges,
+    target_time: stats.targetTime,
+    found: stats.found,
+    total_differences: stats.totalDifferences,
+    completion: stats.completion,
+    t_score: stats.timeScore,
+    a_score: stats.accuracyScore,
+    h_score: stats.hintScore,
+    c_score: stats.completionScore,
+    performance: stats.performance,
+    rating: stats.rating,
+    is_new_pb: false,
+    score_contribution: 0,
   };
 
   const { data, error } = await supabase

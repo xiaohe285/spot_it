@@ -3,16 +3,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getLevelsByDifficulty } from '@/lib/levels';
 import Breadcrumb from '@/components/ui/Breadcrumb';
+import type { GameDifficulty } from '@/types';
 
 const MAX_GAMES_PER_DIFFICULTY = 12;
 const siteUrl = 'https://spotdiffs.com';
 
 export const metadata: Metadata = {
-  title: 'Games by Difficulty - Easy, Hard & Expert Puzzles',
-  description: 'Browse spot the difference games by difficulty level. Choose from easy, hard, or expert puzzles to match your skill level.',
+  title: 'Games by Difficulty - Easy, Medium, Hard & Expert Puzzles',
+  description: 'Browse spot the difference games by difficulty level. Choose from easy, medium, hard, or expert puzzles to match your skill level.',
   openGraph: {
     title: 'Games by Difficulty - Spot the Difference',
-    description: 'Browse spot the difference games by difficulty level. Choose from easy, hard, or expert puzzles.',
+    description: 'Browse spot the difference games by difficulty level. Choose from easy, medium, hard, or expert puzzles.',
     url: `${siteUrl}/games/difficulty`,
     type: 'website',
   },
@@ -27,15 +28,17 @@ export const metadata: Metadata = {
 };
 
 export default async function DifficultyPage() {
-    const difficulties: ('Easy' | 'Hard' | 'Expert')[] = ['Easy', 'Hard', 'Expert'];
+    const difficulties: GameDifficulty[] = ['Easy', 'Medium', 'Hard', 'Expert'];
 
     // Fetch levels for each difficulty
     const easyLevels = await getLevelsByDifficulty('Easy');
+    const mediumLevels = await getLevelsByDifficulty('Medium');
     const hardLevels = await getLevelsByDifficulty('Hard');
     const expertLevels = await getLevelsByDifficulty('Expert');
 
     const levelsByDifficulty = {
         Easy: easyLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
+        Medium: mediumLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
         Hard: hardLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
         Expert: expertLevels.data?.slice(0, MAX_GAMES_PER_DIFFICULTY) || [],
     };
@@ -65,7 +68,7 @@ export default async function DifficultyPage() {
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                     {difficulty}
                                     <span className={`text-sm px-3 py-1 rounded-full text-white
-                  ${difficulty === 'Easy' ? 'bg-green-500' : difficulty === 'Hard' ? 'bg-orange-500' : 'bg-red-600'}`}>
+                  ${difficulty === 'Easy' ? 'bg-green-500' : difficulty === 'Medium' ? 'bg-sky-500' : difficulty === 'Hard' ? 'bg-orange-500' : 'bg-red-600'}`}>
                                         {difficultyLevels.length}+ Games
                                     </span>
                                 </h2>

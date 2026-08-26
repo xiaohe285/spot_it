@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import GameCanvas, { GameStats } from '@/components/game/GameCanvas';
 import { getLevelBySlug, type LevelWithCategory } from '@/lib/levels';
+import type { GameDifficulty } from '@/types';
 interface LevelForCalculation {
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
 }
 import { checkEarnedBadges, saveEarnedBadges, Badge } from '@/utils/badgeSystem';
 import { generateShareText, shareToTwitter, copyToClipboard } from '@/utils/shareUtils';
 import { useAuth } from '@/contexts/AuthContext';
-import { saveGameRecord } from '@/lib/gameRecords';
+import { saveGameRecord, type GameRecord } from '@/lib/gameRecords';
 import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
 import GameTabs from '@/components/game/GameTabs';
@@ -30,11 +31,16 @@ interface HeaderStats {
 // Calculate star rating based on performance
 function calculateStars(stats: GameStats, level: LevelForCalculation): number {
     const { timeElapsed, accuracy, hintsUsed } = stats;
-    const difficultyMultiplier = level.difficulty === 'Easy' ? 1 : level.difficulty === 'Hard' ? 1.3 : 1.6;
+    const difficultyMultiplier: Record<GameDifficulty, number> = {
+        Easy: 1,
+        Medium: 1.15,
+        Hard: 1.3,
+        Expert: 1.6,
+    };
 
     // Time threshold (seconds) - adjusted by difficulty
-    const excellentTime = 60 * difficultyMultiplier;
-    const goodTime = 120 * difficultyMultiplier;
+    const excellentTime = 60 * difficultyMultiplier[level.difficulty];
+    const goodTime = 120 * difficultyMultiplier[level.difficulty];
 
     let stars = 0;
 
@@ -127,6 +133,8 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const [isFromDailyChallenge, setIsFromDailyChallenge] = useState(false);
     const [isFromHomepage, setIsFromHomepage] = useState(false);
     const [headerStats, setHeaderStats] = useState<HeaderStats | null>(null);
+    const [savedRecord, setSavedRecord] = useState<GameRecord | null>(null);
+    const [saveFinished, setSaveFinished] = useState(false);
 
     // Check if user came from daily challenge page or homepage
     useEffect(() => {
@@ -192,6 +200,8 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const handleComplete = async (gameStats: GameStats) => {
         setStats(gameStats);
         setIsComplete(true);
+        setSavedRecord(null);
+        setSaveFinished(false);
 
         // Check and save earned badges to localStorage
         const badges = checkEarnedBadges(gameStats, level);
@@ -205,7 +215,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
             const stars = calculateStars(gameStats, level);
             const badgeIds = badges.map((b) => b.id);
 
-            const { error } = await saveGameRecord(
+            const { data, error } = await saveGameRecord(
                 user.id,
                 level.id,
                 level.slug,
@@ -217,8 +227,12 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
 
             if (error) {
                 console.error('Failed to save game record:', error);
+            } else {
+                setSavedRecord(data);
             }
         }
+
+        setSaveFinished(true);
     };
 
     const stars = stats ? calculateStars(stats, level) : 0;
@@ -255,10 +269,12 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                 
                                 {/* Difficulty Capsule Badge */}
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
-                                    level.difficulty === 'Easy' 
-                                        ? 'bg-emerald-500' 
-                                        : level.difficulty === 'Hard' 
-                                        ? 'bg-amber-500 shadow-amber-300/30' 
+                                    level.difficulty === 'Easy'
+                                        ? 'bg-emerald-500'
+                                        : level.difficulty === 'Medium'
+                                        ? 'bg-sky-500 shadow-sky-300/30'
+                                        : level.difficulty === 'Hard'
+                                        ? 'bg-amber-500 shadow-amber-300/30'
                                         : 'bg-red-500 shadow-red-300/30'
                                 }`}>
                                     {level.difficulty}
@@ -416,6 +432,14 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             <div className="text-5xl font-black mb-4 mt-2 text-amber-900 dark:text-amber-300">
                                 <CountUp end={stats.score} />
                             </div>
+                            <div className="mb-4 flex items-center justify-center gap-2">
+                                <span className="rounded-full bg-gray-900 px-3 py-1 text-sm font-black text-white dark:bg-amber-300 dark:text-gray-950">
+                                    {stats.rating} Rating
+                                </span>
+                                <span className="text-sm font-semibold text-amber-800/80 dark:text-amber-200/80">
+                                    Performance {stats.performance}/100
+                                </span>
+                            </div>
                             {/* Key Stats - 3 Items Only (moved here, replacing stars) */}
                             <div className="grid grid-cols-3 gap-3">
                                 {/* Time */}
@@ -443,6 +467,25 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                 </div>
                             </div>
                         </div>
+
+                        {user && (
+                            <div className={`mb-5 rounded-xl border p-3 text-center text-sm font-semibold ${
+                                (savedRecord?.score_contribution ?? 0) > 0
+                                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
+                                    : 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200'
+                            }`}>
+                                {!saveFinished && 'Saving your result…'}
+                                {saveFinished && (savedRecord?.score_contribution ?? 0) > 0 && savedRecord && (
+                                    <>New personal best — +{savedRecord.score_contribution.toLocaleString()} leaderboard points.</>
+                                )}
+                                {saveFinished && savedRecord && savedRecord.score_contribution === 0 && (
+                                    <>Replay saved. Your leaderboard total stays unchanged because this did not beat your best score for this level.</>
+                                )}
+                                {saveFinished && !savedRecord && (
+                                    <>The result could not be saved. Your leaderboard total was not changed.</>
+                                )}
+                            </div>
+                        )}
 
                         {/* Earned Badges */}
                         {earnedBadges.length > 0 && (

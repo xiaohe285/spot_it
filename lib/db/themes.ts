@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Level } from '@/types';
+import { Level, type GameDifficulty } from '@/types';
 
 // Theme type matching themes_with_stats view
 export interface Theme {
@@ -15,6 +15,7 @@ export interface Theme {
   updated_at: string;
   level_count: number;
   easy_levels: number;
+  medium_levels: number;
   hard_levels: number;
   expert_levels: number;
   total_plays: number;
@@ -28,7 +29,7 @@ interface LevelWithThemeDB {
   image_url_1: string;
   image_url_2: string;
   differences: { x: number; y: number; radius: number }[];
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
   category: 'Adults' | 'Kids' | 'Themes';
   theme_id: string | null;
 }

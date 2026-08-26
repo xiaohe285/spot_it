@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { LevelWithCategory } from '@/lib/levels';
+import { calculateGameScore, type PerformanceRating } from '@/lib/gameScoring';
 import { soundEffects } from '@/utils/soundEffects';
 
 export interface GameStats {
@@ -13,6 +14,16 @@ export interface GameStats {
     accuracy: number;
     hintsUsed: number;
     maxCombo: number;
+    targetTime: number;
+    found: number;
+    totalDifferences: number;
+    completion: number;
+    timeScore: number;
+    accuracyScore: number;
+    hintScore: number;
+    completionScore: number;
+    performance: number;
+    rating: PerformanceRating;
 }
 
 interface HeaderStats {
@@ -171,24 +182,24 @@ export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUp
             if (newFound.length === level.differences.length) {
                 if (timerRef.current) clearInterval(timerRef.current);
 
-                const baseScore = 1000;
-                const timeBonus = Math.max(0, 300 - timeElapsed);
-                const accuracyBonus = Math.floor((newFound.length / (totalClicks + 1)) * 500);
-                const comboBonus = maxCombo * 50;
-                const hintPenalty = hintsUsed * 100;
-
-                const finalScore = baseScore + timeBonus + accuracyBonus + comboBonus - hintPenalty;
-                const accuracy = ((newFound.length / (totalClicks + 1)) * 100);
+                const scoreResult = calculateGameScore({
+                    timeElapsed,
+                    targetTime: level.target_time,
+                    difficulty: level.difficulty,
+                    found: newFound.length,
+                    totalDifferences: level.differences.length,
+                    totalClicks: totalClicks + 1,
+                    hintsUsed,
+                });
 
                 soundEffects.playComplete();
 
                 setTimeout(() => {
                     onComplete({
-                        score: Math.max(0, finalScore),
+                        ...scoreResult,
                         timeElapsed,
                         totalClicks: totalClicks + 1,
                         wrongClicks: wrongClickCount,
-                        accuracy,
                         hintsUsed,
                         maxCombo: Math.max(maxCombo, newCombo),
                     });

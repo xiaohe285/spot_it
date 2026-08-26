@@ -63,6 +63,7 @@ export default async function Home() {
                     <div className="absolute top-4 right-4 z-20">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                         todaysChallenge.level.difficulty === 'Easy' ? 'bg-green-500 text-white' :
+                        todaysChallenge.level.difficulty === 'Medium' ? 'bg-sky-500 text-white' :
                         todaysChallenge.level.difficulty === 'Hard' ? 'bg-orange-500 text-white' :
                         'bg-red-500 text-white'
                       }`}>
@@ -163,6 +164,7 @@ export default async function Home() {
                 <div className="absolute top-3 right-3">
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                     game.difficulty === 'Easy' ? 'bg-green-500 text-white' :
+                    game.difficulty === 'Medium' ? 'bg-sky-500 text-white' :
                     game.difficulty === 'Hard' ? 'bg-orange-500 text-white' :
                     'bg-red-500 text-white'
                   }`}>
@@ -223,6 +225,7 @@ export default async function Home() {
                 <div className="absolute top-3 right-3">
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                     game.difficulty === 'Easy' ? 'bg-green-500 text-white' :
+                    game.difficulty === 'Medium' ? 'bg-sky-500 text-white' :
                     game.difficulty === 'Hard' ? 'bg-orange-500 text-white' :
                     'bg-red-500 text-white'
                   }`}>

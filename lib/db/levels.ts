@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Level } from '@/types';
+import { Level, type GameDifficulty } from '@/types';
 
 // Database type with snake_case fields
 interface LevelDB {
@@ -9,7 +9,7 @@ interface LevelDB {
   image_url_1: string;
   image_url_2: string;
   differences: { x: number; y: number; radius: number }[];
-  difficulty: 'Easy' | 'Hard' | 'Expert';
+  difficulty: GameDifficulty;
   category: 'Adults' | 'Kids' | 'Themes';
   description?: string;
   average_time?: number;
@@ -161,7 +161,7 @@ export async function getLevelsByCategory(category: 'Adults' | 'Kids' | 'Themes'
 /**
  * Fetch levels by difficulty
  */
-export async function getLevelsByDifficulty(difficulty: 'Easy' | 'Hard' | 'Expert'): Promise<Level[]> {
+export async function getLevelsByDifficulty(difficulty: GameDifficulty): Promise<Level[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

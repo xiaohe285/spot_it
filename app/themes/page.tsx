@@ -75,6 +75,11 @@ export default async function ThemesPage({ searchParams }: ThemesPageProps) {
                                                     {theme.easy_levels} Easy
                                                 </span>
                                             )}
+                                            {theme.medium_levels > 0 && (
+                                                <span className="bg-sky-600/80 px-2 py-1 rounded">
+                                                    {theme.medium_levels} Medium
+                                                </span>
+                                            )}
                                             {theme.hard_levels > 0 && (
                                                 <span className="bg-yellow-600/80 px-2 py-1 rounded">
                                                     {theme.hard_levels} Hard

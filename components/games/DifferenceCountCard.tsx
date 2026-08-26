@@ -4,6 +4,7 @@ import type { DifferenceCountGroup } from '@/lib/levels';
 
 const difficultyBadgeClass = {
   Easy: 'bg-green-500',
+  Medium: 'bg-sky-500',
   Hard: 'bg-orange-500',
   Expert: 'bg-red-600',
 } as const;

@@ -14,13 +14,13 @@
 
 | 字段                      | 类型             | 默认值    | 含义 / 作用                                                                                                                                        |
 | :---------------------- | :------------- | :----- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| `target_time`           | `INTEGER`      | `200`  | 该关卡的目标完成时间（秒），用于计算 `T = clamp(100 × (2 - t/target), 0, 100)`。上线初期直接写死；累计 1 万局后可切换为该关中位数 × 0.85。若为空则回退到 `average_time`，再回退到默认 200。              |
+| `target_time`           | `INTEGER`      | —      | 该关卡的稳定目标完成时间（秒）。未配置时按难度与差异数生成：Easy=`20+12N`、Medium=`22+15N`、Hard=`25+18N`、Expert=`30+24N`，四舍五入到 5 秒。`average_time` 仅用于统计，不再直接改变竞技标准。              |
 | `difficulty_multiplier` | `NUMERIC(3,2)` | `1.00` | XP 计算末尾的难度系数（Easy=1.0 / Medium=1.1 / Hard=1.2 / Expert=1.3）。可以通过 trigger 或直接根据 `difficulty` 字段派生，也可以让运营手动微调，故独立成列更灵活。                          |
 | `total_differences`     | `INTEGER`      | `0`    | 关卡差异总数（可从 `differences` JSON 长度派生）。用于计算 `Completion = found / total_differences`。当前虽然可通过 `jsonb_array_length(differences)` 取得，但独立成列可加速排序 / 过滤。 |
 
 ### `difficulty` 枚举扩展
 
-当前 `levels.difficulty` 的 CHECK 约束为 `('Easy', 'Hard', 'Expert')`，文档中的难度系数包含 **Medium**，需要放宽约束：
+旧版 `levels.difficulty` 的 CHECK 约束为 `('Easy', 'Hard', 'Expert')`；当前迁移已将 **Medium** 纳入正式难度，需要使用以下约束：
 
 ```sql
 ALTER TABLE levels DROP CONSTRAINT IF EXISTS levels_difficulty_check;
@@ -179,7 +179,7 @@ ALTER TABLE levels ADD CONSTRAINT levels_difficulty_check
 
 | 文档规则                                | 对应字段                                                                              |
 | :---------------------------------- | :-------------------------------------------------------------------------------- |
-| `T = clamp(100×(2-t/target),0,100)` | `game_records.t_score` ← `game_records.time_elapsed` / `game_records.target_time` |
+| T 按 `0.5/0.75/1/1.5/2 × target` 锚点分段插值 | `game_records.t_score` ← `game_records.time_elapsed` / `game_records.target_time` |
 | `A = f(found / totalClicks)`        | `game_records.a_score` ← `game_records.found` / `game_records.total_clicks`       |
 | `H` 提示依赖                            | `game_records.h_score` ← `game_records.hints_used`                                |
 | `C` 完成度                             | `game_records.c_score` ← `game_records.completion`                                |
@@ -194,4 +194,3 @@ ALTER TABLE levels ADD CONSTRAINT levels_difficulty_check
 | PB / 首次 S / 首次通关                    | `level_user_stats.*`                                                              |
 | 一次性成就                               | `user_achievements`                                                               |
 | XP 审计                               | `xp_ledger`                                                                       |
-

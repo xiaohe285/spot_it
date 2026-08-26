@@ -146,9 +146,11 @@ export default async function DifferencesCountPage({
                     className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold text-white shadow-sm ${
                       level.difficulty === 'Easy'
                         ? 'bg-green-500'
-                        : level.difficulty === 'Hard'
-                          ? 'bg-orange-500'
-                          : 'bg-red-600'
+                        : level.difficulty === 'Medium'
+                          ? 'bg-sky-500'
+                          : level.difficulty === 'Hard'
+                            ? 'bg-orange-500'
+                            : 'bg-red-600'
                     }`}
                   >
                     {level.difficulty}

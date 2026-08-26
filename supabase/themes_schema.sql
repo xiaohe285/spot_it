@@ -100,7 +100,8 @@ SELECT
   COUNT(DISTINCT CASE WHEN l.difficulty = 'Easy' THEN l.id END) as easy_levels,
   COUNT(DISTINCT CASE WHEN l.difficulty = 'Hard' THEN l.id END) as hard_levels,
   COUNT(DISTINCT CASE WHEN l.difficulty = 'Expert' THEN l.id END) as expert_levels,
-  COALESCE(SUM(l.total_plays), 0) as total_plays
+  COALESCE(SUM(l.total_plays), 0) as total_plays,
+  COUNT(DISTINCT CASE WHEN l.difficulty = 'Medium' THEN l.id END) as medium_levels
 FROM themes t
 LEFT JOIN levels l ON t.id = l.theme_id AND l.published = true
 GROUP BY t.id;
