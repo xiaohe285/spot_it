@@ -27,6 +27,7 @@ export interface GameRecord {
   performance: number;
   rating: GameStats['rating'];
   is_new_pb: boolean;
+  is_first_attempt?: boolean;
   score_contribution: number;
   played_at?: string;
   created_at?: string;
@@ -43,6 +44,33 @@ export interface LeaderboardEntry {
   rank: number;
   level_slug?: string;
   level_title?: string;
+}
+
+export interface FirstAttemptLeaderboardEntry {
+  level_slug: string;
+  user_id: string;
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  score: number;
+  time_elapsed: number;
+  accuracy: number;
+  rating: GameStats['rating'];
+  first_attempt_at: string;
+  rank: number;
+}
+
+export interface FirstAttemptStats {
+  level_slug: string;
+  participant_count: number;
+  average_first_score: number;
+  average_first_time: number;
+}
+
+export interface FirstAttemptLeaderboardData {
+  topTen: FirstAttemptLeaderboardEntry[];
+  currentUser: FirstAttemptLeaderboardEntry | null;
+  stats: FirstAttemptStats;
 }
 
 export interface UserRank {
@@ -161,6 +189,65 @@ export async function getLevelLeaderboard(
     .limit(limit);
 
   return { data, error };
+}
+
+// Get the per-level leaderboard using only each user's first completed attempt.
+export async function getLevelFirstAttemptLeaderboard(
+  levelSlug: string,
+  currentUserId?: string | null
+): Promise<{ data: FirstAttemptLeaderboardData | null; error: Error | null }> {
+  const supabase = createClient();
+
+  const topTenRequest = supabase
+    .from('level_first_attempt_leaderboard')
+    .select('*')
+    .eq('level_slug', levelSlug)
+    .order('rank', { ascending: true })
+    .limit(10);
+
+  const statsRequest = supabase
+    .from('level_first_attempt_stats')
+    .select('*')
+    .eq('level_slug', levelSlug)
+    .maybeSingle();
+
+  const currentUserRequest = currentUserId
+    ? supabase
+        .from('level_first_attempt_leaderboard')
+        .select('*')
+        .eq('level_slug', levelSlug)
+        .eq('user_id', currentUserId)
+        .maybeSingle()
+    : Promise.resolve({ data: null, error: null });
+
+  const [topTenResult, statsResult, currentUserResult] = await Promise.all([
+    topTenRequest,
+    statsRequest,
+    currentUserRequest,
+  ]);
+
+  const queryError = topTenResult.error || statsResult.error || currentUserResult.error;
+  if (queryError) {
+    return { data: null, error: new Error(queryError.message) };
+  }
+
+  const topTen = (topTenResult.data || []) as FirstAttemptLeaderboardEntry[];
+  const currentUser = currentUserResult.data as FirstAttemptLeaderboardEntry | null;
+  const rawStats = statsResult.data as FirstAttemptStats | null;
+
+  return {
+    data: {
+      topTen,
+      currentUser,
+      stats: rawStats || {
+        level_slug: levelSlug,
+        participant_count: 0,
+        average_first_score: 0,
+        average_first_time: 0,
+      },
+    },
+    error: null,
+  };
 }
 
 // Get global leaderboard

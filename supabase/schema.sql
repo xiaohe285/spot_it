@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS game_records (
   performance SMALLINT NOT NULL DEFAULT 0,
   rating TEXT NOT NULL DEFAULT 'C' CHECK (rating IN ('S+', 'S', 'A', 'B', 'C')),
   is_new_pb BOOLEAN NOT NULL DEFAULT false,
+  is_first_attempt BOOLEAN NOT NULL DEFAULT false,
   score_contribution INTEGER NOT NULL DEFAULT 0,
 
   -- Timestamps
@@ -53,6 +54,12 @@ CREATE INDEX IF NOT EXISTS idx_game_records_user_id ON game_records(user_id);
 CREATE INDEX IF NOT EXISTS idx_game_records_level_slug ON game_records(level_slug);
 CREATE INDEX IF NOT EXISTS idx_game_records_score ON game_records(score DESC);
 CREATE INDEX IF NOT EXISTS idx_game_records_played_at ON game_records(played_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_game_records_one_first_attempt
+  ON game_records(user_id, level_slug)
+  WHERE is_first_attempt = true;
+CREATE INDEX IF NOT EXISTS idx_game_records_first_attempt_ranking
+  ON game_records(level_slug, score DESC, time_elapsed ASC, accuracy DESC, played_at ASC, user_id ASC)
+  WHERE is_first_attempt = true;
 
 -- =====================================================
 -- 2. User Profiles Table
@@ -122,6 +129,48 @@ FROM game_records gr
 JOIN profiles p ON gr.user_id = p.id
 GROUP BY gr.level_slug, gr.level_title, p.id, p.username, p.display_name, p.avatar_url
 ORDER BY gr.level_slug, best_score DESC;
+
+-- First completed attempt per user. The scoring migration owns the trigger
+-- that marks is_first_attempt and backfills historical rows.
+CREATE OR REPLACE VIEW level_first_attempt_leaderboard
+WITH (security_invoker = true) AS
+SELECT
+  gr.level_slug,
+  gr.user_id,
+  p.username,
+  p.display_name,
+  p.avatar_url,
+  gr.score,
+  gr.time_elapsed,
+  gr.accuracy,
+  gr.rating,
+  COALESCE(gr.played_at, gr.created_at) AS first_attempt_at,
+  ROW_NUMBER() OVER (
+    PARTITION BY gr.level_slug
+    ORDER BY
+      gr.score DESC,
+      gr.time_elapsed ASC,
+      gr.accuracy DESC,
+      COALESCE(gr.played_at, gr.created_at) ASC NULLS LAST,
+      gr.user_id ASC
+  ) AS rank
+FROM game_records gr
+LEFT JOIN profiles p ON p.id = gr.user_id
+WHERE gr.is_first_attempt = true;
+
+CREATE OR REPLACE VIEW level_first_attempt_stats
+WITH (security_invoker = true) AS
+SELECT
+  gr.level_slug,
+  COUNT(*)::INTEGER AS participant_count,
+  ROUND(AVG(gr.score))::INTEGER AS average_first_score,
+  ROUND(AVG(gr.time_elapsed))::INTEGER AS average_first_time
+FROM game_records gr
+WHERE gr.is_first_attempt = true
+GROUP BY gr.level_slug;
+
+GRANT SELECT ON level_first_attempt_leaderboard TO anon, authenticated;
+GRANT SELECT ON level_first_attempt_stats TO anon, authenticated;
 
 -- =====================================================
 -- 5. Row Level Security (RLS) Policies

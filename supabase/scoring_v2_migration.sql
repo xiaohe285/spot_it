@@ -99,6 +99,7 @@ ALTER TABLE public.game_records
   ADD COLUMN IF NOT EXISTS performance SMALLINT NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS rating TEXT NOT NULL DEFAULT 'C',
   ADD COLUMN IF NOT EXISTS is_new_pb BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS is_first_attempt BOOLEAN NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS score_contribution INTEGER NOT NULL DEFAULT 0;
 
 DO $$
@@ -209,7 +210,15 @@ BEGIN
 
   -- Serialize submissions for one user before reading their current PB. The
   -- global score grows only by the amount that this attempt improves the PB.
+  PERFORM pg_advisory_xact_lock(hashtextextended(NEW.user_id::TEXT, 0));
   PERFORM 1 FROM public.profiles WHERE id = NEW.user_id FOR UPDATE;
+
+  NEW.is_first_attempt := NOT EXISTS (
+    SELECT 1
+    FROM public.game_records gr
+    WHERE gr.user_id = NEW.user_id
+      AND gr.level_slug = NEW.level_slug
+  );
 
   SELECT COALESCE(MAX(gr.score), 0)
   INTO v_previous_best
@@ -357,6 +366,40 @@ SET
 FROM ordered_records ordered
 WHERE gr.id = ordered.id;
 
+-- Preserve only the earliest completed attempt for each user + level pair.
+WITH ranked_attempts AS (
+  SELECT
+    gr.id,
+    ROW_NUMBER() OVER (
+      PARTITION BY gr.user_id, gr.level_slug
+      ORDER BY
+        COALESCE(gr.played_at, gr.created_at) ASC NULLS LAST,
+        gr.created_at ASC NULLS LAST,
+        gr.id ASC
+    ) AS attempt_number
+  FROM public.game_records gr
+)
+UPDATE public.game_records gr
+SET is_first_attempt = ranked_attempts.attempt_number = 1
+FROM ranked_attempts
+WHERE gr.id = ranked_attempts.id
+  AND gr.is_first_attempt IS DISTINCT FROM (ranked_attempts.attempt_number = 1);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_game_records_one_first_attempt
+  ON public.game_records(user_id, level_slug)
+  WHERE is_first_attempt = true;
+
+CREATE INDEX IF NOT EXISTS idx_game_records_first_attempt_ranking
+  ON public.game_records(
+    level_slug,
+    score DESC,
+    time_elapsed ASC,
+    accuracy DESC,
+    played_at ASC,
+    user_id ASC
+  )
+  WHERE is_first_attempt = true;
+
 -- Repair totals that were previously inflated by summing every replay.
 WITH best_scores AS (
   SELECT user_id, level_slug, MAX(score) AS best_score
@@ -408,6 +451,46 @@ SELECT
   l.target_time
 FROM public.levels l
 LEFT JOIN public.categories c ON l.category_id = c.id;
+
+CREATE OR REPLACE VIEW public.level_first_attempt_leaderboard
+WITH (security_invoker = true) AS
+SELECT
+  gr.level_slug,
+  gr.user_id,
+  p.username,
+  p.display_name,
+  p.avatar_url,
+  gr.score,
+  gr.time_elapsed,
+  gr.accuracy,
+  gr.rating,
+  COALESCE(gr.played_at, gr.created_at) AS first_attempt_at,
+  ROW_NUMBER() OVER (
+    PARTITION BY gr.level_slug
+    ORDER BY
+      gr.score DESC,
+      gr.time_elapsed ASC,
+      gr.accuracy DESC,
+      COALESCE(gr.played_at, gr.created_at) ASC NULLS LAST,
+      gr.user_id ASC
+  ) AS rank
+FROM public.game_records gr
+LEFT JOIN public.profiles p ON p.id = gr.user_id
+WHERE gr.is_first_attempt = true;
+
+CREATE OR REPLACE VIEW public.level_first_attempt_stats
+WITH (security_invoker = true) AS
+SELECT
+  gr.level_slug,
+  COUNT(*)::INTEGER AS participant_count,
+  ROUND(AVG(gr.score))::INTEGER AS average_first_score,
+  ROUND(AVG(gr.time_elapsed))::INTEGER AS average_first_time
+FROM public.game_records gr
+WHERE gr.is_first_attempt = true
+GROUP BY gr.level_slug;
+
+GRANT SELECT ON public.level_first_attempt_leaderboard TO anon, authenticated;
+GRANT SELECT ON public.level_first_attempt_stats TO anon, authenticated;
 
 -- Existing theme installations gain a Medium counter without requiring the
 -- whole themes schema (and its policies) to be replayed.

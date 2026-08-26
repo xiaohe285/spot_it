@@ -391,11 +391,12 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                 <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} />
             </div>
 
-            {/* Game Tabs - Description and Stats (Desktop Only) */}
+            {/* Game Tabs - Description and first-attempt leaderboard */}
             <GameTabs
                 description={level.description}
-                averageTime={level.average_time}
-                averageScore={level.average_score}
+                levelSlug={level.slug}
+                currentUserId={user?.id}
+                refreshKey={savedRecord?.id ?? null}
             />
 
             {/* Simplified Completion Modal */}
