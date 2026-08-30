@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { GameStats } from './GameCanvas';
 import { useAuth } from '@/contexts/AuthContext';
+import type { GameRecord, UserXpProgress } from '@/lib/gameRecords';
+import XpEarnedCard from '@/components/xp/XpEarnedCard';
 
 interface GameCompletionModalProps {
   isOpen: boolean;
@@ -11,6 +12,9 @@ interface GameCompletionModalProps {
   levelTitle: string;
   onShowAuth?: () => void; // Callback to show auth modal
   isRecordSaved?: boolean; // Override the save status (for when user logs in during modal)
+  savedRecord?: GameRecord | null;
+  xpProgress?: UserXpProgress | null;
+  isSaving?: boolean;
 }
 
 export default function GameCompletionModal({ 
@@ -19,10 +23,12 @@ export default function GameCompletionModal({
   gameStats, 
   levelTitle,
   onShowAuth,
-  isRecordSaved
+  isRecordSaved,
+  savedRecord = null,
+  xpProgress = null,
+  isSaving = false,
 }: GameCompletionModalProps) {
   const { user } = useAuth();
-  const [showSyncStatus, setShowSyncStatus] = useState(false);
 
   // Determine if record is saved - use prop override if provided, otherwise use user status
   const recordSaved = isRecordSaved !== undefined ? isRecordSaved : !!user;
@@ -54,12 +60,12 @@ export default function GameCompletionModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-40">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl transform animate-in zoom-in-95 duration-300">
+      <div className="max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-3xl bg-white p-8 shadow-2xl transform animate-in zoom-in-95 duration-300 dark:bg-gray-800">
         <div className="text-center">
           {/* Success Header */}
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Puzzle Completed!
+            {levelTitle} Completed!
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             {getPerformanceMessage()}
@@ -92,6 +98,10 @@ export default function GameCompletionModal({
               <div className="text-sm text-orange-600 dark:text-orange-400">Max Combo</div>
             </div>
           </div>
+
+          {user && (
+            <XpEarnedCard record={savedRecord} progress={xpProgress} saving={isSaving} />
+          )}
 
           {/* User Status Section */}
           {!recordSaved ? (

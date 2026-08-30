@@ -66,6 +66,8 @@ CREATE TABLE IF NOT EXISTS levels (
   average_score DECIMAL(10, 2) DEFAULT 0,
   average_time INTEGER DEFAULT 0, -- in seconds
   target_time INTEGER, -- Stable target generated from difficulty + difference count
+  difficulty_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00,
+  total_differences INTEGER NOT NULL DEFAULT 0,
 
   -- Status
   published BOOLEAN DEFAULT true,
@@ -78,6 +80,8 @@ CREATE TABLE IF NOT EXISTS levels (
 
 -- Existing installations may still have the original three-level constraint.
 ALTER TABLE levels ADD COLUMN IF NOT EXISTS target_time INTEGER;
+ALTER TABLE levels ADD COLUMN IF NOT EXISTS difficulty_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00;
+ALTER TABLE levels ADD COLUMN IF NOT EXISTS total_differences INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE levels DROP CONSTRAINT IF EXISTS levels_difficulty_check;
 ALTER TABLE levels ADD CONSTRAINT levels_difficulty_check
   CHECK (difficulty IN ('Easy', 'Medium', 'Hard', 'Expert'));
@@ -258,7 +262,9 @@ SELECT
   c.slug as category_slug,
   c.name as category_name,
   c.icon as category_icon,
-  l.target_time
+  l.target_time,
+  l.difficulty_multiplier,
+  l.total_differences
 FROM levels l
 LEFT JOIN categories c ON l.category_id = c.id;
 

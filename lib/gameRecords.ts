@@ -28,9 +28,64 @@ export interface GameRecord {
   rating: GameStats['rating'];
   is_new_pb: boolean;
   is_first_attempt?: boolean;
+  is_first_clear?: boolean;
+  is_first_s_rating?: boolean;
   score_contribution: number;
+  base_xp?: number;
+  performance_bonus_xp?: number;
+  achievement_bonus_xp?: number;
+  difficulty_multiplier?: number;
+  replay_multiplier?: number;
+  xp_before_replay?: number;
+  xp_earned?: number;
+  xp_bonus_details?: Record<string, number>;
+  game_mode?: 'standard' | 'daily';
+  challenge_date?: string | null;
   played_at?: string;
   created_at?: string;
+}
+
+export interface UserXpProgress {
+  user_id: string;
+  total_xp: number;
+  current_level: number;
+  xp_to_next_level: number;
+  current_level_start_xp: number;
+  next_level_xp: number;
+  xp_into_level: number;
+  xp_span: number;
+  current_streak: number;
+  longest_streak: number;
+  unique_badges_count: number;
+  achievements_count: number;
+}
+
+export interface XpLedgerEntry {
+  id: string;
+  amount: number;
+  balance_after: number;
+  reason: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface UserAchievement {
+  id: string;
+  achievement_key: string;
+  xp_awarded: number;
+  metadata: Record<string, unknown>;
+  unlocked_at: string;
+}
+
+export interface UserXpDashboard {
+  progress: UserXpProgress;
+  recentLedger: XpLedgerEntry[];
+  recentAchievements: UserAchievement[];
+}
+
+export interface SaveGameRecordOptions {
+  gameMode?: 'standard' | 'daily';
+  challengeDate?: string;
 }
 
 export interface LeaderboardEntry {
@@ -98,8 +153,9 @@ export async function saveGameRecord(
   levelTitle: string,
   stats: GameStats,
   stars: number,
-  badges: string[]
-): Promise<{ data: GameRecord | null; error: Error | null }> {
+  badges: string[],
+  options: SaveGameRecordOptions = {}
+): Promise<{ data: GameRecord | null; progress: UserXpProgress | null; error: Error | null }> {
   const supabase = createClient();
 
   const record: Omit<GameRecord, 'id' | 'played_at' | 'created_at'> = {
@@ -128,6 +184,8 @@ export async function saveGameRecord(
     rating: stats.rating,
     is_new_pb: false,
     score_contribution: 0,
+    game_mode: options.gameMode || 'standard',
+    challenge_date: options.gameMode === 'daily' ? options.challengeDate || null : null,
   };
 
   const { data, error } = await supabase
@@ -136,7 +194,25 @@ export async function saveGameRecord(
     .select()
     .single();
 
-  return { data, error };
+  if (error || !data) {
+    return { data: null, progress: null, error };
+  }
+
+  const { data: progress, error: progressError } = await supabase
+    .from('user_xp_progress')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('spotdiffs:xp-updated', { detail: progress }));
+  }
+
+  if (progressError) {
+    console.error('Game saved, but XP progress could not be refreshed:', progressError);
+  }
+
+  return { data, progress: (progress as UserXpProgress | null) || null, error: null };
 }
 
 // Get user's game history
@@ -289,4 +365,52 @@ export async function getUserStats(userId: string): Promise<{ data: UserStats | 
     .single();
 
   return { data, error };
+}
+
+export async function getUserXpProgress(
+  userId: string
+): Promise<{ data: UserXpProgress | null; error: Error | null }> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('user_xp_progress')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  return { data: data as UserXpProgress | null, error };
+}
+
+export async function getUserXpDashboard(
+  userId: string
+): Promise<{ data: UserXpDashboard | null; error: Error | null }> {
+  const supabase = createClient();
+  const [progressResult, ledgerResult, achievementsResult] = await Promise.all([
+    supabase.from('user_xp_progress').select('*').eq('user_id', userId).maybeSingle(),
+    supabase
+      .from('xp_ledger')
+      .select('id, amount, balance_after, reason, metadata, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20),
+    supabase
+      .from('user_achievements')
+      .select('id, achievement_key, xp_awarded, metadata, unlocked_at')
+      .eq('user_id', userId)
+      .order('unlocked_at', { ascending: false })
+      .limit(20),
+  ]);
+
+  const queryError = progressResult.error || ledgerResult.error || achievementsResult.error;
+  if (queryError || !progressResult.data) {
+    return { data: null, error: new Error(queryError?.message || 'XP progress was not found') };
+  }
+
+  return {
+    data: {
+      progress: progressResult.data as UserXpProgress,
+      recentLedger: (ledgerResult.data || []) as XpLedgerEntry[],
+      recentAchievements: (achievementsResult.data || []) as UserAchievement[],
+    },
+    error: null,
+  };
 }

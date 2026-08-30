@@ -2,9 +2,11 @@
 
 本文档基于 [`docs/得分和XP计算规则.md`](./得分和XP计算规则.md) 中的 Performance / Rating / XP 设计规则，梳理落地这套系统所需的**新增表**、**已有表新增字段**及**字段的含义与作用**，作为后续实施 SQL 迁移的依据。
 
+> 实施状态（2026-08-27）：XP 表、权威计算触发器、累计流程、历史回填、RLS、等级进度和前端展示已经落地。最终实现与部署说明见 [`xp_system.md`](./xp_system.md)，可执行迁移为 [`supabase/xp_system_migration.sql`](../supabase/xp_system_migration.sql)。
+
 > 涉及现有表：`profiles`（[schema.sql](../supabase/schema.sql)）、`game_records`（[schema.sql](../supabase/schema.sql)）、`levels`（[levels\_schema.sql](../supabase/levels_schema.sql)）
 >
-> 新增表：`level_user_stats`、`user_achievements`、`xp_ledger`（可选）
+> 新增表：`level_user_stats`、`user_achievements`、`xp_ledger`（已实现）
 
 ***
 

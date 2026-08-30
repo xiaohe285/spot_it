@@ -9,6 +9,7 @@
 | V0 原始规则 | 2026-08-26 以前 | 随关卡差异数量变化；当前本地关卡最高 2,000 分 | 每次通关都把整局分数累加到用户总分 |
 | V1 Performance | 2026-08-26 起 | 最高 3,000 分 | 每关只贡献个人最佳分（PB），刷新 PB 时只增加差值 |
 | V1.1 关卡首次成绩榜 | 2026-08-27 起 | 沿用 V1，最高 3,000 分 | `/game/[slug]` Statistics 只按每位用户的首次完成成绩排名 |
+| XP V1 长期成长 | 2026-08-27 起 | Score 不变；每局独立结算 XP | 首通全额，普通重玩 Base/Performance 部分按 15%，一次性成就由唯一流水防重复 |
 
 ## V0：原始得分规则
 
@@ -226,6 +227,12 @@ First Attempt = 每个 user_id + level_slug 按完成时间最早的一条记录
 
 该规则只影响关卡详情 Statistics 榜单，不改变 V1 全局排行榜按每关 PB 累计的规则。
 
+## XP V1：长期成长与等级累计
+
+XP 与竞技 Score 正式拆分。每局按 `Base XP + Performance Bonus + Achievement Bonus` 计算，再乘 Easy/Medium/Hard/Expert 的 `1.0/1.1/1.2/1.3` 难度系数。首次通关全额发放；普通重玩只给 Base 与 Performance 部分的 15%，本局首次解锁的成就仍全额发放。
+
+数据库会在游戏记录写入事务中同步更新 `level_user_stats`、`user_achievements`、`xp_ledger` 和 `profiles.total_xp/current_level`。具体公式、奖励 Key、等级曲线、安全边界和部署顺序见 [`xp_system.md`](./xp_system.md)。
+
 ## 实现位置
 
 - 前端评分算法：`lib/gameScoring.ts`
@@ -234,4 +241,5 @@ First Attempt = 每个 user_id + level_slug 按完成时间最早的一条记录
 - 完成弹窗和 PB 提示：`app/game/[slug]/GamePageClient.tsx`
 - 数据库迁移与历史总分修复：`supabase/scoring_v2_migration.sql`
 - 首次成绩榜部署迁移：`supabase/first_attempt_leaderboard_migration.sql`
+- XP 系统迁移：`supabase/xp_system_migration.sql`
 - 设计参考：`docs/得分和XP计算规则.md`

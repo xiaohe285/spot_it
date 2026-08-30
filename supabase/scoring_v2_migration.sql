@@ -5,7 +5,9 @@
 -- Existing inflated totals are recalculated at the end of this migration.
 
 ALTER TABLE public.levels
-  ADD COLUMN IF NOT EXISTS target_time INTEGER;
+  ADD COLUMN IF NOT EXISTS target_time INTEGER,
+  ADD COLUMN IF NOT EXISTS difficulty_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00,
+  ADD COLUMN IF NOT EXISTS total_differences INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE public.levels DROP CONSTRAINT IF EXISTS levels_difficulty_check;
 ALTER TABLE public.levels ADD CONSTRAINT levels_difficulty_check
@@ -448,7 +450,9 @@ SELECT
   c.slug AS category_slug,
   c.name AS category_name,
   c.icon AS category_icon,
-  l.target_time
+  l.target_time,
+  l.difficulty_multiplier,
+  l.total_differences
 FROM public.levels l
 LEFT JOIN public.categories c ON l.category_id = c.id;
 

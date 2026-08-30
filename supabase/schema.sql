@@ -43,6 +43,20 @@ CREATE TABLE IF NOT EXISTS game_records (
   is_first_attempt BOOLEAN NOT NULL DEFAULT false,
   score_contribution INTEGER NOT NULL DEFAULT 0,
 
+  -- XP growth snapshot (calculated by xp_system_migration.sql)
+  base_xp INTEGER NOT NULL DEFAULT 0,
+  performance_bonus_xp INTEGER NOT NULL DEFAULT 0,
+  achievement_bonus_xp INTEGER NOT NULL DEFAULT 0,
+  difficulty_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00,
+  replay_multiplier NUMERIC(3,2) NOT NULL DEFAULT 1.00,
+  xp_before_replay INTEGER NOT NULL DEFAULT 0,
+  xp_earned INTEGER NOT NULL DEFAULT 0,
+  xp_bonus_details JSONB NOT NULL DEFAULT '{}'::jsonb,
+  is_first_clear BOOLEAN NOT NULL DEFAULT false,
+  is_first_s_rating BOOLEAN NOT NULL DEFAULT false,
+  game_mode TEXT NOT NULL DEFAULT 'standard' CHECK (game_mode IN ('standard', 'daily')),
+  challenge_date DATE,
+
   -- Timestamps
   played_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -75,6 +89,11 @@ CREATE TABLE IF NOT EXISTS profiles (
   total_games_played INTEGER DEFAULT 0,
   total_score INTEGER DEFAULT 0,
   total_stars INTEGER DEFAULT 0,
+  total_xp BIGINT NOT NULL DEFAULT 0,
+  current_level INTEGER NOT NULL DEFAULT 1,
+  xp_to_next_level INTEGER NOT NULL DEFAULT 100,
+  current_streak INTEGER NOT NULL DEFAULT 0,
+  longest_streak INTEGER NOT NULL DEFAULT 0,
 
   -- Badge Collection (unique badges earned)
   unique_badges JSONB DEFAULT '[]'::jsonb,

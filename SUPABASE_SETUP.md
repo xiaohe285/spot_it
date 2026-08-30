@@ -20,6 +20,11 @@
    - 显示总分、游戏次数、平均星级
    - 高亮显示当前用户排名
 
+4. **XP 长期成长系统**
+   - Rating、Performance、成就和难度共同结算 XP
+   - 首通全额、普通重玩衰减，防止重复刷经验
+   - 等级进度、一次性成就、每关聚合和完整 XP 流水
+
 ## 设置步骤
 
 ### 1. 填写 Supabase Credentials
@@ -40,16 +45,19 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ### 2. 创建数据库表
 
 1. 在 Supabase Dashboard，进入 SQL Editor
-2. 打开项目中的 `supabase/schema.sql` 文件
-3. 复制所有 SQL 代码
-4. 粘贴到 Supabase SQL Editor 中
-5. 点击 "Run" 执行
+2. 新项目依次执行：`schema.sql` → `levels_schema.sql` → `daily_challenges_schema.sql` → `streak_schema.sql` → `scoring_v2_migration.sql` → `first_attempt_leaderboard_migration.sql` → `xp_system_migration.sql`
+3. 现有已完成计分迁移的项目只需继续执行 `first_attempt_leaderboard_migration.sql`（若尚未执行）和 `xp_system_migration.sql`
+4. 最后执行只读的 `verify_xp_system.sql`；看到 `XP system verification passed` 即表示核心不变量通过
 
 这将创建以下表和功能：
 - `profiles` - 用户资料表
 - `game_records` - 游戏记录表
 - `global_leaderboard` - 全局排行榜视图
 - `level_leaderboard` - 关卡排行榜视图
+- `level_user_stats` - 每人每关 XP/PB 聚合
+- `user_achievements` - 一次性成就记录
+- `xp_ledger` - XP 审计流水
+- `user_xp_progress` - 用户等级进度视图
 - 自动触发器和函数
 
 ### 3. 启动开发服务器

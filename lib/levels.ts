@@ -33,6 +33,8 @@ export interface Level {
   average_score: number;
   average_time: number;
   target_time?: number | null;
+  difficulty_multiplier?: number;
+  total_differences?: number;
   published: boolean;
   featured: boolean;
   created_at: string;

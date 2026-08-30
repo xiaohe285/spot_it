@@ -10,12 +10,12 @@ interface LevelForCalculation {
   difficulty: GameDifficulty;
 }
 import { checkEarnedBadges, saveEarnedBadges, Badge } from '@/utils/badgeSystem';
-import { generateShareText, shareToTwitter, copyToClipboard } from '@/utils/shareUtils';
 import { useAuth } from '@/contexts/AuthContext';
-import { saveGameRecord, type GameRecord } from '@/lib/gameRecords';
+import { saveGameRecord, type GameRecord, type UserXpProgress } from '@/lib/gameRecords';
 import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
 import GameTabs from '@/components/game/GameTabs';
+import XpEarnedCard from '@/components/xp/XpEarnedCard';
 
 // Interface for header stats
 interface HeaderStats {
@@ -142,6 +142,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const [isFromHomepage, setIsFromHomepage] = useState(false);
     const [headerStats, setHeaderStats] = useState<HeaderStats | null>(null);
     const [savedRecord, setSavedRecord] = useState<GameRecord | null>(null);
+    const [xpProgress, setXpProgress] = useState<UserXpProgress | null>(null);
     const [saveFinished, setSaveFinished] = useState(false);
 
     // Check if user came from daily challenge page or homepage
@@ -163,17 +164,18 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                               referrer.includes('/daily/archive') ||
                               Boolean(referrer.match(/\/daily\/\d{4}\/\d{1,2}\/\d{1,2}/));
 
-            console.log('GamePageClient - Is from daily challenge:', isFromDaily);
-            setIsFromDailyChallenge(isFromDaily);
-
             // Check if from homepage
             const isFromHome = fromParam === 'home' ||
                              referrer === 'https://spotdiffs.com/' ||
                              referrer.endsWith('spotdiffs.com/') ||
                              (referrer.includes('spotdiffs.com') && !referrer.includes('/games') && !referrer.includes('/daily'));
 
-            console.log('GamePageClient - Is from homepage:', isFromHome);
-            setIsFromHomepage(isFromHome);
+            const updateSource = window.setTimeout(() => {
+                setIsFromDailyChallenge(isFromDaily);
+                setIsFromHomepage(isFromHome);
+            }, 0);
+
+            return () => window.clearTimeout(updateSource);
         }
     }, []);
 
@@ -209,6 +211,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
         setStats(gameStats);
         setIsComplete(true);
         setSavedRecord(null);
+        setXpProgress(null);
         setSaveFinished(false);
 
         // Check and save earned badges to localStorage
@@ -223,7 +226,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
             const stars = calculateStars(gameStats, level);
             const badgeIds = badges.map((b) => b.id);
 
-            const { data, error } = await saveGameRecord(
+            const { data, progress, error } = await saveGameRecord(
                 user.id,
                 level.id,
                 level.slug,
@@ -237,6 +240,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                 console.error('Failed to save game record:', error);
             } else {
                 setSavedRecord(data);
+                setXpProgress(progress);
             }
         }
 
@@ -244,13 +248,6 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     };
 
     const stars = stats ? calculateStars(stats, level) : 0;
-
-    const handleShareTwitter = () => {
-        if (!stats) return;
-        const shareText = generateShareText({ levelTitle: level.title, stars, stats });
-        shareToTwitter(shareText, typeof window !== 'undefined' ? window.location.href : undefined);
-    };
-
 
     // Prepare structured data
     const breadcrumbItems = [
@@ -411,7 +408,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                         }
                     `}</style>
-                    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-6 rounded-3xl max-w-lg w-full shadow-2xl border-2 border-gray-200 dark:border-yellow-500/30 relative animate-pop-in">
+                    <div className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-3xl border-2 border-gray-200 bg-white p-6 text-gray-900 shadow-2xl dark:border-yellow-500/30 dark:bg-gray-900 dark:text-white relative animate-pop-in">
                         {/* Close Button */}
                         <button
                             onClick={() => setIsComplete(false)}
@@ -499,6 +496,14 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                     <>The result could not be saved. Your leaderboard total was not changed.</>
                                 )}
                             </div>
+                        )}
+
+                        {user && (
+                            <XpEarnedCard
+                                record={savedRecord}
+                                progress={xpProgress}
+                                saving={!saveFinished}
+                            />
                         )}
 
                         {/* Earned Badges */}

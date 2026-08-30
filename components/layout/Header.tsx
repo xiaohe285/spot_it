@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
+import XpProgressBadge from '@/components/xp/XpProgressBadge';
 
 export default function Header() {
     const { user, loading, signOut } = useAuth();
@@ -94,6 +95,8 @@ export default function Header() {
                             </Link>
                         )}
 
+                        {!loading && user && <XpProgressBadge />}
+
                         {loading ? (
                             <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
                         ) : user ? (
@@ -120,6 +123,12 @@ export default function Header() {
                                         </p>
                                     </div>
                                     <div className="py-2">
+                                        <Link
+                                            href="/progress"
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            XP Progress
+                                        </Link>
                                         <Link
                                             href="/streak"
                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -255,6 +264,13 @@ export default function Header() {
                                     <div className="px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white">
                                         {user.user_metadata?.display_name || user.email?.split('@')[0]}
                                     </div>
+                                    <Link
+                                        href="/progress"
+                                        className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        XP Progress
+                                    </Link>
                                     <Link
                                         href="/streak"
                                         className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"

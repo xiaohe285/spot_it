@@ -1,7 +1,9 @@
 -- =====================================================
 -- Per-level first-attempt leaderboard
 -- =====================================================
--- Run after scoring_v2_migration.sql. This migration is idempotent.
+-- Run after scoring_v2_migration.sql and before xp_system_migration.sql.
+-- Do not replay this older trigger migration after the XP migration, because
+-- xp_system_migration.sql installs the final combined Score + XP trigger.
 
 BEGIN;
 

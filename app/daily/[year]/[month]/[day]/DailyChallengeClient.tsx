@@ -13,7 +13,7 @@ interface LevelForCalculation {
 }
 import { GameRecordCache } from '@/lib/gameRecordCache';
 import { useAuth } from '@/contexts/AuthContext';
-import { saveGameRecord } from '@/lib/gameRecords';
+import { saveGameRecord, type GameRecord, type UserXpProgress } from '@/lib/gameRecords';
 import { checkEarnedBadges } from '@/utils/badgeSystem';
 
 interface DailyChallengeClientProps {
@@ -71,6 +71,9 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
     const [showCompletionModal, setShowCompletionModal] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [isRecordSaved, setIsRecordSaved] = useState(false);
+    const [isSavingRecord, setIsSavingRecord] = useState(false);
+    const [savedRecord, setSavedRecord] = useState<GameRecord | null>(null);
+    const [xpProgress, setXpProgress] = useState<UserXpProgress | null>(null);
 
     useEffect(() => {
         async function loadChallenge() {
@@ -157,6 +160,9 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
     const handleGameComplete = async (stats: GameStats) => {
         setGameStats(stats);
         setShowCompletionModal(true);
+        setSavedRecord(null);
+        setXpProgress(null);
+        setIsSavingRecord(!!user);
 
         // Handle game record caching/saving
         if (level) {
@@ -173,14 +179,15 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                     const badgeIds = badges.map((b) => b.id);
 
                     // Save to database
-                    const { error } = await saveGameRecord(
+                    const { data, progress, error } = await saveGameRecord(
                         user.id,
                         level.id,
                         level.slug,
                         level.title,
                         stats,
                         stars,
-                        badgeIds
+                        badgeIds,
+                        { gameMode: 'daily', challengeDate }
                     );
 
                     if (error) {
@@ -198,6 +205,8 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                         }
                     } else {
                         console.log('Game record successfully saved to server');
+                        setSavedRecord(data);
+                        setXpProgress(progress);
                     }
                     
                     setIsRecordSaved(true);
@@ -217,6 +226,7 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                     
                     setIsRecordSaved(true); // Still show as saved for UX
                 }
+                setIsSavingRecord(false);
             } else {
                 // User is not logged in - cache locally
                 if (GameRecordCache.isAvailable()) {
@@ -340,6 +350,9 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
                     levelTitle={level.title}
                     onShowAuth={handleShowAuth}
                     isRecordSaved={isRecordSaved}
+                    savedRecord={savedRecord}
+                    xpProgress={xpProgress}
+                    isSaving={isSavingRecord}
                 />
             )}
 
