@@ -46,7 +46,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                                 href={`/game/${level.slug}`}
                                 className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                             >
-                                <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                <div className="relative h-64 md:h-72 overflow-hidden bg-gray-100 dark:bg-gray-700">
                                     <Image
                                         src={level.imageUrl1}
                                         alt={`${level.title} - Find the difference puzzle`}
@@ -59,14 +59,22 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                                         placeholder="blur"
                                         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                                     />
-                                    <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-purple-600 dark:text-purple-300 shadow-sm">
+                                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-purple-600 dark:text-purple-300 shadow-sm">
+                                        {level.differences.length} differences
+                                    </div>
+                                    <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold text-white shadow-sm ${
+                                        level.difficulty === 'Easy'
+                                            ? 'bg-green-500'
+                                            : level.difficulty === 'Hard'
+                                                ? 'bg-orange-500'
+                                                : 'bg-red-600'
+                                    }`}>
                                         {level.difficulty}
                                     </div>
                                 </div>
-                                <div className="p-6">
-                                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">{level.category}</div>
-                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{level.title}</h3>
-                                    <p className="text-gray-600 dark:text-gray-300 text-sm">Find {level.differences.length} differences</p>
+                                <div className="px-4 py-3">
+                                    <div className="text-sm leading-tight text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider font-semibold">{level.category}</div>
+                                    <h3 className="text-xl leading-snug font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{level.title}</h3>
                                 </div>
                             </Link>
                         ))}
