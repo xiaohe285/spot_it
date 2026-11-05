@@ -50,7 +50,7 @@ export default async function Home() {
               {todaysChallenge ? (
                 <Link
                   href={`/game/${todaysChallenge.level.slug}?from=home`}
-                  className="group relative w-full max-w-md"
+                  className="group relative w-full max-w-xl"
                 >
                   <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-yellow-400/50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-yellow-400">
                     {/* Badge */}
@@ -77,15 +77,9 @@ export default async function Home() {
                         src={todaysChallenge.level.image_url_1}
                         alt={todaysChallenge.level.title}
                         fill
+                        sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) 576px, (max-width: 1280px) calc(50vw - 32px), 576px"
                         className="object-cover transform transition-transform duration-700 group-hover:scale-110"
                       />
-                    </div>
-
-                    {/* Play Button Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center z-20">
-                      <div className="px-8 py-4 bg-white/95 backdrop-blur-sm text-orange-600 rounded-full font-bold text-lg shadow-xl transform transition-all group-hover:bg-yellow-400 group-hover:scale-110">
-                        Start Challenge →
-                      </div>
                     </div>
 
                     {/* Bottom Info */}
@@ -111,7 +105,7 @@ export default async function Home() {
                 /* Fallback when no challenge available */
                 <Link
                   href="/games"
-                  className="group relative w-full max-w-md"
+                  className="group relative w-full max-w-xl"
                 >
                   <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-purple-400/50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-purple-400">
                     <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500">
