@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import Image from 'next/image';
 import { LevelWithCategory } from '@/lib/levels';
 import { soundEffects } from '@/utils/soundEffects';
@@ -30,9 +30,10 @@ interface GameCanvasProps {
     onComplete: (stats: GameStats) => void;
     maxHints?: number;
     onHeaderUpdate?: (stats: HeaderStats) => void;
+    supportAction?: ReactNode;
 }
 
-export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate }: GameCanvasProps) {
+export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, supportAction }: GameCanvasProps) {
     // Calculate max hints: should not be >= number of differences
     const actualMaxHints = Math.min(maxHints, level.differences.length - 1);
 
@@ -263,7 +264,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUp
     return (
         <div className="flex flex-col gap-4 w-full max-w-7xl mx-auto">
             {/* Game HUD - Mobile Only */}
-            <div className="md:hidden bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex justify-between items-center shadow-lg">
+            <div className="md:hidden bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 flex flex-wrap gap-3 justify-between items-center shadow-lg">
                 {/* Left Side - Status Area */}
                 <div className="flex items-center gap-4">
                     {/* Circular Progress */}
@@ -344,8 +345,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUp
                         )}
                     </button>
 
-                    {/* SOS Button */}
-                    <button
+                    {supportAction ?? <button
                         onClick={handleAskForHelp}
                         disabled={foundDifferences.length === level.differences.length}
                         className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 text-white hover:scale-110 hover:shadow-lg cursor-pointer disabled:bg-gray-300 disabled:dark:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
@@ -354,7 +354,7 @@ export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUp
                         onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff690078'}
                     >
                         <span>🆘</span>
-                    </button>
+                    </button>}
                 </div>
             </div>
 
