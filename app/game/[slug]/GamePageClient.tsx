@@ -15,6 +15,7 @@ import { saveGameRecord } from '@/lib/gameRecords';
 import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
 import GameTabs from '@/components/game/GameTabs';
+import KofiDonationButton from '@/components/game/KofiDonationButton';
 
 // Interface for header stats
 interface HeaderStats {
@@ -24,7 +25,6 @@ interface HeaderStats {
     hintsUsed: number;
     maxHints: number;
     onHint: () => void;
-    onSOS: () => void;
 }
 
 // Calculate star rating based on performance
@@ -346,16 +346,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                         )}
                                     </button>
 
-                                    {/* SOS Button */}
-                                    <button
-                                        onClick={headerStats.onSOS}
-                                        className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 text-white hover:scale-110 hover:shadow-lg cursor-pointer"
-                                        style={{ backgroundColor: '#ff690078' }}
-                                        onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff6900aa'}
-                                        onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#ff690078'}
-                                    >
-                                        <span>🆘</span>
-                                    </button>
+                                    <KofiDonationButton />
                                 </div>
                             )}
                         </div>
@@ -364,7 +355,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
 
             {/* Game Area */}
             <div className="flex-grow flex items-center justify-center p-1">
-                <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} />
+                <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} supportAction={<KofiDonationButton />} />
             </div>
 
             {/* Game Tabs - Description and Stats (Desktop Only) */}
