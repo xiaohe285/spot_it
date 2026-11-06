@@ -22,6 +22,7 @@ export const dynamic = "force-dynamic";
 
 type BrowsePageProps = {
   params: Promise<{ segments?: string[] }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
 async function getBrowsePageState(params: BrowsePageProps["params"]) {
@@ -92,7 +93,9 @@ export async function generateMetadata({
 
 export default async function PrintableBrowsePage({
   params,
+  searchParams,
 }: BrowsePageProps) {
+  const { page } = await searchParams;
   const state = await getBrowsePageState(params);
 
   if (!state.segments.length) {
@@ -148,6 +151,7 @@ export default async function PrintableBrowsePage({
         filterGroups={state.catalog.filterGroups}
         premiumPlan={state.catalog.premiumPlan}
         initialSelected={state.parsed.selected}
+        initialPage={Number(page)}
       />
     </>
   );
