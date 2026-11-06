@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import PrintableCard from "@/components/printables/PrintableCard";
+import Pagination from "@/components/Pagination";
 import {
   formatPrintablePrice,
   type PrintableFilterGroup,
@@ -36,17 +37,20 @@ import {
 } from "@/lib/printableFilters";
 
 type SortOption = "popular" | "newest" | "price-low" | "pages";
+const PAGE_SIZE = 24;
 
 export default function PrintablesBrowser({
   products,
   filterGroups,
   premiumPlan,
   initialSelected = emptyPrintableFilters(),
+  initialPage = 1,
 }: {
   products: PrintableProduct[];
   filterGroups: PrintableFilterGroup[];
   premiumPlan: PrintablePremiumPlan;
   initialSelected?: SelectedPrintableFilters;
+  initialPage?: number;
 }) {
   const router = useRouter();
   const [selected, setOptimisticSelected] = useOptimistic(initialSelected);
@@ -83,6 +87,17 @@ export default function PrintablesBrowser({
       }
     });
   }, [products, selected, sort]);
+
+  const basePath = buildPrintableBrowsePath(selected, filterGroups);
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const currentPage = Math.min(
+    Math.max(1, totalPages),
+    Number.isSafeInteger(initialPage) && initialPage > 0 ? initialPage : 1,
+  );
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   function navigateToFilters(next: SelectedPrintableFilters) {
     const nextPath = buildPrintableBrowsePath(next, filterGroups);
@@ -139,7 +154,10 @@ export default function PrintablesBrowser({
               <select
                 id="printables-sort"
                 value={sort}
-                onChange={(event) => setSort(event.target.value as SortOption)}
+                onChange={(event) => {
+                  setSort(event.target.value as SortOption);
+                  router.replace(basePath, { scroll: false });
+                }}
                 className="appearance-none rounded-xl border border-slate-300 bg-white py-2.5 pl-4 pr-10 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               >
                 <option value="newest">Newest</option>
@@ -374,7 +392,7 @@ export default function PrintablesBrowser({
             aria-label="Printable PDF resources"
             className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
-            {filteredProducts.map((product) => (
+            {paginatedProducts.map((product) => (
               <PrintableCard key={product.slug} product={product} />
             ))}
           </section>
@@ -395,6 +413,14 @@ export default function PrintablesBrowser({
             </button>
           </section>
         )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          total={filteredProducts.length}
+          pageSize={PAGE_SIZE}
+          basePath={basePath}
+          itemLabel="resources"
+        />
       </div>
 
       {allFiltersOpen && (
