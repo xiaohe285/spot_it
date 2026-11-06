@@ -23,7 +23,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PrintablesPage() {
+export default async function PrintablesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page } = await searchParams;
   const catalog = await getPrintableCatalog();
   const collectionSchema = {
     "@context": "https://schema.org",
@@ -54,6 +59,7 @@ export default async function PrintablesPage() {
         filterGroups={catalog.filterGroups}
         premiumPlan={catalog.premiumPlan}
         initialSelected={emptyPrintableFilters()}
+        initialPage={Number(page)}
       />
     </>
   );

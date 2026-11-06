@@ -10,6 +10,7 @@ interface PaginationProps {
   total: number;
   pageSize: number;
   basePath?: string;
+  itemLabel?: string;
 }
 
 export default function Pagination({
@@ -18,6 +19,7 @@ export default function Pagination({
   total,
   pageSize,
   basePath = '/games',
+  itemLabel = 'games',
 }: PaginationProps) {
   const router = useRouter();
   const [jumpPage, setJumpPage] = useState('');
@@ -82,7 +84,7 @@ export default function Pagination({
       <div className="text-sm text-gray-600 dark:text-gray-400">
         Showing <span className="font-semibold text-gray-900 dark:text-white">{startItem}</span> to{' '}
         <span className="font-semibold text-gray-900 dark:text-white">{endItem}</span> of{' '}
-        <span className="font-semibold text-gray-900 dark:text-white">{total}</span> games
+        <span className="font-semibold text-gray-900 dark:text-white">{total}</span> {itemLabel}
       </div>
 
       {/* Page navigation */}
