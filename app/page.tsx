@@ -1,3 +1,4 @@
+import PremiumRibbon from '@/components/premium/PremiumRibbon';
 import Link from "next/link";
 import Image from "next/image";
 import { getPopularLevels, getFeaturedLevels, getTodaysChallenge } from "@/lib/levels";
@@ -73,7 +74,8 @@ export default async function Home() {
                     {/* Preview Image */}
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
-                      <Image
+                      <PremiumRibbon premium={todaysChallenge.level.is_premium} />
+                                    <Image
                         src={todaysChallenge.level.image_url_1}
                         alt={todaysChallenge.level.title}
                         fill
@@ -145,7 +147,8 @@ export default async function Home() {
             >
               {/* Game Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
-                <Image
+                <PremiumRibbon premium={game.is_premium} />
+                                    <Image
                   src={game.image_url_1}
                   alt={game.title}
                   fill
@@ -205,7 +208,8 @@ export default async function Home() {
             >
               {/* Game Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
-                <Image
+                <PremiumRibbon premium={game.is_premium} />
+                                    <Image
                   src={game.image_url_1}
                   alt={game.title}
                   fill

@@ -1,5 +1,6 @@
 'use client';
 
+import { usePremium } from '@/contexts/PremiumContext';
 import { useEffect, useRef } from 'react';
 
 declare global {
@@ -9,10 +10,11 @@ declare global {
 }
 
 export default function TilePuzzleDetailAd() {
+  const { adsAllowed } = usePremium();
   const initializedRef = useRef(false);
 
   useEffect(() => {
-    if (initializedRef.current) return;
+    if (!adsAllowed || initializedRef.current) return;
 
     try {
       window.adsbygoogle = window.adsbygoogle || [];
@@ -21,7 +23,9 @@ export default function TilePuzzleDetailAd() {
     } catch (error) {
       console.warn('Unable to initialize tile puzzle ad:', error);
     }
-  }, []);
+  }, [adsAllowed]);
+
+  if (!adsAllowed) return null;
 
   return (
     <aside

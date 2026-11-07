@@ -11,6 +11,7 @@ interface PaginationProps {
   pageSize: number;
   basePath?: string;
   itemLabel?: string;
+  queryParams?: Record<string, string>;
 }
 
 export default function Pagination({
@@ -20,8 +21,10 @@ export default function Pagination({
   pageSize,
   basePath = '/games',
   itemLabel = 'games',
+  queryParams = {},
 }: PaginationProps) {
   const router = useRouter();
+  const pageHref = (page: number) => `${basePath}?${new URLSearchParams({ ...queryParams, page: String(page) })}`;
   const [jumpPage, setJumpPage] = useState('');
 
   // Calculate display range
@@ -69,7 +72,7 @@ export default function Pagination({
     e.preventDefault();
     const page = parseInt(jumpPage);
     if (page >= 1 && page <= totalPages) {
-      router.push(`${basePath}?page=${page}`);
+      router.push(pageHref(page));
       setJumpPage('');
     }
   };
@@ -92,7 +95,7 @@ export default function Pagination({
         {/* Previous button */}
         {currentPage > 1 ? (
           <Link
-            href={`${basePath}?page=${currentPage - 1}`}
+            href={pageHref(currentPage - 1)}
             className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Previous
@@ -126,7 +129,7 @@ export default function Pagination({
             return (
               <Link
                 key={pageNum}
-                href={`${basePath}?page=${pageNum}`}
+                href={pageHref(pageNum)}
                 className={`px-4 py-2 rounded-lg border transition-colors ${
                   isActive
                     ? 'bg-orange-500 text-white border-orange-500 font-semibold'
@@ -142,7 +145,7 @@ export default function Pagination({
         {/* Next button */}
         {currentPage < totalPages ? (
           <Link
-            href={`${basePath}?page=${currentPage + 1}`}
+            href={pageHref(currentPage + 1)}
             className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Next

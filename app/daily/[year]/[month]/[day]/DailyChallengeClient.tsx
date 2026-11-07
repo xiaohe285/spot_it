@@ -1,5 +1,6 @@
 'use client';
 
+import { usePremium } from '@/contexts/PremiumContext';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { levels } from '@/data/levels';
@@ -58,6 +59,7 @@ function calculateStars(stats: GameStats, level: LevelForCalculation): number {
 export default function DailyChallengeClient({ params }: DailyChallengeClientProps) {
     const { year, month, day } = params;
     const { user } = useAuth();
+    const premium = usePremium();
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const [gameStats, setGameStats] = useState<GameStats | null>(null);
     const [level, setLevel] = useState<LevelWithCategory | null>(null);
@@ -149,6 +151,7 @@ export default function DailyChallengeClient({ params }: DailyChallengeClientPro
     }, [year, month, day]);
 
     const handleGameComplete = async (stats: GameStats) => {
+        if (level?.is_premium && (premium.loading || premium.error || !premium.status.active)) return;
         setGameStats(stats);
         setShowCompletionModal(true);
 

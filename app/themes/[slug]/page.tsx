@@ -1,3 +1,4 @@
+import PremiumRibbon from '@/components/premium/PremiumRibbon';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -158,6 +159,7 @@ export default async function ThemeDetailPage({ params, searchParams }: ThemeDet
                                 className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                             >
                                 <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                    <PremiumRibbon premium={level.isPremium} />
                                     <Image
                                         src={level.imageUrl1}
                                         alt={`${level.title} - Find the difference puzzle`}

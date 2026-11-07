@@ -1,3 +1,4 @@
+import PremiumPackDownload from '@/components/premium/PremiumPackDownload';
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -315,6 +316,7 @@ export default async function PrintableProductPage({
                   />
                 ) : (
                   <div className="space-y-4">
+                    {product.isPremiumIncluded && <PremiumPackDownload productId={product.id} productSlug={product.slug} files={downloadFiles} hasExistingAccess={hasDatabaseAccess} />}
                     {product.isPremiumIncluded && (
                       <PremiumAccessDownload
                         productSlug={product.slug}

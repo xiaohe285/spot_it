@@ -1,5 +1,6 @@
 'use client';
 
+import { usePremium } from '@/contexts/PremiumContext';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import {
@@ -20,6 +21,7 @@ interface TilePuzzleGameProps {
 }
 
 export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
+  const { adsAllowed } = usePremium();
   const [gridSize, setGridSize] = useState(3);
   const [gameStarted, setGameStarted] = useState(true);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -194,10 +196,10 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 px-4 py-2 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)_300px] lg:items-stretch lg:gap-3">
-        <div className="hidden min-h-0 lg:flex">
+      <main className={`mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 px-4 py-2 sm:px-6 lg:items-stretch lg:gap-3 ${adsAllowed ? "lg:grid-cols-[300px_minmax(0,1fr)_300px]" : "lg:max-w-3xl"}`}>
+        {adsAllowed && <div className="hidden min-h-0 lg:flex">
           <TilePuzzleDetailAd />
-        </div>
+        </div>}
 
         <section
           aria-label="Puzzle board"
@@ -215,9 +217,9 @@ export default function TilePuzzleGame({ puzzle }: TilePuzzleGameProps) {
           </div>
         </section>
 
-        <div className="mx-auto min-h-0 w-full max-w-xl lg:flex lg:max-w-none">
+        {adsAllowed && <div className="mx-auto min-h-0 w-full max-w-xl lg:flex lg:max-w-none">
           <TilePuzzleDetailAd />
-        </div>
+        </div>}
       </main>
 
       {finalStats && (

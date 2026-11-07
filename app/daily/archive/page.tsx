@@ -1,4 +1,5 @@
 'use client';
+import PremiumRibbon from '@/components/premium/PremiumRibbon';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -194,7 +195,8 @@ function ChallengeArchiveCard({
             isCompleted ? 'border-emerald-200 dark:border-emerald-900/80' : 'border-slate-200/80 dark:border-slate-800'
         }`}>
             <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                <Image
+                <PremiumRibbon premium={level.is_premium} />
+                                    <Image
                     src={level.image_url_1}
                     alt={level.title}
                     fill

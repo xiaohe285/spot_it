@@ -1,5 +1,6 @@
 'use client';
 
+import PremiumGameGate from '@/components/premium/PremiumGameGate';
 import { useState, useRef, useEffect, type ReactNode } from 'react';
 import Image from 'next/image';
 import { LevelWithCategory } from '@/lib/levels';
@@ -33,7 +34,11 @@ interface GameCanvasProps {
     supportAction?: ReactNode;
 }
 
-export default function GameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, supportAction }: GameCanvasProps) {
+export default function GameCanvas(props: GameCanvasProps) {
+    return <PremiumGameGate level={props.level}><PlayableGameCanvas {...props} /></PremiumGameGate>;
+}
+
+function PlayableGameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, supportAction }: GameCanvasProps) {
     // Calculate max hints: should not be >= number of differences
     const actualMaxHints = Math.min(maxHints, level.differences.length - 1);
 

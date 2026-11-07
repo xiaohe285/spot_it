@@ -1,5 +1,6 @@
 'use client';
 
+import { usePremium } from '@/contexts/PremiumContext';
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -119,6 +120,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     const { slug } = use(params);
     const router = useRouter();
     const { user } = useAuth();
+    const premium = usePremium();
     const [isComplete, setIsComplete] = useState(false);
     const [stats, setStats] = useState<GameStats | null>(null);
     const [earnedBadges, setEarnedBadges] = useState<Badge[]>([]);
@@ -190,6 +192,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
     }
 
     const handleComplete = async (gameStats: GameStats) => {
+        if (level.is_premium && (premium.loading || premium.error || !premium.status.active)) return;
         setStats(gameStats);
         setIsComplete(true);
 
@@ -266,7 +269,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             </div>
                             
                             {/* Center: Time and Combo (Desktop Only) */}
-                            {headerStats && (
+                            {headerStats && (!level.is_premium || (!premium.loading && !premium.error && premium.status.active)) && (
                                 <div className="hidden md:flex items-center gap-4">
                                     {/* Timer */}
                                     <div className="flex items-center gap-2 text-gray-900 dark:text-white">
@@ -287,7 +290,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             )}
                             
                             {/* Right: Game Progress and Tools (Desktop Only) */}
-                            {headerStats && (
+                            {headerStats && (!level.is_premium || (!premium.loading && !premium.error && premium.status.active)) && (
                                 <div className="hidden md:flex items-center gap-4">
                                     {/* Circular Progress */}
                                     <div className="relative w-15 h-15">

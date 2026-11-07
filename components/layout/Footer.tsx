@@ -46,7 +46,10 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-400 dark:text-gray-500 text-sm">
-                    © {new Date().getFullYear()} SpotDiffs! All rights reserved.
+                    <Link href="/premium?source=footer" className="mb-4 inline-block font-semibold text-amber-700 transition-colors hover:text-amber-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-600 dark:text-amber-300 dark:hover:text-amber-200">
+                        Premium
+                    </Link>
+                    <p>© {new Date().getFullYear()} SpotDiffs! All rights reserved.</p>
                 </div>
             </div>
         </footer>

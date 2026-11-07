@@ -1,3 +1,4 @@
+import PremiumRibbon from '@/components/premium/PremiumRibbon';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -98,6 +99,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                 className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                             >
                                 <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                    <PremiumRibbon premium={level.is_premium} />
                                     <Image
                                         src={level.image_url_1}
                                         alt={`${level.title} - Find the difference puzzle`}

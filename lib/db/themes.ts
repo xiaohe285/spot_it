@@ -22,6 +22,8 @@ export interface Theme {
 
 // Database type with snake_case fields for levels_with_theme
 interface LevelWithThemeDB {
+  is_premium?: boolean;
+  mode?: 'compare' | 'single';
   id: string;
   slug: string;
   title: string;
@@ -37,6 +39,8 @@ interface LevelWithThemeDB {
 function convertDBToLevel(dbLevel: LevelWithThemeDB): Level {
   return {
     id: dbLevel.id,
+    isPremium: dbLevel.is_premium ?? false,
+    mode: dbLevel.mode,
     slug: dbLevel.slug,
     title: dbLevel.title,
     imageUrl1: dbLevel.image_url_1,

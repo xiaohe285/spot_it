@@ -1,3 +1,4 @@
+import { hasPremiumPackAccess } from '@/lib/premium/server';
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
@@ -37,7 +38,11 @@ export async function GET(
     }
   } else {
     const token = new URL(request.url).searchParams.get("token");
-    const hasDatabaseAccess = await userHasPrintableAccess(product);
+    let hasDatabaseAccess = await userHasPrintableAccess(product);
+    if (!hasDatabaseAccess && product.isPremiumIncluded) {
+      try { hasDatabaseAccess = await hasPremiumPackAccess(product.id); }
+      catch { /* A valid existing purchase token can still authorize this download. */ }
+    }
     if (!token && !hasDatabaseAccess) {
       return NextResponse.json(
         { error: "Payment is required before downloading this file." },
@@ -123,7 +128,7 @@ export async function GET(
         "Content-Length": String(file.byteLength),
         "Cache-Control":
           product.priceCents === 0
-            ? "public, max-age=3600"
+            ? "private, no-store"
             : "private, no-store",
         "X-Content-Type-Options": "nosniff",
       },
