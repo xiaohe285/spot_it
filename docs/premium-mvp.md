@@ -84,3 +84,83 @@ group by plan;
 Before real billing, add verified provider events, renewal/cancellation handling
 and protection for the game data/images, which remain publicly discoverable in
 the existing catalog architecture. The MVP gates gameplay, not asset scraping.
+
+## Protected Premium game content
+
+Apply `supabase/premium_level_content_schema.sql` after the Premium migration.
+It is repeatable and does not copy or modify public level data. Content is keyed
+by `slug`, referencing `levels.slug`; UUIDs can change during data migration.
+Import `levels` before importing protected content and preserve slugs. Slug
+changes cascade to protected content, and deleting a level deletes its content.
+If the earlier `level_id` table already exists, running the same migration
+converts it to slugs using the existing levels and preserves its real content.
+Deploy the updated API together with this schema change; old UUID-based code
+cannot read the new table. The new
+`premium_level_content` table is readable/writable only by the server's
+`service_role`, even for signed-in members. No public catalog view joins it.
+`SUPABASE_SERVICE_ROLE_KEY` must be configured on the server.
+
+`GET /api/premium/levels/[slug]` validates the Supabase session and active
+membership on every request, then verifies that the level is published and
+Premium. It returns only `slug`, `image_url_1`, `image_url_2`, and
+`differences`, with `Cache-Control: private, no-store` on success and errors.
+Anonymous requests receive 401, inactive memberships 403, and missing,
+unpublished or free levels 404. Missing/invalid real content and service errors
+receive 503, never public placeholder coordinates. Images must use absolute
+HTTP(S) URLs. Compare mode requires both images; single mode allows a null
+second image. Coordinates must be finite numbers between 0 and 100, with a
+positive radius and a nonempty differences array matching the public count.
+
+The shared game canvas loads the protected content only after membership
+resolution; this also covers daily pages that use the canvas. The playable
+canvas and its timer mount only after a successful load. Errors offer Retry.
+Real content stays in component memory. Logout, account/level changes and
+membership invalidation unmount the game, clear header actions and discard
+pending responses. Public lists, metadata, filters and structured data continue
+to use `levels` exclusively.
+
+### Preparing content
+
+For a new Premium level, create it unpublished. As a database administrator,
+insert its real content (replace the sample values):
+
+```sql
+insert into public.premium_level_content
+  (slug, image_url_1, image_url_2, differences)
+values (
+  'replace-with-level-slug',
+  'https://img.spotdiffs.com/real-original.jpg',
+  'https://img.spotdiffs.com/real-modified.jpg',
+  '[{"x":25,"y":40,"radius":5},{"x":70,"y":65,"radius":4}]'::jsonb
+)
+on conflict (slug) do update set
+  image_url_1 = excluded.image_url_1,
+  image_url_2 = excluded.image_url_2,
+  differences = excluded.differences;
+```
+
+Set `levels.image_url_1` and `levels.image_url_2` to the same public preview
+URL. Store fixed unusable coordinates in `levels.differences`, with exactly the
+same array length as the real differences. For example, a two-difference
+puzzle can use `[{"x":0,"y":0,"radius":0},{"x":0,"y":0,"radius":0}]`.
+Zero-radius placeholders cannot register hits under the current game logic;
+they are never used for Premium gameplay. Then set `is_premium = true` and
+publish the level. Preserve its other fields, including mode and slug.
+
+For an existing level whose public fields still contain real content, copy
+those fields into the protected table **before** replacing them with previews
+and placeholders. Do not copy fields that already contain decoys. Prepare both
+changes in one administrator transaction when replacing live content. To update
+the number of differences later, update both arrays in the same transaction.
+
+Rollout: create the table → prepare protected content for all existing Premium
+levels → deploy the endpoint and loader → replace public fields. New Premium
+levels must have protected content ready before publication. Missing content
+intentionally blocks play, so prepare existing Premium rows before deployment.
+Do not remove the protected table while this loader is deployed; rolling back
+the app alone does not restore play from public decoy data.
+
+This protects content discovery, not the public image URLs themselves. Members
+can still share URLs and previously public assets remain accessible. No billing,
+private storage, signed URLs, image proxy or automatic catalog rewriting is
+included in this change.
