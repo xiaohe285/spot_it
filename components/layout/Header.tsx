@@ -184,29 +184,29 @@ export default function Header() {
                 {isMobileMenuOpen && (
                     <div className="md:hidden border-t border-gray-200 dark:border-gray-700">
                         <div className="px-4 py-4 space-y-2">
-                            <Link 
-                                href="/games" 
+                            <Link
+                                href="/games"
                                 className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Games
                             </Link>
-                            <Link 
-                                href="/daily/today" 
+                            <Link
+                                href="/daily/today"
                                 className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Daily Challenge
                             </Link>
-                            <Link 
-                                href="/guides" 
+                            <Link
+                                href="/guides"
                                 className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Guides
                             </Link>
-                            <Link 
-                                href="/leaderboard" 
+                            <Link
+                                href="/leaderboard"
                                 className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
@@ -226,7 +226,7 @@ export default function Header() {
                             >
                                 Mahjongg Solitaire
                             </Link>
-                            
+
                             {!user && (
                                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                                     <button

@@ -82,6 +82,10 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-8">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Premium launch interest</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">When you express interest in Premium, we store the selected plan, price, source page, an anonymous browser identifier, and the time. We use a hashed network identifier to limit repeated submissions. If you voluntarily leave an email, we use it to notify you about the Premium launch. Email addresses are not sent in analytics events. Expressing interest does not create a subscription or charge you.</p>
+          </section>
+          <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. How We Use Your Information</h2>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               We use the information we collect for the following purposes:

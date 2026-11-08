@@ -1,3 +1,4 @@
+import PremiumRibbon from '@/components/premium/PremiumRibbon';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -99,7 +100,8 @@ export default async function DailyChallengePage() {
                     <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_70px_-28px_rgba(15,23,42,0.35)] dark:border-slate-700 dark:bg-slate-900" aria-labelledby="challenge-card-title">
                         <div className="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,0.75fr)]">
                             <div className="relative min-h-[360px] overflow-hidden sm:min-h-[500px] lg:min-h-[570px]">
-                                <Image
+                                <PremiumRibbon premium={level.is_premium} />
+                                    <Image
                                     src={level.image_url_1}
                                     alt={level.title}
                                     fill

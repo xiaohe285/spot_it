@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:premium": "node --test tests/premium.test.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1095.0",
@@ -24,6 +25,7 @@
     "remark-html": "^16.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20",
     "@types/react": "^19",

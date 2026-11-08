@@ -1,4 +1,5 @@
 export interface Level {
+  isPremium?: boolean;
   id: string;
   slug: string;
   title: string;

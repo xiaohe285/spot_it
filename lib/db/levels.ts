@@ -3,6 +3,8 @@ import { Level } from '@/types';
 
 // Database type with snake_case fields
 interface LevelDB {
+  is_premium?: boolean;
+  mode?: 'compare' | 'single';
   id: string;
   slug: string;
   title: string;
@@ -22,6 +24,8 @@ interface LevelDB {
 function convertDBToLevel(dbLevel: LevelDB): Level {
   return {
     id: dbLevel.id,
+    isPremium: dbLevel.is_premium ?? false,
+    mode: dbLevel.mode,
     slug: dbLevel.slug,
     title: dbLevel.title,
     imageUrl1: dbLevel.image_url_1,
@@ -61,7 +65,7 @@ export async function getAllLevels(): Promise<Level[]> {
 /**
  * Fetch paginated game levels from the database
  */
-export async function getLevels(page: number = 1, pageSize: number = 24): Promise<{
+export async function getLevels(page: number = 1, pageSize: number = 24, access: 'all' | 'free' | 'premium' = 'all'): Promise<{
   levels: Level[];
   total: number;
   page: number;
@@ -75,9 +79,9 @@ export async function getLevels(page: number = 1, pageSize: number = 24): Promis
   const to = from + pageSize - 1;
 
   // Fetch total count
-  const { count, error: countError } = await supabase
-    .from('levels')
-    .select('*', { count: 'exact', head: true });
+  let countQuery = supabase.from('levels').select('*', { count: 'exact', head: true }).eq('published', true);
+  if (access !== 'all') countQuery = countQuery.eq('is_premium', access === 'premium');
+  const { count, error: countError } = await countQuery;
 
   if (countError) {
     console.error('Error fetching levels count:', countError);
@@ -87,11 +91,9 @@ export async function getLevels(page: number = 1, pageSize: number = 24): Promis
   const total = count || 0;
 
   // Fetch paginated data
-  const { data, error } = await supabase
-    .from('levels')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .range(from, to);
+  let query = supabase.from('levels').select('*').eq('published', true);
+  if (access !== 'all') query = query.eq('is_premium', access === 'premium');
+  const { data, error } = await query.order('created_at', { ascending: false }).range(from, to);
 
   if (error) {
     console.error('Error fetching levels:', error);

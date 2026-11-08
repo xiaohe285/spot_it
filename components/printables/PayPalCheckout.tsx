@@ -78,6 +78,7 @@ export default function PayPalCheckout({
   accessDays,
   downloadFiles = [],
   embedded = false,
+  minimal = false,
 }: {
   purchaseType?: "product" | "premium";
   itemSlug: string;
@@ -85,6 +86,7 @@ export default function PayPalCheckout({
   accessDays?: number;
   downloadFiles?: PrintableProductFile[];
   embedded?: boolean;
+  minimal?: boolean;
 }) {
   const buttonsContainer = useRef<HTMLDivElement>(null);
   const [config, setConfig] = useState<PayPalConfig | null>(null);
@@ -319,14 +321,16 @@ export default function PayPalCheckout({
   return (
     <div
       className={
-        purchaseType === "premium"
-          ? "rounded-[1.4rem] border border-white/90 bg-white p-6 shadow-[0_16px_45px_rgba(249,115,22,0.12)] dark:border-slate-700 dark:bg-slate-900"
-          : embedded
-            ? ""
-            : "rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        minimal
+          ? ""
+          : purchaseType === "premium"
+            ? "rounded-[1.4rem] border border-white/90 bg-white p-6 shadow-[0_16px_45px_rgba(249,115,22,0.12)] dark:border-slate-700 dark:bg-slate-900"
+            : embedded
+              ? ""
+              : "rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900"
       }
     >
-      {!embedded && (
+      {!embedded && !minimal && (
         <div className="mb-5 flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
@@ -372,8 +376,7 @@ export default function PayPalCheckout({
       )}
       {status === "unavailable" && (
         <div className="rounded-lg bg-amber-50 p-4 text-sm leading-6 text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
-          PayPal checkout is not active yet. Add the PayPal and Supabase
-          server credentials before accepting a payment.
+          PayPal checkout is temporarily unavailable. Please try again later.
         </div>
       )}
       <div
@@ -394,7 +397,7 @@ export default function PayPalCheckout({
         </p>
       )}
 
-      {embedded ? (
+      {!minimal && (embedded ? (
         <p className="mt-4 flex items-center justify-center gap-2 text-center text-sm font-semibold leading-5 text-slate-500 dark:text-slate-400">
           <LockKeyhole className="h-4 w-4 shrink-0" aria-hidden="true" />
           Secure checkout · Download immediately after payment
@@ -405,7 +408,7 @@ export default function PayPalCheckout({
             ? "This is a one-time purchase, not an auto-renewing subscription. Access starts when PayPal confirms payment."
             : "You will receive an instant digital download after PayPal confirms payment. No physical item will be shipped."}
         </p>
-      )}
+      ))}
     </div>
   );
 }

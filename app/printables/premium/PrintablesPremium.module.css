@@ -1,0 +1,52 @@
+.breadcrumb { max-width: 1320px; padding: 30px 40px 0; margin: auto; }
+.breadcrumb a { display: inline-flex; align-items: center; gap: 5px; color: var(--body); font-size: 13px; font-weight: 600; }
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb svg { width: 16px; height: 16px; }
+.hero { padding-top: 30px; }
+.audience { margin-top: 28px; text-align: center; color: var(--body); font-size: 13px; }
+.pricePanel { position: relative; margin-top: 30px; padding: 28px 20px 24px; border: 1px solid #dc981f; border-radius: 19px; background: linear-gradient(115deg, #fff8eb, #fff0d5); text-align: center; }
+.passBadge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 5px 14px; background: linear-gradient(#ecb650, #d68e1a); color: #fff; font-size: 11px; font-weight: 750; white-space: nowrap; }
+.passBadge svg { width: 14px; height: 14px; fill: currentColor; }
+.price { color: var(--ink); font-size: 48px; line-height: 1.15; font-weight: 800; letter-spacing: -.04em; }
+.price > span { display: inline-block; margin-left: 9px; font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--body); }
+.paymentNote { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--body); }
+.features { display: grid; gap: 13px; margin: 26px 0; }
+.features li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; font-weight: 550; line-height: 1.6; }
+.features svg { flex: 0 0 auto; height: 17px; width: 17px; color: var(--gold); margin-top: 3px; }
+.checkout { padding-top: 5px; }
+.totalLabel { margin-top: 19px; color: var(--body); font-size: 12px; text-align: center; }
+.total { margin-top: 3px; font-size: 25px; font-weight: 800; color: var(--ink); text-align: center; font-variant-numeric: tabular-nums; }
+.total span { margin-left: 7px; font-size: 12px; font-weight: 500; color: var(--body); }
+.policy { margin-top: 18px; font-size: 11px; line-height: 1.8; text-align: center; color: var(--body); }
+.howSection { padding: 60px 24px; border-block: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 55%, transparent); }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; max-width: 1120px; margin: 38px auto 0; }
+.steps li { position: relative; padding: 24px; text-align: center; }
+.stepNumber { position: absolute; right: 10px; top: 8px; color: var(--line); font-family: Georgia, 'Times New Roman', serif; font-size: 48px; }
+.steps h3 { margin-top: 19px; font-size: 18px; font-weight: 700; }
+.steps p { margin-top: 12px; font-size: 14px; line-height: 1.85; color: var(--body); }
+.collection { max-width: 1280px; padding: 65px 40px 0; margin: auto; }
+.packCount { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--tint); color: var(--gold); font-size: 12px; font-weight: 650; }
+.packCount svg { width: 16px; height: 16px; }
+.packGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
+.packCard { display: block; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); overflow: hidden; transition: transform .18s, box-shadow .18s; }
+.packCard:hover { transform: translateY(-4px); box-shadow: 0 14px 32px -20px #93612366; }
+.packImage { position: relative; aspect-ratio: 4/4.5; background: var(--tint); overflow: hidden; }
+.included { position: absolute; bottom: 14px; left: 14px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #ead2ac; border-radius: 999px; padding: 7px 10px; color: #7b4b10; background: #fff5e6; font-size: 10px; font-weight: 700; }
+.included svg { width: 13px; height: 13px; }
+.packCopy { padding: 21px; }
+.packCopy h3 { font-size: 17px; line-height: 1.5; font-weight: 700; }
+.packCopy p { margin-top: 8px; color: var(--body); font-size: 12px; line-height: 1.7; }
+.packCopy p span { margin-inline: 3px; }
+.viewPack { display: inline-flex; align-items: center; gap: 8px; margin-top: 17px; color: var(--gold); font-size: 12px; font-weight: 650; }
+.viewPack svg { width: 15px; height: 15px; }
+.empty { text-align: center; color: var(--body); padding: 30px 0; font-size: 14px; line-height: 1.8; }
+.gameMembership { display: flex; align-items: flex-start; gap: 18px; padding: 26px; margin-top: 38px; border: 1px solid var(--line); border-radius: 20px; background: var(--tint); }
+.gameMembership > svg { flex-shrink: 0; width: 24px; height: 24px; color: var(--gold); }
+.gameMembership h3 { font-size: 17px; font-weight: 700; }
+.gameMembership p { margin-top: 9px; color: var(--body); font-size: 13px; line-height: 1.8; }
+.gameMembership a { display: inline-flex; align-items: center; gap: 6px; margin-top: 13px; font-size: 13px; }
+.gameMembership a svg { width: 15px; height: 15px; }
+@media (max-width: 1000px) { .breadcrumb { max-width: 680px; padding-inline: 24px; } .hero { padding-top: 20px; } .steps { gap: 12px; } .steps li { padding-inline: 12px; } .packGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .breadcrumb { padding: 22px 20px 0; } .howSection { padding: 45px 20px; } .steps { grid-template-columns: 1fr; max-width: 340px; margin-top: 18px; gap: 8px; } .steps li { padding: 22px; } .stepNumber { right: 28px; } .collection { padding: 45px 20px 0; } .packGrid { grid-template-columns: 1fr; gap: 22px; } .price { font-size: 42px; } .price > span { font-size: 13px; } .features li { font-size: 13px; } .gameMembership { padding: 20px; gap: 12px; } }
+@media (prefers-color-scheme: dark) { .pricePanel { background: linear-gradient(115deg, #43311c, #382916); border-color: #d49633; } }
+@media (prefers-reduced-motion: reduce) { .packCard { transition: none; } }

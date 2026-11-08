@@ -1,17 +1,19 @@
+import PremiumRibbon from '@/components/premium/PremiumRibbon';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getLevels } from '@/lib/db/levels';
 import Pagination from '@/components/Pagination';
 
 interface GamesPageProps {
-    searchParams: Promise<{ page?: string }>;
+    searchParams: Promise<{ page?: string; access?: string }>;
 }
 
 export default async function GamesPage({ searchParams }: GamesPageProps) {
     const params = await searchParams;
-    const currentPage = Number(params.page) || 1;
+    const currentPage = Math.max(1, Math.floor(Number(params.page)) || 1);
+    const access = params.access === 'free' || params.access === 'premium' ? params.access : 'all';
 
-    const { levels, total, page, pageSize, totalPages } = await getLevels(currentPage, 24);
+    const { levels, total, page, pageSize, totalPages } = await getLevels(currentPage, 24, access);
 
     return (
         <div className="container mx-auto px-4 py-12">
@@ -33,9 +35,13 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                 ))}
             </div>
 
+            <nav aria-label="Game access" className="mb-8 flex flex-wrap items-center gap-2">
+                {(['all', 'free', 'premium'] as const).map(value => <Link key={value} href={value === 'all' ? '/games' : `/games?access=${value}`} aria-current={access === value ? 'page' : undefined} className={`rounded-full px-5 py-2.5 font-bold capitalize transition ${access === value ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-white text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>{value}</Link>)}
+                <Link href="/premium?source=games" className="ml-auto font-bold text-amber-700 dark:text-amber-300">Explore Premium →</Link>
+            </nav>
             {levels.length === 0 ? (
                 <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400 text-lg">暂无游戏数据</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-lg">No games match this filter.</p><Link href="/games" className="mt-3 inline-block font-bold text-orange-600">Browse all games</Link>
                 </div>
             ) : (
                 <>
@@ -47,6 +53,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                                 className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                             >
                                 <div className="relative h-64 md:h-72 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                    <PremiumRibbon premium={level.isPremium} />
                                     <Image
                                         src={level.imageUrl1}
                                         alt={`${level.title} - Find the difference puzzle`}
@@ -86,6 +93,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                         total={total}
                         pageSize={pageSize}
                         basePath="/games"
+                        queryParams={access === 'all' ? {} : { access }}
                     />
                 </>
             )}

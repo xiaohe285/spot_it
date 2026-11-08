@@ -15,6 +15,7 @@ export interface Category {
 }
 
 export interface Level {
+  is_premium?: boolean;
   id: string;
   slug: string;
   title: string;
@@ -467,6 +468,7 @@ async function getFallbackDailyChallenge(
     .from('levels_with_category')
     .select('*')
     .eq('published', true)
+    .eq('is_premium', false)
     .order('display_order', { ascending: true });
 
   if (error || !levels || levels.length === 0) {
