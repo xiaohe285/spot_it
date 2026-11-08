@@ -1,6 +1,8 @@
 'use client';
 
 import PremiumGameGate from '@/components/premium/PremiumGameGate';
+import PremiumLevelLoader from '@/components/premium/PremiumLevelLoader';
+import { useAuth } from '@/contexts/AuthContext';
 import { useState, useRef, useEffect, type ReactNode } from 'react';
 import Image from 'next/image';
 import { LevelWithCategory } from '@/lib/levels';
@@ -30,12 +32,18 @@ interface GameCanvasProps {
     level: LevelWithCategory;
     onComplete: (stats: GameStats) => void;
     maxHints?: number;
-    onHeaderUpdate?: (stats: HeaderStats) => void;
+    onHeaderUpdate?: (stats: HeaderStats | null) => void;
     supportAction?: ReactNode;
 }
 
 export default function GameCanvas(props: GameCanvasProps) {
-    return <PremiumGameGate level={props.level}><PlayableGameCanvas {...props} /></PremiumGameGate>;
+    const { user } = useAuth();
+    const identity = `${user?.id ?? 'anonymous'}:${props.level.id}:${props.level.slug}`;
+    return <PremiumGameGate level={props.level}>
+        {props.level.is_premium ? <PremiumLevelLoader key={identity} level={props.level}>
+            {level => <PlayableGameCanvas {...props} level={level} />}
+        </PremiumLevelLoader> : <PlayableGameCanvas key={`${props.level.id}:${props.level.slug}`} {...props} />}
+    </PremiumGameGate>;
 }
 
 function PlayableGameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, supportAction }: GameCanvasProps) {
@@ -59,6 +67,9 @@ function PlayableGameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, s
     const imageRef = useRef<HTMLImageElement>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const popupIdRef = useRef(0);
+
+    // Drop old hint/share callbacks whenever the playable canvas is removed.
+    useEffect(() => () => onHeaderUpdate?.(null), [onHeaderUpdate]);
 
     // Timer
     useEffect(() => {

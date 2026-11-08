@@ -19,6 +19,7 @@ export default function Footer() {
                         <ul className="space-y-2">
                             <li><Link href="/games/adults" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">For Adults</Link></li>
                             <li><Link href="/games/kids" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">For Kids</Link></li>
+                            <li><Link href="/premium?source=footer" className="font-semibold text-amber-700 transition-colors hover:text-amber-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-600 dark:text-amber-300 dark:hover:text-amber-200">Premium</Link></li>
                             <li><Link href="/printables" className="text-gray-500 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Printable PDFs</Link></li>
                             <li><Link href="/games/differences" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">By Differences</Link></li>
                             <li><Link href="/how-to-play" className="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">How to Play</Link></li>
@@ -46,9 +47,6 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-400 dark:text-gray-500 text-sm">
-                    <Link href="/premium?source=footer" className="mb-4 inline-block font-semibold text-amber-700 transition-colors hover:text-amber-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-600 dark:text-amber-300 dark:hover:text-amber-200">
-                        Premium
-                    </Link>
                     <p>© {new Date().getFullYear()} SpotDiffs! All rights reserved.</p>
                 </div>
             </div>
