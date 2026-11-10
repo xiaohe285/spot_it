@@ -6,6 +6,9 @@ export const premiumPlans = [
 export type PremiumPlanId = typeof premiumPlans[number]['id'];
 export interface PremiumStatus {
   active: boolean;
+  billingStatus?: 'active' | 'canceling' | 'canceled' | 'past_due' | null;
+  canCancel?: boolean;
+  waffoMode?: 'test' | 'prod' | null;
   plan: PremiumPlanId | null;
   expiresAt: string | null;
   periodStart: string | null;

@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useCallback, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { freePremiumStatus, type PremiumStatus } from '@/lib/premium/plans';
+import { premiumAuthHeaders } from '@/lib/premium/clientAuth';
 
 type Value = { status: PremiumStatus; loading: boolean; error: string | null; refresh: () => Promise<void>; adsAllowed: boolean };
 const Context = createContext<Value | null>(null);
@@ -15,7 +16,7 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
     const requestVersion = ++version.current;
     setState(previous => ({ ...previous, identity, loading: previous.identity !== identity || previous.loading || Boolean(previous.error) || (previous.status.active && +new Date(previous.status.expiresAt!) <= Date.now()), error: null }));
     try {
-      const response = await fetch('/api/premium/status', { cache: 'no-store' });
+      const response = await fetch('/api/premium/status', { cache: 'no-store', headers: await premiumAuthHeaders() });
       if (!response.ok) throw new Error('Unable to check Premium access.');
       const status: PremiumStatus = await response.json();
       if (version.current !== requestVersion) return;

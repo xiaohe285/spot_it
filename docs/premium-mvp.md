@@ -1,7 +1,9 @@
 # Game Premium MVP
 
-Game membership is separate from the existing printable-only pass. No payment
-provider is called and no subscription is created by the public Subscribe button.
+Game membership is separate from the existing printable-only pass. The public
+Subscribe button now starts Waffo checkout; see [Waffo setup](waffo-payments.md).
+The intent-recording flow described below is historical and its endpoint remains
+available for existing data, but is no longer called by `/premium`.
 
 ## Database rollout
 
@@ -13,7 +15,7 @@ this change.
 
 Set `SUPABASE_SERVICE_ROLE_KEY` on the server for intent recording and protected
 PDF metadata (it is also used by the existing printable store). Never expose it
-with a `NEXT_PUBLIC_` prefix. No new payment secrets are required.
+with a `NEXT_PUBLIC_` prefix. Waffo payment configuration is documented in `docs/waffo-payments.md`.
 
 Mark chosen new levels with `levels.is_premium = true`. The migration rejects new
 Premium daily-challenge assignments. Keep already scheduled free challenges free.
@@ -81,9 +83,9 @@ group by plan;
   is available. Logging in after AdSense has loaded refreshes the document to
   remove injected auto-ad frames.
 
-Before real billing, add verified provider events, renewal/cancellation handling
-and protection for the game data/images, which remain publicly discoverable in
-the existing catalog architecture. The MVP gates gameplay, not asset scraping.
+The original MVP gated gameplay without billing. Waffo now handles verified
+provider events and renewal/cancellation (see `docs/waffo-payments.md`); the
+protected-content layer is described below. Public previews remain discoverable.
 
 ## Protected Premium game content
 
@@ -161,6 +163,5 @@ Do not remove the protected table while this loader is deployed; rolling back
 the app alone does not restore play from public decoy data.
 
 This protects content discovery, not the public image URLs themselves. Members
-can still share URLs and previously public assets remain accessible. No billing,
-private storage, signed URLs, image proxy or automatic catalog rewriting is
-included in this change.
+can still share URLs and previously public assets remain accessible. The content protection layer does not add private storage, signed URLs,
+an image proxy or automatic catalog rewriting. Waffo billing is documented separately.

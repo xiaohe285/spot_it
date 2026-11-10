@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { premiumLevelContentResponse } from '@/lib/premium/levelContentResponse';
+import { getPremiumStatus } from '@/lib/premium/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,10 +18,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
       return user;
     },
     async isActive() {
-      const supabase = await client();
-      const { data, error } = await supabase.rpc('get_game_premium_status');
-      if (error) throw error;
-      return data?.active === true;
+      return (await getPremiumStatus()).active;
     },
     async getLevel(slug) {
       const supabase = await client();
