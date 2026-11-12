@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
+import AccountMenu from '@/components/account/AccountMenu';
 
 export default function Header() {
     const { user, loading, signOut } = useAuth();
@@ -97,45 +98,7 @@ export default function Header() {
                         {loading ? (
                             <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
                         ) : user ? (
-                            <div className="relative group">
-                                <div className="flex items-center gap-3 cursor-pointer">
-                                    <div className="text-right hidden sm:block">
-                                        <p className="text-sm font-semibold text-gray-900">
-                                            {user.user_metadata?.display_name || user.email?.split('@')[0]}
-                                        </p>
-                                    </div>
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center text-white font-bold ring-2 ring-transparent group-hover:ring-orange-300 transition-all">
-                                        {(user.user_metadata?.display_name || user.email)?.[0]?.toUpperCase()}
-                                    </div>
-                                </div>
-
-                                {/* Dropdown Menu */}
-                                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                    <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                            {user.user_metadata?.display_name || user.email?.split('@')[0]}
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                            {user.email}
-                                        </p>
-                                    </div>
-                                    <div className="py-2">
-                                        <Link
-                                            href="/streak"
-                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                        >
-                                            Streak
-                                        </Link>
-                                        <button
-                                            onClick={signOut}
-                                            className="cursor-pointer w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                                        >
-                                            <span>🚪</span>
-                                            Logout
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <AccountMenu key={user.id} />
                         ) : (
                             <>
                                 {/* Desktop: Show both buttons */}
@@ -255,6 +218,7 @@ export default function Header() {
                                     <div className="px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white">
                                         {user.user_metadata?.display_name || user.email?.split('@')[0]}
                                     </div>
+                                    <Link href="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Orders</Link>
                                     <Link
                                         href="/streak"
                                         className="block px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"

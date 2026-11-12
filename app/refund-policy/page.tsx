@@ -20,10 +20,23 @@ export default function RefundPolicyPage() {
           Digital Delivery & Refund Policy
         </h1>
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          Last updated: July 25, 2026
+          Last updated: November 12, 2026
         </p>
 
         <div className="mt-10 space-y-9 text-slate-700 dark:text-slate-300">
+          <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 leading-7 dark:border-amber-800 dark:bg-amber-950">
+            <h2 className="text-xl font-bold text-slate-950 dark:text-white">Premium subscription refunds</h2>
+            <p className="mt-3">
+              Waffo Premium subscriptions have a separate{' '}
+              <Link href="/terms#refunds" className="font-semibold text-purple-700 underline dark:text-purple-300">subscription refund policy in our Terms of Service</Link>.
+              {' '}To stop future charges, sign in and select Cancel renewal in your{' '}
+              <Link href="/premium" className="font-semibold text-purple-700 underline dark:text-purple-300">Premium membership details</Link>.
+              {' '}The printable delivery and refund sections below apply to separate PayPal purchases.
+            </p>
+            <p className="mt-3">
+              Your first Premium purchase includes a 7-day full money-back guarantee on any plan, including if you have used Premium features. Verified duplicate charges are refunded in full. A verified service outage attributable to us lasting more than 72 consecutive hours qualifies for a prorated refund or an agreed membership extension. You can cancel automatic renewal at any time. See the subscription policy linked above for eligibility, requests, and processing times.
+            </p>
+          </section>
           <section>
             <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
               Digital product delivery

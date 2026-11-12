@@ -1,254 +1,124 @@
-import { Metadata } from 'next';
-
-const siteUrl = 'https://spotdiffs.com';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import LegalPage, { LegalSection } from '@/components/layout/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Learn how Spot the Difference collects, uses, and protects your personal information.',
-  openGraph: {
-    title: 'Privacy Policy - Spot the Difference',
-    description: 'Learn how we collect, use, and protect your personal information.',
-    url: `${siteUrl}/privacy`,
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Privacy Policy - Spot the Difference',
-    description: 'Learn how we collect, use, and protect your personal information.',
-  },
-  alternates: {
-    canonical: `${siteUrl}/privacy`,
-  },
+  description: 'How SpotDiffs handles account, gameplay, subscription, payment, analytics, and support information and how to exercise your privacy rights.',
+  alternates: { canonical: 'https://spotdiffs.com/privacy' },
 };
 
 export default function PrivacyPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Privacy Policy</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Last Updated: July 25, 2026</p>
+    <LegalPage title="Privacy Policy">
+      <LegalSection id="controller" title="1. Who this policy covers">
+        <p>This policy explains how <strong>Qin JUNKUN</strong>, the individual operator of SpotDiffs based in Guangdong, People’s Republic of China (“we,” “us,” or “our”), handles personal information at <a href="https://spotdiffs.com">spotdiffs.com</a>, including online puzzles, Premium membership, and printable products. Qin JUNKUN is the data controller responsible for this processing. Privacy requests are handled directly by the operator through the monitored mailbox <a href="mailto:support@spotdiffs.com?subject=Privacy%20request">support@spotdiffs.com</a>.</p>
+        <p>This policy describes our practices; it does not make consent a condition for processing that relies on a different lawful basis. Our <Link href="/terms">Terms of Service</Link> explain the membership contract, billing, cancellation, and refunds.</p>
+      </LegalSection>
 
-        <div className="prose prose-lg dark:prose-invert max-w-none">
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">1. Introduction</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Welcome to Spot the Difference ("we," "our," or "us"). We are committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services (collectively, the "Service").
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              By accessing or using the Service, you agree to this Privacy Policy. If you do not agree with the terms of this Privacy Policy, please do not access the Service.
-            </p>
-          </section>
+      <LegalSection id="collection" title="2. Information we collect">
+        <ul>
+          <li><strong>Account information:</strong> email address, account identifier, username, display name, and available profile picture. Supabase manages authentication credentials and sessions. For Google sign-in, we receive the identity and profile information authorized through Google; we do not receive your Google password.</li>
+          <li><strong>Gameplay:</strong> levels played, scores, completion times, progress, accuracy, achievements, badges, and streaks. Some progress is stored in your browser; signed-in activity may be saved to your account.</li>
+          <li><strong>Membership and purchases:</strong> chosen plan, checkout and order references, payment identifiers, payment status, amounts and currency when supplied by the provider, transaction dates, paid membership periods, renewal/cancellation status, and printable redemptions and download access records.</li>
+          <li><strong>Support:</strong> your email address, correspondence, account or order references, and information you choose to send us. Please do not send passwords, full card numbers, or card security codes.</li>
+          <li><strong>Technical and usage information:</strong> IP address, approximate region inferred from network information, browser and device characteristics, referring pages, page visits, feature interactions, request timestamps, and diagnostic or security logs. We do not request precise device geolocation.</li>
+          <li><strong>Browser storage:</strong> sign-in sessions, preferences, locally saved game progress, and download receipts or access tokens. Clearing this storage may remove progress or download access saved only on that device.</li>
+        </ul>
+        <p><strong>Payment-card details:</strong> Waffo Pancake processes Premium subscription payments through its hosted checkout and payment partners. Card information is entered with the provider; SpotDiffs does not store full card numbers or security codes on its servers. Separately purchased printable products use PayPal, which processes those payment credentials under its own policy. We receive the limited transaction information needed to verify purchases and provide access.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Information We Collect</h2>
+      <LegalSection id="purposes" title="3. Purposes and legal bases">
+        <p>Where GDPR or similar laws apply, we use the following legal bases:</p>
+        <ul>
+          <li><strong>Performing our contract:</strong> creating accounts, providing games and saved progress, verifying purchases, managing subscriptions, issuing download access, processing cancellations or refunds, and responding to requests about the purchased service.</li>
+          <li><strong>Legitimate interests:</strong> securing accounts, preventing fraud and abuse, investigating errors, handling support, and sending necessary operational notices. We assess these interests against your rights. Non-essential analytics rely on consent where the law requires it.</li>
+          <li><strong>Legal obligations:</strong> retaining legally required accounting records, responding to valid legal requests, and meeting applicable tax, payment, and consumer-protection requirements.</li>
+          <li><strong>Consent:</strong> optional communications and non-essential tracking where required. You may withdraw consent without changing the lawfulness of earlier processing.</li>
+        </ul>
+        <p>We do not use personal information to make solely automated decisions that produce legal or similarly significant effects. Security checks and game-score validation may be automated.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">2.1 Personal Information</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              When you register for an account, we may collect the following personal information:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Email address (required for account creation)</li>
-              <li>Username and display name</li>
-              <li>Profile picture or avatar (optional)</li>
-            </ul>
+      <LegalSection id="cookies" title="4. Cookies, local storage, and analytics">
+        <p>Necessary cookies and session storage support sign-in, security, and payment-related access. Functional local storage remembers preferences, progress, and printable access receipts. Non-essential analytics help us understand visits and interactions. Necessary storage may be required for a requested feature; optional storage can be controlled using browser settings, though blocking all storage can affect sign-in and downloads.</p>
+        <ul>
+          <li><strong>Google Analytics:</strong> when configured, records page visits and feature events, such as a Premium plan selection or checkout click, with technical and usage information. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google’s Privacy Policy</a> and the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google Analytics opt-out add-on</a>.</li>
+          <li><strong>Microsoft Clarity:</strong> collects website interaction information, such as clicks, scrolling, and session replay data, to help diagnose usability problems. These records can relate to a browser or device and are not necessarily anonymous. See the <a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener noreferrer">Microsoft Privacy Statement</a>.</li>
+        </ul>
+        <p>You can remove cookies and site data, block tracking through browser controls or extensions, and contact us about tracking-related rights. We do not currently provide an on-site cookie preference center. See our <Link href="/cookies">Cookie Policy</Link> for additional storage information.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">2.2 Game Activity Data</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              When you play games on our Service, we automatically collect:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Game scores and completion times</li>
-              <li>Accuracy statistics and performance metrics</li>
-              <li>Game play history and progress</li>
-              <li>Achievements and badges earned</li>
-            </ul>
+      <LegalSection id="sharing" title="5. Who receives information">
+        <p>We do not sell or rent your personal information. We disclose information only for operating the Service, the purposes described here, your directions, or legal requirements:</p>
+        <ul>
+          <li><strong>Waffo Pancake and its payment partners:</strong> receive account identifiers, billing email, chosen product, checkout references, and purchase metadata needed for Premium checkout, recurring billing, fraud prevention, and payment support. Card data is handled by the payment provider, not stored by SpotDiffs. See <a href="https://waffo.com/en/privacy-policy" target="_blank" rel="noopener noreferrer">Waffo’s Privacy Policy</a>.</li>
+          <li><strong>PayPal:</strong> handles separate printable purchases and supplies transaction confirmations. See <a href="https://www.paypal.com/legalhub/privacy-full" target="_blank" rel="noopener noreferrer">PayPal’s Privacy Statement</a>.</li>
+          <li><strong>Supabase:</strong> provides authentication and database services for account, gameplay, membership, and purchase records. See <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Supabase’s Privacy Policy</a>.</li>
+          <li><strong>Hosting, file delivery, and technical providers:</strong> process network and request data to serve pages, images, and PDF files, including Cloudflare storage and delivery services. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare’s Privacy Policy</a>.</li>
+          <li><strong>Analytics providers:</strong> Google Analytics and Microsoft Clarity receive the information described in Section 4 under their applicable terms and privacy policies.</li>
+          <li><strong>Other players:</strong> display names, scores, and rankings may appear in public leaderboard features. Your account email and payment information are not intentionally published there.</li>
+          <li><strong>Authorities and advisers:</strong> where needed to comply with law, protect safety and rights, resolve a dispute, or investigate fraud.</li>
+          <li><strong>Business successors:</strong> if the Service is transferred, subject to applicable safeguards and notice of material changes in how your information is handled.</li>
+        </ul>
+        <p>Payment providers may also process information for their own legal, tax, fraud-prevention, or regulatory obligations. Third-party websites and sign-in services have their own policies.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">2.3 Automatically Collected Information</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              When you access our Service, we may automatically collect certain information, including:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>IP address and general location information</li>
-              <li>Browser type and version</li>
-              <li>Device information (type, operating system)</li>
-              <li>Pages visited and time spent on pages</li>
-              <li>Referring website addresses</li>
-            </ul>
+      <LegalSection id="security" title="6. Security and incident response">
+        <p>We use HTTPS for production connections, provider-managed authentication, access controls for account records, and server-side payment verification. Administrative database credentials and payment signing keys are kept on the server. No transmission or storage system can be guaranteed completely secure; protect your credentials and report suspected compromise to support.</p>
+        <p>If a personal data breach occurs, we will assess its effects and give notices required by applicable law. Where GDPR requires notification to a supervisory authority, the applicable deadline is without undue delay and, where feasible, within 72 hours of becoming aware of the breach. Affected individuals will be informed without undue delay where legally required.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">2.4 Purchase Information</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              When you buy a printable product, we receive limited transaction information from PayPal, such as the PayPal order ID, payment status, amount, currency, and purchased product. Payment credentials and full card details are entered with and processed by PayPal; SpotDiffs does not receive or store them.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Premium launch interest</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">When you express interest in Premium, we store the selected plan, price, source page, an anonymous browser identifier, and the time. We use a hashed network identifier to limit repeated submissions. If you voluntarily leave an email, we use it to notify you about the Premium launch. Email addresses are not sent in analytics events. Expressing interest does not create a subscription or charge you.</p>
-          </section>
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. How We Use Your Information</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We use the information we collect for the following purposes:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li><strong>Account Management:</strong> To create and maintain your user account</li>
-              <li><strong>Game Functionality:</strong> To provide game features, track progress, and maintain leaderboards</li>
-              <li><strong>Service Improvement:</strong> To understand how users interact with our Service and improve user experience</li>
-              <li><strong>Communication:</strong> To send you service-related notifications and respond to your inquiries</li>
-              <li><strong>Analytics:</strong> To analyze usage patterns and generate aggregate statistics</li>
-              <li><strong>Security:</strong> To detect and prevent fraud, abuse, and security incidents</li>
-              <li><strong>Legal Compliance:</strong> To comply with applicable laws and regulations</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Third-Party Services</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We use third-party service providers to help us operate and improve our Service:
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">4.1 Analytics Services</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We use analytics services to understand how users interact with our Service. These services may collect information about your visit, including pages viewed, time spent, and navigation patterns. This information is used in aggregate form and does not personally identify you.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">4.2 Advertising (Future)</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We may work with advertising partners in the future to display advertisements on our Service. If implemented, we will update this Privacy Policy and notify users accordingly. Any advertising will comply with applicable privacy regulations.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">4.3 Image Services</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We use third-party image hosting services to deliver game images. These services may collect limited technical information necessary to deliver images to your device.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">4.4 PayPal</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We use PayPal to create and capture payments for digital products. PayPal processes payment information under its own privacy terms. We use the transaction confirmation to create a time-limited, signed download link and to provide purchase support.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Data Sharing and Disclosure</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li><strong>With Your Consent:</strong> When you explicitly agree to share information</li>
-              <li><strong>Public Information:</strong> Leaderboard rankings, usernames, and game scores are displayed publicly as part of the Service</li>
-              <li><strong>Service Providers:</strong> With trusted third-party service providers who assist in operating our Service (bound by confidentiality agreements)</li>
-              <li><strong>Legal Requirements:</strong> When required by law or to protect our rights, safety, or property</li>
-              <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">6. Data Security</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Encryption of data in transit and at rest</li>
-              <li>Regular security assessments and updates</li>
-              <li>Access controls and authentication mechanisms</li>
-              <li>Secure data storage with industry-standard providers</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive to protect your personal information, we cannot guarantee its absolute security.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">7. Your Rights and Choices</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You have the following rights regarding your personal information:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li><strong>Access:</strong> You can access and review your personal information through your account settings</li>
-              <li><strong>Correction:</strong> You can update or correct your profile information at any time</li>
-              <li><strong>Deletion:</strong> You can request deletion of your account and associated data</li>
-              <li><strong>Data Portability:</strong> You can request a copy of your data in a structured format</li>
-              <li><strong>Opt-Out:</strong> You can opt out of non-essential communications</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              To exercise these rights, please contact us at support@spotdiffs.com.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">8. Children's Privacy</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Our Service is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us immediately at support@spotdiffs.com, and we will take steps to delete such information.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Users between the ages of 13 and 18 should review this Privacy Policy with a parent or guardian to ensure understanding.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">9. Data Retention</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We retain your personal information for as long as necessary to provide the Service and fulfill the purposes described in this Privacy Policy, unless a longer retention period is required or permitted by law. When you delete your account, we will delete or anonymize your personal information within a reasonable timeframe, except where we are required to retain it for legal or legitimate business purposes.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">10. International Data Transfers</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Our Service is operated from and governed by the laws of the People's Republic of China. If you are accessing the Service from outside China, please be aware that your information may be transferred to, stored, and processed in China. By using the Service, you consent to the transfer of your information to China and acknowledge that Chinese data protection laws may differ from those in your jurisdiction.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">11. Cookies and Tracking Technologies</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We use cookies and similar tracking technologies to enhance your experience on our Service. Cookies are small text files stored on your device that help us:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Remember your login status and preferences</li>
-              <li>Analyze how you use our Service</li>
-              <li>Improve Service functionality and user experience</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You can control cookie settings through your browser. However, disabling cookies may limit your ability to use certain features of the Service.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">12. Changes to This Privacy Policy</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We may update this Privacy Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. When we make material changes, we will notify you by:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Updating the "Last Updated" date at the top of this policy</li>
-              <li>Posting a notice on our Service</li>
-              <li>Sending you an email notification (if you have an account)</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Your continued use of the Service after any changes constitutes your acceptance of the updated Privacy Policy.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">13. Contact Us</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at:
-            </p>
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-900 dark:text-white font-semibold mb-2">Spot the Difference</p>
-              <p className="text-gray-700 dark:text-gray-300 mb-1">Email: <a href="mailto:support@spotdiffs.com" className="text-purple-600 hover:underline">support@spotdiffs.com</a></p>
-              <p className="text-gray-700 dark:text-gray-300">We aim to respond to all inquiries within 48 hours.</p>
-            </div>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">14. Governing Law</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              This Privacy Policy is governed by and construed in accordance with the laws of the People's Republic of China. Any disputes arising from or relating to this Privacy Policy shall be resolved through arbitration in accordance with Chinese law.
-            </p>
-          </section>
+      <LegalSection id="retention" title="7. Data retention and account closure">
+        <p>We retain account information and saved activity while your account remains open to provide the Service. Canceling Premium renewal does not delete your free account or immediately erase membership or purchase records.</p>
+        <p>Our standard retention schedule is:</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+          <table className="w-full min-w-[600px] text-left text-sm">
+            <caption className="sr-only">Personal information retention periods and disposal</caption>
+            <thead className="bg-slate-100 dark:bg-slate-800"><tr><th scope="col" className="p-4">Information</th><th scope="col" className="p-4">Retention period</th><th scope="col" className="p-4">After the period</th></tr></thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+              <tr><th scope="row" className="p-4 font-semibold">Account, profile, and account-linked gameplay</th><td className="p-4">While the account is open; delete or anonymize from active systems within 30 days after a verified account-deletion request, and from routine backups within 90 days.</td><td className="p-4">Delete or irreversibly anonymize, except separately retained records below.</td></tr>
+              <tr><th scope="row" className="p-4 font-semibold">Order, payment, subscription, redemption, and refund records</th><td className="p-4">7 years after the end of the calendar year in which the transaction or subscription ends, whichever is later.</td><td className="p-4">Delete or anonymize; keep only legally required accounting records in restricted archives if a longer statutory period applies.</td></tr>
+              <tr><th scope="row" className="p-4 font-semibold">Customer-support correspondence</th><td className="p-4">2 years after the inquiry is resolved.</td><td className="p-4">Securely delete or anonymize; transaction evidence follows the transaction schedule.</td></tr>
+              <tr><th scope="row" className="p-4 font-semibold">Security and network audit logs</th><td className="p-4">6 months from collection.</td><td className="p-4">Delete or anonymize, unless needed for a documented incident or a legal preservation requirement.</td></tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-    </div>
+        <p>To request account deletion, email <a href="mailto:support@spotdiffs.com?subject=Account%20deletion%20request">support@spotdiffs.com</a> from your registered address. We will verify the request and explain any records that must be retained. Deletion is completed in active systems within 30 days and in routine backups under our control within 90 days of the verified request; backup data is restricted to recovery and is not returned to active use without reapplying deletion requests. Retained transaction records are restricted to accounting, tax, fraud-prevention, and dispute purposes; they are not used to keep a deleted gameplay profile active.</p>
+        <p>A legal hold, unresolved claim, or mandatory accounting or tax rule may require specific records to be kept longer. For example, records classified as accounting vouchers may require a 30-year statutory archive period under applicable Chinese accounting rules. We retain only what is necessary, restrict access, and delete or anonymize the records when the applicable requirement ends.</p>
+        <p>Browser-only data remains on your device until it expires or is removed through the site, browser settings, or clearing local storage. Payment and analytics providers may retain information under their own policies and legal obligations.</p>
+      </LegalSection>
+
+      <LegalSection id="rights" title="8. Your privacy rights">
+        <p>Depending on where you live and the applicable law, you may request access to or a copy of your information, correction, deletion, restriction of processing, a portable copy, or information about its collection and disclosure. You may object to processing based on legitimate interests, object to direct marketing, and withdraw consent for processing based on consent. California residents may have additional rights to know, correct, delete, and opt out of sale or sharing as defined by applicable law, and to exercise rights without unlawful discrimination.</p>
+        <p>Email <a href="mailto:support@spotdiffs.com?subject=Privacy%20rights%20request">support@spotdiffs.com</a> with the subject “Privacy rights request” and describe the request. We may need proportionate identity verification to protect your account. We aim to respond within 30 calendar days; where a different statutory deadline or permitted extension applies, we will explain it. You may authorize an agent where permitted by law.</p>
+        <p>You may complain to your local data protection regulator. In the EEA, this may be the authority in your habitual residence, workplace, or place of the alleged infringement; in the UK, it is the Information Commissioner’s Office. This does not limit other available remedies.</p>
+      </LegalSection>
+
+      <LegalSection id="communications" title="9. Communications and choices">
+        <p>Account verification, payment, cancellation, security, and policy notices are service communications. Any optional marketing messages must have a lawful basis, including consent where required. To stop optional promotional emails, use the unsubscribe option included in the message or email support. Opting out does not prevent necessary service or legal notices.</p>
+      </LegalSection>
+
+      <LegalSection id="transfers" title="10. International processing">
+        <p>SpotDiffs is operated from China, and our cloud, authentication, analytics, and payment providers may process information in other countries. Protections may differ from those in your country. Where applicable law requires safeguards for an international transfer, we use an appropriate lawful transfer mechanism, such as an adequacy decision or standard contractual clauses with necessary supplementary measures. Contact support for information about safeguards applicable to your data.</p>
+      </LegalSection>
+
+      <LegalSection id="children" title="11. Children and younger users">
+        <p>Accounts are not intended for children under 13 or a higher minimum age required by local law. Users under 18 should review this policy with a parent or guardian. Purchases must be made by an adult. A puzzle category labeled “Kids” describes the difficulty or theme and does not invite children below the minimum age to create accounts.</p>
+        <p>We do not knowingly collect account information from children below the applicable age. If you believe a child has provided personal information, contact <a href="mailto:support@spotdiffs.com">support@spotdiffs.com</a> so we can investigate and delete it as appropriate.</p>
+      </LegalSection>
+
+      <LegalSection id="external-services" title="12. External services">
+        <p>Links, third-party authentication, hosted payment pages, and provider services may be governed by their own privacy notices. This policy covers our processing and does not replace those notices. Review the applicable provider’s notice before giving information directly to it.</p>
+      </LegalSection>
+
+      <LegalSection id="changes" title="13. Policy updates">
+        <p>We will update the version and date on this page when our practices change. Material changes will be announced by a prominent website notice or registered email at least 15 days in advance, except where an earlier update is necessary to comply with law or address a security issue. We will seek fresh consent when legally required; continued use does not substitute for consent where consent is required.</p>
+      </LegalSection>
+
+      <LegalSection id="contact" title="14. Contact us">
+        <p><strong>Data controller and operator:</strong> Qin JUNKUN, individual operator, Guangdong, People’s Republic of China.</p>
+        <p>For privacy requests, account deletion, support, billing, or security issues, email <a href="mailto:support@spotdiffs.com">support@spotdiffs.com</a>. Using “Privacy request” or “Security report” in the subject helps us route your message. We aim to acknowledge general inquiries within two business days; privacy rights requests follow Section 8.</p>
+      </LegalSection>
+    </LegalPage>
   );
 }

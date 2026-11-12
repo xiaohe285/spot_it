@@ -1,325 +1,114 @@
-import { Metadata } from 'next';
-
-const siteUrl = 'https://spotdiffs.com';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import LegalPage, { LegalSection } from '@/components/layout/LegalPage';
+import { premiumPlans } from '@/lib/premium/plans';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Read the terms and conditions for using Spot the Difference games and services.',
-  openGraph: {
-    title: 'Terms of Service - Spot the Difference',
-    description: 'Read the terms and conditions for using our games and services.',
-    url: `${siteUrl}/terms`,
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Terms of Service - Spot the Difference',
-    description: 'Read the terms and conditions for using our games and services.',
-  },
-  alternates: {
-    canonical: `${siteUrl}/terms`,
-  },
+  description: 'SpotDiffs terms for puzzle games, Premium subscriptions, recurring billing, cancellation, refunds, and printable downloads.',
+  alternates: { canonical: 'https://spotdiffs.com/terms' },
 };
 
 export default function TermsPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Terms of Service</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Last Updated: July 25, 2026</p>
+    <LegalPage title="Terms of Service">
+      <LegalSection id="acceptance" title="1. About these terms">
+        <p>These Terms govern your use of SpotDiffs at <a href="https://spotdiffs.com">spotdiffs.com</a>, including our online puzzles, Premium membership, and printable digital products (the “Service”). SpotDiffs is operated by <strong>Qin JUNKUN</strong>, an individual operator based in Guangdong, People’s Republic of China. In these Terms, “we,” “us,” and “our” refer to Qin JUNKUN trading as SpotDiffs.</p>
+        <p>By using the Service or purchasing a subscription, you agree to these Terms. Please also read our <Link href="/privacy">Privacy Policy</Link>. If you do not agree, do not use the Service or complete a purchase.</p>
+      </LegalSection>
 
-        <div className="prose prose-lg dark:prose-invert max-w-none">
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">1. Acceptance of Terms</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Welcome to Spot the Difference ("Service," "we," "our," or "us"). These Terms of Service ("Terms") constitute a legally binding agreement between you and Spot the Difference governing your access to and use of our website, games, and related services.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              By accessing or using the Service, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you must not access or use the Service.
-            </p>
-          </section>
+      <LegalSection id="service" title="2. Service and eligibility">
+        <p>SpotDiffs provides spot-the-difference puzzles for entertainment and downloadable PDF activity packs. Products are digital; we do not ship physical goods. Free games remain available without a Premium subscription. Some puzzle illustrations may be created with AI assistance; we do not provide a user-facing AI generation service.</p>
+        <p>You must be at least 13, or the higher minimum age required where you live, to create an account. Users under 18 need a parent or guardian’s permission and supervision. You must be at least 18 and legally authorized to use the payment method to purchase a subscription; a parent or guardian must make purchases for a minor.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Eligibility</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You must be at least 13 years of age to use the Service. By using the Service, you represent and warrant that:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>You are at least 13 years old</li>
-              <li>You have the legal capacity to enter into these Terms</li>
-              <li>You will comply with these Terms and all applicable laws and regulations</li>
-              <li>All information you provide is accurate, current, and complete</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              If you are between 13 and 18 years of age, you confirm that you have obtained permission from your parent or legal guardian to use the Service, and that they have reviewed and agreed to these Terms on your behalf.
-            </p>
-          </section>
+      <LegalSection id="account" title="3. Accounts and security">
+        <p>Keep your registration details and billing email accurate, protect your login credentials, and do not share, sell, or transfer your account. Report unauthorized access to <a href="mailto:support@spotdiffs.com">support@spotdiffs.com</a>. Accounts may use email/password or supported Google sign-in.</p>
+        <p>You can request account deletion by emailing support from your registered address. Cancel any active renewal first or ask us to cancel it as part of your request. Signing out, clearing browser data, or stopping play does not cancel recurring billing. Subscription cancellation and account deletion are separate actions.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. Account Registration and Security</h2>
+      <LegalSection id="plans" title="4. Premium subscription plans">
+        <p>Premium includes access to Premium online puzzles, ad-free browsing, and an allowance of 10 eligible printable packs per subscription month. Current plans are available on the <Link href="/premium">Premium page</Link>:</p>
+        <ul>{premiumPlans.map(plan => <li key={plan.id}><strong>{plan.name}:</strong> USD {(plan.priceCents / 100).toFixed(2)} charged every {plan.months === 1 ? 'month' : plan.months === 3 ? '3 months' : '12 months'}.</li>)}</ul>
+        <p>Quarterly and annual prices are charged in full at the start of each billing period. A displayed monthly equivalent is for comparison and does not mean monthly installments. The selected plan, recurring interval, currency, total, and applicable taxes are shown before you confirm payment. No free trial is currently offered.</p>
+        <p>The printable allowance refreshes on your monthly membership anniversary, including on quarterly and annual plans. For a shorter calendar month, the anniversary falls on its last day. Unused allowances do not roll over, cannot be transferred or redeemed for cash, and are not separately purchased credits. One eligible product counts as one pack, even when it has multiple files; downloading its files again during the same subscription month does not consume another pack. Membership download access requires an active membership and a redemption in the current subscription month.</p>
+        <p>Separately purchased printable PDFs and printable passes are different products with their own displayed access terms. They do not create or renew a Waffo Premium subscription.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">3.1 Account Creation</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              To access certain features of the Service, you must create an account. You agree to:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Provide accurate, current, and complete information during registration</li>
-              <li>Maintain and promptly update your account information</li>
-              <li>Maintain the security and confidentiality of your password</li>
-              <li>Notify us immediately of any unauthorized access to your account</li>
-            </ul>
+      <LegalSection id="billing" title="5. Recurring billing and payment authorization">
+        <p><strong>By choosing a paid plan and confirming checkout, you authorize recurring charges to your selected payment method for that plan at its stated interval until you cancel renewal.</strong> The initial charge is due at purchase; subsequent charges occur when the paid billing period renews.</p>
+        <p>Premium payments are processed through <strong>Waffo Pancake</strong> using its hosted checkout and payment partners. Full card numbers and card security codes are handled by the payment provider and are not stored on SpotDiffs servers. Access begins after payment has been verified; returning from checkout alone does not confirm payment.</p>
+        <p>Prices are in US dollars. Applicable VAT, GST, sales tax, or other taxes, if any, are shown at checkout before payment. Your bank may apply currency conversion or other fees. Keep the payment receipt and use <Link href="/my-orders">My Orders</Link> to view available Premium payment records.</p>
+        <p>If a renewal payment fails, membership may expire at the end of the previously paid period. A failed or pending payment does not extend access. Contact support about payment problems before creating a second subscription.</p>
+        <p>If we change a recurring price or materially reduce a paid plan’s benefits, we will notify affected subscribers by email or a prominent website notice at least 30 days before the change takes effect. Price changes apply to a future renewal, and you may cancel beforehand. Additional consent will be obtained where required by law.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">3.2 Account Responsibility</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You are solely responsible for all activities that occur under your account. You agree not to:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Share your account credentials with any third party</li>
-              <li>Use another user's account without permission</li>
-              <li>Create multiple accounts for deceptive purposes</li>
-              <li>Impersonate any person or entity</li>
-            </ul>
+      <LegalSection id="cancellation" title="6. Canceling renewal">
+        <p><strong>You can cancel automatic renewal at any time online:</strong> sign in to the account used to subscribe, open <Link href="/premium">Premium</Link>, scroll to your active membership details, and select <strong>Cancel renewal</strong>. A successful request displays a “Renewal canceled” confirmation. If an error appears or your status is unclear, contact support so we can verify it.</p>
+        <p>You may also request cancellation by emailing <a href="mailto:support@spotdiffs.com">support@spotdiffs.com</a> from your registered address with the subject “Cancel Premium renewal.” Include the account email and available order reference, never full payment-card details. Allow time for a support-assisted request to be processed before your next billing date; the online option is available without waiting for a support response.</p>
+        <p>Cancel before the next renewal charge to stop future billing. Your membership and monthly printable allowance remain available until the end of your already paid period, shown in your membership details. Cancellation does not itself refund an earlier charge, delete your account, or remove separately purchased printable access. Data handling is explained in our <Link href="/privacy#retention">Privacy Policy</Link>.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">3.3 Account Termination</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You may delete your account at any time through your account settings. Upon deletion, your personal data will be removed in accordance with our Privacy Policy. We reserve the right to retain certain information for legal compliance or legitimate business purposes.
-            </p>
+      <LegalSection id="refunds" title="7. Refund policy for Premium subscriptions">
+        <p><strong>First-purchase 7-day money-back guarantee:</strong> if this is your first Premium purchase, you may request a full refund within 7 calendar days of your first successful payment. This guarantee applies to monthly, quarterly, and annual plans, even if you have played Premium puzzles or redeemed printable packs. It is available once per customer and does not restart on renewal or a later purchase.</p>
+        <p>Outside this guarantee and the exceptions below, fees for a used billing period are generally non-refundable simply because you stop using the Service. Canceling renewal prevents future charges and preserves access through the paid period; it does not itself request a refund.</p>
+        <ul>
+          <li><strong>Duplicate charges and billing errors:</strong> we will refund a verified duplicate charge in full and refund any amount incorrectly charged, including a renewal charged after an effective cancellation.</li>
+          <li><strong>Extended service outage:</strong> if a verified failure attributable to us makes the paid Service unavailable for more than 72 consecutive hours, you may request a prorated refund for the affected paid time or agree with us to an equivalent membership extension. The refund is calculated using the fee paid for the affected billing period and the proportion of that period for which the paid Service was unavailable. This compensation does not limit the first-purchase guarantee or your statutory rights.</li>
+          <li><strong>Service not delivered:</strong> contact us if paid access is not activated or a material service defect prevents use. If we cannot provide the purchased service or remedy the problem, we will provide an appropriate refund or other remedy required by law.</li>
+          <li><strong>Consumer rights:</strong> nothing in these Terms removes statutory withdrawal, cancellation, refund, or other consumer rights, including applicable EU/UK rights. Any exception for immediately supplied digital services applies only when its legal requirements, including any required express consent and acknowledgment, have been met.</li>
+        </ul>
+        <p>Request a refund at <a href="mailto:support@spotdiffs.com?subject=Premium%20refund%20request">support@spotdiffs.com</a> with your account email, transaction or order ID, charge date, and reason. For the 7-day guarantee, send the request within the 7-day window; processing time does not affect eligibility. Do not send passwords, full card numbers, or security codes. We aim to acknowledge requests within two business days and initiate approved refunds to the original payment method within 5–10 business days of approval. Your bank or payment provider may need additional time to post the credit.</p>
+        <p>A full subscription refund ends the refunded Premium access and cancels its future renewal. A partial outage refund does not cancel renewal unless you ask us to do so. Refund processing is handled through support and the payment provider.</p>
+        <p>Separately purchased PayPal printable products are covered by the <Link href="/refund-policy">Digital Delivery &amp; Refund Policy</Link>. That policy does not replace this Premium subscription policy.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">3.4 Printable Digital Products</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Printable products are digital PDF files; no physical item is shipped. Paid orders are processed by PayPal, and access is provided only after PayPal confirms a completed payment. Product pages state the price, file format, page count, and included content before checkout.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Each download grants a limited, non-exclusive license for one household or one classroom. You may print copies for that permitted use, but you may not resell, redistribute, upload, sublicense, or commercially republish the PDF or its contents. Digital delivery and refund terms are described in our <a href="/refund-policy" className="text-purple-600 dark:text-purple-400 hover:underline">Digital Delivery & Refund Policy</a>.
-            </p>
-          </section>
+      <LegalSection id="billing-disputes" title="8. Billing questions and disputes">
+        <p>For an unfamiliar charge, failed cancellation, or receipt question, email <a href="mailto:support@spotdiffs.com">support@spotdiffs.com</a> with your order reference. We aim to respond within two business days and investigate promptly. Contacting us does not restrict your right to contact your bank or payment provider, dispute a payment, or use a remedy available under applicable law.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Acceptable Use Policy</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You agree to use the Service only for lawful purposes and in accordance with these Terms. You agree NOT to:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Use the Service in any way that violates any applicable law or regulation</li>
-              <li>Attempt to gain unauthorized access to any portion of the Service</li>
-              <li>Use any automated system (bots, scripts) to access, scrape, or manipulate the Service</li>
-              <li>Interfere with or disrupt the Service or servers</li>
-              <li>Transmit viruses, malware, or any other harmful code</li>
-              <li>Harass, abuse, or harm other users</li>
-              <li>Upload or transmit offensive, inappropriate, or illegal content</li>
-              <li>Engage in any form of cheating or exploit game mechanics unfairly</li>
-              <li>Attempt to reverse engineer, decompile, or extract source code</li>
-              <li>Use the Service for any commercial purpose without our prior written consent</li>
-            </ul>
-          </section>
+      <LegalSection id="license" title="9. Content and permitted use">
+        <p>Our games, illustrations, designs, software, and printable materials belong to SpotDiffs or their respective licensors. You receive a limited, non-exclusive, non-transferable license for personal, non-commercial play. A printable may be printed for one household or one classroom. Downloaded files remain subject to this license after membership ends.</p>
+        <p>You may not resell, sublicense, redistribute, publicly upload, or commercially republish our PDFs or game content. Feedback and profile information may be used as needed to provide the Service; personal data remains subject to the Privacy Policy.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Intellectual Property Rights</h2>
+      <LegalSection id="acceptable-use" title="10. Acceptable use and fair play">
+        <ul>
+          <li>Do not violate laws, intellectual property rights, privacy rights, or child-protection rules.</li>
+          <li>Do not share paid access, bypass paywalls or download controls, misuse payment methods, or impersonate another person.</li>
+          <li>Do not attack the Service, introduce malware, access another account, or interfere with security features.</li>
+          <li>Do not use automated scraping, cheating tools, fraudulent scores, or exploits to manipulate games, rankings, or printable allowances.</li>
+          <li>Do not use profile information or communications to harass, defraud, or harm others.</li>
+        </ul>
+        <p>We may remove fraudulent scores and restrict abusive access proportionately to protect the Service.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">5.1 Ownership</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              All content, features, and functionality of the Service, including but not limited to text, graphics, logos, images, game designs, software code, and the compilation thereof (collectively, "Content"), are the exclusive property of Spot the Difference or its licensors and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
-            </p>
+      <LegalSection id="privacy" title="11. Privacy and third-party services">
+        <p>Our <Link href="/privacy">Privacy Policy</Link> describes account, gameplay, payment, analytics, and support data, their purposes, and your rights. Canceling renewal does not delete a free account. Waffo Pancake processes Premium payments; PayPal processes separately purchased printable products. Third-party sites and providers have their own terms and privacy practices.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">5.2 License to Use</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable, non-sublicensable, revocable license to access and use the Service for your personal, non-commercial entertainment purposes.
-            </p>
+      <LegalSection id="liability" title="12. Availability and liability">
+        <p>We work to keep the Service available, but maintenance, network issues, and provider outages may interrupt access. Games are for recreation, and no particular learning or health outcome is promised. Except for express commitments in these Terms and rights required by law, the Service is provided as available.</p>
+        <p>To the extent permitted by law, we are not responsible for indirect or consequential losses, and our aggregate liability is limited to the fees you paid us during the 12 months before the event giving rise to a claim. These limits do not exclude liability for fraud, intentional misconduct, death or personal injury caused by negligence, or any liability or consumer remedy that cannot legally be limited.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">5.3 Restrictions</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You may not:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Copy, modify, distribute, sell, or lease any part of the Service</li>
-              <li>Use the Content for any commercial purpose</li>
-              <li>Remove any copyright, trademark, or other proprietary notices</li>
-              <li>Create derivative works based on the Service or Content</li>
-              <li>Frame or mirror any part of the Service without our prior written consent</li>
-            </ul>
+      <LegalSection id="termination" title="13. Suspension and termination">
+        <p>We may suspend or terminate access for a material breach, fraud, a security threat, or a legal requirement. Where reasonably possible, we will explain the issue and allow an opportunity to resolve it. If we discontinue a prepaid service for reasons other than your breach, we will refund the unused portion of the prepaid period. Termination does not remove mandatory refund rights.</p>
+        <p>You can request account closure through support. Obligations that necessarily continue after closure, including content restrictions, payment obligations already incurred, and applicable dispute provisions, survive termination.</p>
+      </LegalSection>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">5.4 User-Generated Content</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              By submitting content to the Service (such as profile information, usernames, or feedback), you grant us a worldwide, non-exclusive, royalty-free, perpetual license to use, reproduce, modify, and display such content in connection with operating and promoting the Service.
-            </p>
-          </section>
+      <LegalSection id="law" title="14. Governing law and consumer rights">
+        <p>These Terms are governed by the laws of the People’s Republic of China, subject to any mandatory protections and rights to bring claims in your place of residence. Please contact support to try to resolve a dispute informally. Nothing requires you to waive access to a competent court, a consumer authority, or any statutory dispute-resolution process.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">6. Game Rules and Fair Play</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              To maintain fairness and integrity of the gaming experience:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Cheating, exploiting bugs, or using unauthorized tools is strictly prohibited</li>
-              <li>Leaderboard rankings must be achieved through legitimate gameplay</li>
-              <li>We reserve the right to remove scores or achievements obtained through unfair means</li>
-              <li>Repeated violations may result in account suspension or termination</li>
-            </ul>
-          </section>
+      <LegalSection id="changes" title="15. Changes to these terms">
+        <p>We will announce material changes at least 15 days before they take effect through a prominent website notice or your registered email, unless an earlier change is necessary for legal or security reasons. Recurring price changes follow Section 5. Changes do not retroactively remove accrued rights. Where consent is required, we will request it. If a provision is unenforceable, the remaining provisions continue to apply.</p>
+      </LegalSection>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">7. Third-Party Content and Links</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              The Service may contain links to third-party websites or services that are not owned or controlled by us. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party websites or services. You acknowledge and agree that we shall not be liable for any damage or loss caused by your use of any third-party content or services.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">8. Service Modifications and Availability</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We reserve the right to:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Modify, suspend, or discontinue any aspect of the Service at any time</li>
-              <li>Impose limits on certain features or restrict access to parts of the Service</li>
-              <li>Update or change game content, rules, or features</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We will make reasonable efforts to notify users of significant changes, but we are not obligated to do so. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the Service.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">9. Disclaimer of Warranties</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4 uppercase font-semibold">
-              THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              To the fullest extent permitted by law, we disclaim all warranties, including but not limited to:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Implied warranties of merchantability and fitness for a particular purpose</li>
-              <li>Warranties regarding accuracy, reliability, or availability of the Service</li>
-              <li>Warranties that the Service will be uninterrupted, secure, or error-free</li>
-              <li>Warranties regarding the quality of any products, services, or information obtained through the Service</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">10. Limitation of Liability</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4 uppercase font-semibold">
-              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL SPOT THE DIFFERENCE BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              This limitation applies regardless of the legal theory (contract, tort, strict liability, or otherwise) and whether or not we have been informed of the possibility of such damage.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">11. Indemnification</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You agree to indemnify, defend, and hold harmless Spot the Difference and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, arising out of or in any way connected with:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Your access to or use of the Service</li>
-              <li>Your violation of these Terms</li>
-              <li>Your violation of any third-party rights, including intellectual property rights</li>
-              <li>Any content you submit or transmit through the Service</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">12. Termination</h2>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">12.1 Termination by You</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You may terminate your account at any time by deleting your account through the account settings page. Upon termination, your right to use the Service will immediately cease.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">12.2 Termination by Us</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We reserve the right to suspend or terminate your account and access to the Service, without prior notice or liability, for any reason, including but not limited to:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Violation of these Terms</li>
-              <li>Fraudulent, abusive, or illegal activity</li>
-              <li>Extended periods of inactivity</li>
-              <li>At our sole discretion for any other reason</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">12.3 Effect of Termination</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Upon termination, all licenses and rights granted to you under these Terms will immediately cease. Sections of these Terms that by their nature should survive termination shall survive, including but not limited to intellectual property provisions, disclaimers, and limitations of liability.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">13. Dispute Resolution</h2>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">13.1 Governing Law</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              These Terms shall be governed by and construed in accordance with the laws of the People's Republic of China, without regard to its conflict of law provisions.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">13.2 Arbitration</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Any dispute, controversy, or claim arising out of or relating to these Terms, or the breach, termination, or invalidity thereof, shall be settled by arbitration in accordance with the arbitration rules of the People's Republic of China. The arbitration shall be conducted in Chinese, and the arbitral award shall be final and binding upon both parties.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">13.3 Exceptions</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Notwithstanding the above, we may seek injunctive or other equitable relief in any court of competent jurisdiction to protect our intellectual property rights or confidential information.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">14. General Provisions</h2>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">14.1 Entire Agreement</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              These Terms, together with our Privacy Policy, constitute the entire agreement between you and us regarding the use of the Service and supersede all prior agreements and understandings.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">14.2 Severability</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-300 mb-3">14.3 Waiver</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Our failure to enforce any right or provision of these Terms shall not be deemed a waiver of such right or provision.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">14.4 Assignment</h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              You may not assign or transfer these Terms or your rights hereunder without our prior written consent. We may assign these Terms without restriction.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">15. Changes to Terms</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              We reserve the right to modify these Terms at any time. When we make material changes, we will:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
-              <li>Update the "Last Updated" date at the top of this page</li>
-              <li>Post a notice on our Service</li>
-              <li>Notify registered users via email or in-app notification</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Your continued use of the Service after any such changes constitutes your acceptance of the new Terms. If you do not agree to the modified Terms, you must stop using the Service and delete your account.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">16. Contact Information</h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              If you have any questions about these Terms, please contact us at:
-            </p>
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-900 dark:text-white font-semibold mb-2">Spot the Difference</p>
-              <p className="text-gray-700 dark:text-gray-300 mb-1">Email: <a href="mailto:support@spotdiffs.com" className="text-purple-600 hover:underline">support@spotdiffs.com</a></p>
-              <p className="text-gray-700 dark:text-gray-300">We aim to respond to all inquiries within 48 hours.</p>
-            </div>
-          </section>
-
-          <section className="mb-8">
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              By using Spot the Difference, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
-            </p>
-          </section>
-        </div>
-      </div>
-    </div>
+      <LegalSection id="contact" title="16. Contact and support">
+        <p><strong>Operator:</strong> Qin JUNKUN, individual operator, Guangdong, People’s Republic of China.</p>
+        <p>For general support, billing, cancellations, refund requests, privacy, or security reports, email <a href="mailto:support@spotdiffs.com">support@spotdiffs.com</a>. Include a clear subject and your account or order reference where relevant. We aim to respond within two business days. Online renewal cancellation is available on <Link href="/premium">Premium</Link>.</p>
+      </LegalSection>
+    </LegalPage>
   );
 }

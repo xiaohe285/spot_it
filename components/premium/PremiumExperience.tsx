@@ -2,12 +2,14 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Bell, Check, CircleSlash, Crown, Download, Gamepad2, Mail, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check, CheckCircle2, CircleSlash, Crown, Download, Gamepad2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { premiumPlans, type PremiumPlanId } from '@/lib/premium/plans';
-import { trackPremium, visitorId } from '@/lib/premium/analytics';
+import { trackPremium } from '@/lib/premium/analytics';
+import { premiumAuthHeaders } from '@/lib/premium/clientAuth';
 import PremiumRibbon from './PremiumRibbon';
+import AuthModal from '@/components/auth/AuthModal';
 import styles from './PremiumExperience.module.css';
 import type { Level } from '@/types';
 import type { PrintableProduct } from '@/data/printables';
@@ -19,7 +21,8 @@ const benefits = [
   { icon: Sparkles, title: 'New Premium', detail: 'puzzles' },
 ];
 const faqs = [
-  ['Can I subscribe today?', 'Not yet. We’re checking interest before opening subscriptions. Clicking Subscribe records your interest; it won’t charge you or activate a membership. Leaving an email is optional.'],
+  ['How does payment work?', 'Sign in, choose a plan, and complete payment securely with Waffo. Membership begins after the payment is verified. Subscriptions renew automatically at the selected interval until canceled.'],
+  ['Can I cancel renewal?', 'Yes. Use Cancel renewal in your membership details below. You keep access until the end of your paid period.'],
   ['What counts as one printable pack?', 'One printable product counts as one pack, even if it contains several PDF files. Download any of its files again during the same subscription month without using another credit.'],
   ['When do my 10 credits refresh?', 'On your subscription’s monthly anniversary, including quarterly and annual plans. Unused credits don’t roll over. For a month without your signup date, we use its last day, then return to your original date in later months.'],
   ['Which printables can I choose?', 'Paid products marked Included with Premium. Free packs and packs you can already access through a separate purchase or an existing printable pass don’t use your credits.'],
@@ -27,39 +30,63 @@ const faqs = [
   ['Can I keep playing for free?', 'Yes. Existing free puzzles and daily challenges remain free. Premium adds more puzzles and extra benefits. Monthly pack download access requires an active membership and a redemption in the current subscription month.'],
 ];
 
-export default function PremiumExperience({ source, levelSlug, games, products }: {
-  source: string; levelSlug: string; games: Level[]; products: PrintableProduct[];
+export default function PremiumExperience({ source, levelSlug, games, products, testMode }: {
+  source: string; levelSlug: string; games: Level[]; products: PrintableProduct[]; testMode: boolean;
 }) {
   const { user } = useAuth();
   const { status, loading, error: statusError, refresh } = usePremium();
   const [planId, setPlanId] = useState<PremiumPlanId>('monthly');
   const plan = premiumPlans.find(plan => plan.id === planId)!;
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState('');
+  const [authOpen, setAuthOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
-  const [intentSaved, setIntentSaved] = useState(false);
-  const requestId = useRef('');
-  const visitor = useRef('');
-  const dialog = useRef<HTMLDialogElement>(null);
+  const [needsSignIn, setNeedsSignIn] = useState(false);
+  const [errorAction, setErrorAction] = useState<'checkout' | 'cancel'>('checkout');
+  const [notice, setNotice] = useState('');
+  const checkoutLock = useRef(false);
+  const checkoutAlert = useRef<HTMLDivElement>(null);
+  const cancellationDialog = useRef<HTMLDialogElement>(null);
   const fields = { source, level_slug: levelSlug, plan: plan.id, price_cents: plan.priceCents };
   useEffect(() => { trackPremium('premium_page_view', { source, level_slug: levelSlug }); }, [source, levelSlug]);
+  useEffect(() => { if (error) checkoutAlert.current?.focus(); }, [error]);
   useEffect(() => {
-    if (open) dialog.current?.showModal(); else dialog.current?.close();
-  }, [open]);
-  async function record(email?: string) {
-    const response = await fetch('/api/premium/interest', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ visitorId: visitor.current, requestId: requestId.current, plan: plan.id, source, levelSlug, ...(email ? { email } : {}) }),
-    });
-    if (!response.ok) { const body = await response.json(); throw new Error(body.error || 'Unable to save your interest. Please retry.'); }
-  }
+    if (notice && !cancellationDialog.current?.open) cancellationDialog.current?.showModal();
+  }, [notice]);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('checkout') !== 'returned' || !user || status.active) return;
+    // The return URL is only a cue to refresh; it never grants membership.
+    let attempts = 0;
+    const timer = setInterval(() => { void refresh(); if (++attempts >= 20) clearInterval(timer); }, 3000);
+    return () => clearInterval(timer);
+  }, [user, status.active, refresh]);
   async function subscribe() {
-    requestId.current = crypto.randomUUID(); visitor.current = visitorId();
-    setEmail(user?.email || ''); setSaved(false); setError(''); setIntentSaved(false); setOpen(true); setBusy(true);
+    if (!user) { setAuthOpen(true); return; }
+    if (checkoutLock.current) return;
+    checkoutLock.current = true;
+    setBusy(true); setError(''); setNotice(''); setNeedsSignIn(false);
+    setErrorAction('checkout');
     trackPremium('premium_subscribe_click', fields);
-    try { await record(); setIntentSaved(true); } catch (error) { setError((error as Error).message); } finally { setBusy(false); }
+    try {
+      const response = await fetch('/api/waffo/checkout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...await premiumAuthHeaders() }, body: JSON.stringify({ plan: plan.id }),
+      });
+      const body = await response.json();
+      if (!response.ok) { setNeedsSignIn(response.status === 401); throw new Error(body.error || 'Unable to start checkout.'); }
+      window.location.href = body.checkoutUrl;
+    } catch (error) { setError((error as Error).message); }
+    finally { checkoutLock.current = false; setBusy(false); }
+  }
+  async function cancelRenewal() {
+    setErrorAction('cancel');
+    setBusy(true); setError(''); setNeedsSignIn(false);
+    try {
+      const response = await fetch('/api/waffo/subscription', { method: 'POST', headers: await premiumAuthHeaders() });
+      const body = await response.json();
+      if (!response.ok) { setNeedsSignIn(response.status === 401); throw new Error(body.error || 'Unable to cancel renewal.'); }
+      setNotice('Renewal canceled. Your membership remains available until the end of your paid period.');
+      await refresh();
+    } catch (error) { setError((error as Error).message); }
+    finally { setBusy(false); }
   }
   const date = (value: string | null) => value ? new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
   return (
@@ -80,7 +107,7 @@ export default function PremiumExperience({ source, levelSlug, games, products }
         </div>
         <div className={styles.planCard}>
           <h2 className={styles.cardHeading}>Choose your plan</h2>
-          <fieldset className={styles.plans}>
+          <fieldset disabled={busy || status.active} className={styles.plans}>
             <legend className="sr-only">Choose a subscription plan</legend>
             {premiumPlans.map(option => (
               <label key={option.id} className={`${styles.plan} ${option.id === planId ? styles.selected : ''}`}>
@@ -96,28 +123,54 @@ export default function PremiumExperience({ source, levelSlug, games, products }
               </label>
             ))}
           </fieldset>
-          <button disabled={busy} onClick={() => void subscribe()} className={styles.subscribe}>
-            Subscribe to Premium <ArrowRight aria-hidden="true" />
+          <button disabled={busy || loading || status.active} onClick={() => void subscribe()} className={styles.subscribe}>
+            {busy ? 'Please wait…' : status.active ? 'Premium is active' : 'Subscribe to Premium'} <ArrowRight aria-hidden="true" />
           </button>
+          {(error || statusError) && (
+            <div ref={checkoutAlert} role="alert" tabIndex={-1} className={styles.checkoutAlert} aria-labelledby="premium-alert-title">
+              <span className={styles.alertIcon}><AlertCircle aria-hidden="true" /></span>
+              <div className={styles.alertContent}>
+                <h3 id="premium-alert-title">{error ? needsSignIn ? 'Please sign in again' : errorAction === 'checkout' ? 'We couldn’t start checkout' : 'We couldn’t update your subscription' : 'Membership status unavailable'}</h3>
+                <p>{error || 'We couldn’t check your Premium membership. Please retry before continuing.'}</p>
+                <button disabled={busy || loading} className={styles.alertAction} onClick={() => {
+                  if (error && needsSignIn) setAuthOpen(true);
+                  else if (error) { void (errorAction === 'checkout' ? subscribe() : cancelRenewal()); }
+                  else { void refresh(); }
+                }}>{error ? needsSignIn ? 'Sign in again' : 'Try again' : 'Refresh membership'}<ArrowRight aria-hidden="true" /></button>
+              </div>
+            </div>
+          )}
           <div className={styles.selectedBilling} aria-live="polite" aria-atomic="true">
             <p className={styles.billingAmount}>${plan.priceCents / 100} / {plan.period}</p>
             <p className={styles.billingBenefit}>10 printable packs each month</p>
           </div>
-          <p className={styles.comingSoon}>Coming soon · No payment collected today</p>
+          <p className={styles.comingSoon}>{testMode ? 'Test checkout · No real charges' : 'Renews automatically · Cancel renewal anytime'}</p>
+          <p className={styles.checkoutTerms}>
+            By subscribing, you authorize recurring charges at the selected billing interval until you cancel renewal and agree to our <Link href="/terms">Terms of Service</Link>. Read our <Link href="/terms#refunds">subscription refund policy</Link> and <Link href="/privacy">Privacy Policy</Link> before checkout.
+          </p>
           <div className={styles.reassurance}>
-            <span><ShieldCheck aria-hidden="true" /> No charge today</span>
-            <span><Mail aria-hidden="true" /> Optional email</span>
-            <span><Bell aria-hidden="true" /> Launch updates</span>
+            <span><ShieldCheck aria-hidden="true" /> Secure checkout with Waffo</span>
           </div>
         </div>
       </section>
-      {loading ? <p className={styles.status}>Checking your membership…</p> : statusError ? (
-        <div className={styles.status}>{statusError} <button onClick={() => void refresh()} className={styles.textLink}>Retry</button></div>
-      ) : status.active && (
+      {notice && <p role="status" className={styles.status}>{notice}</p>}
+      <dialog ref={cancellationDialog} className={styles.dialog} aria-labelledby="renewal-canceled-title" aria-describedby="renewal-canceled-description">
+        <button type="button" className={styles.close} aria-label="Close notification" onClick={() => cancellationDialog.current?.close()}><X aria-hidden="true" /></button>
+        <span className={`${styles.dialogIcon} ${styles.cancellationIcon}`}><CheckCircle2 aria-hidden="true" /></span>
+        <h2 id="renewal-canceled-title">Renewal canceled</h2>
+        <p id="renewal-canceled-description" className={styles.dialogDescription}>{notice}</p>
+        <form method="dialog"><button className={styles.subscribe}>Got it</button></form>
+      </dialog>
+      {!status.active && user && <PaymentReturnNotice refresh={refresh} />}
+      {loading ? <p className={styles.status}>Checking your membership…</p> : status.active && (
         <div className={`${styles.status} ${styles.membership}`}>
           <Crown aria-hidden="true" /><div><p className={styles.planName}>Your {premiumPlans.find(plan => plan.id === status.plan)?.name} membership is active</p>
           <p>Valid through {date(status.expiresAt)} · {status.remaining} of 10 pack credits remaining · {status.resetsAt === status.expiresAt ? 'Access ends' : 'Next refresh'} {date(status.resetsAt)}</p>
-          <Link href="/printables" className={styles.textLink}>Choose your printable packs →</Link></div>
+          <Link href="/printables" className={styles.textLink}>Choose your printable packs →</Link>
+          {status.billingStatus === 'canceling' && <p>Renewal canceled. Access ends {date(status.expiresAt)}.</p>}
+          {status.billingStatus === 'past_due' && <p>Renewal payment failed. Update your payment method in Waffo to keep your membership.</p>}
+          {status.canCancel && !notice && <p><button disabled={busy} onClick={() => void cancelRenewal()} className={styles.textLink}>Cancel renewal</button></p>}
+          </div>
         </div>
       )}
       <section className={styles.comparisonSection}>
@@ -156,26 +209,13 @@ export default function PremiumExperience({ source, levelSlug, games, products }
         <div className={styles.faqs}>{faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
         <p className={styles.pdfPass}>Looking for the PDF-only pass? <Link href="/printables/premium" className={styles.textLink}>Explore printable access</Link></p>
       </section>
-      <dialog ref={dialog} onCancel={() => setOpen(false)} onClose={() => setOpen(false)} aria-labelledby="premium-dialog-title" className={styles.dialog}>
-        <button onClick={() => setOpen(false)} aria-label="Close" className={styles.close}><X aria-hidden="true" /></button>
-        <span className={styles.dialogIcon}><Crown aria-hidden="true" /></span><h2 id="premium-dialog-title">Premium is coming soon</h2>
-        <p className={styles.dialogDescription}>You won’t be charged today, and a membership won’t be activated. Your interest helps us decide what to build next.</p>
-        <p className={styles.dialogPlan}>{plan.name} · ${plan.priceCents / 100}/{plan.period}</p>
-        {saved ? <p role="status" className={styles.success}>You’re on the list. We’ll notify you when Premium launches.</p> : (
-          <form className={styles.form} onSubmit={async event => {
-            event.preventDefault(); setBusy(true); setError('');
-            try { await record(email); setIntentSaved(true); setSaved(true); trackPremium('premium_notify_submit', fields); } catch (error) { setError((error as Error).message); } finally { setBusy(false); }
-          }}>
-            <label htmlFor="premium-email">Email for launch updates (optional)</label>
-            <input id="premium-email" type="email" autoComplete="email" maxLength={254} value={email} onChange={event => setEmail(event.target.value)} placeholder="you@example.com" />
-            <p>Only used to notify you about the Premium launch. <Link href="/privacy" className={styles.textLink}>Privacy policy</Link></p>
-            <button disabled={busy || !email.trim()} className={styles.subscribe}>{busy ? 'Saving…' : 'Notify me at launch'}</button>
-          </form>
-        )}
-        {error && <div role="alert" className={styles.error}>{error}{!intentSaved && !email && <button disabled={busy} onClick={async () => { setBusy(true); try { await record(); setIntentSaved(true); setError(''); } catch (error) { setError((error as Error).message); } finally { setBusy(false); } }} className={styles.textLink}>Retry</button>}</div>}
-        <button onClick={() => setOpen(false)} className={styles.continue}>Continue browsing</button>
-        {levelSlug && <Link href={`/game/${encodeURIComponent(levelSlug)}`} className={`${styles.textLink} ${styles.backLink}`}>Back to your puzzle</Link>}
-      </dialog>
+      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} onSuccess={() => { setAuthOpen(false); setError(''); setNeedsSignIn(false); void refresh(); }} />
     </div>
   );
+}
+
+function PaymentReturnNotice({ refresh }: { refresh: () => Promise<void> }) {
+  const [returned, setReturned] = useState(false);
+  useEffect(() => { queueMicrotask(() => setReturned(new URLSearchParams(window.location.search).get('checkout') === 'returned')); }, []);
+  return returned ? <div role="status" className={styles.status}>Waiting for payment confirmation. Your membership will appear here once verified. If this takes longer than a minute, contact support before paying again. <button onClick={() => void refresh()} className={styles.textLink}>Refresh membership</button></div> : null;
 }

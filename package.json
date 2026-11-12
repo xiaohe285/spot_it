@@ -7,12 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:premium": "node --test tests/premium.test.mjs"
+    "test:premium": "node --test tests/premium.test.mjs",
+    "waffo:setup": "node scripts/waffo-setup.mjs",
+    "test:waffo": "node --test tests/waffo.test.mjs",
+    "waffo:backfill": "node scripts/waffo-backfill.mjs",
+    "test:orders": "node --test tests/orders.test.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1095.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.84.0",
+    "@waffo/pancake-ts": "^0.28.0",
     "date-fns": "^4.1.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.562.0",
