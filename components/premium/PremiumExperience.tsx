@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AlertCircle, ArrowRight, Check, CircleSlash, Crown, Download, Gamepad2, ShieldCheck, Sparkles } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check, CheckCircle2, CircleSlash, Crown, Download, Gamepad2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { premiumPlans, type PremiumPlanId } from '@/lib/premium/plans';
@@ -45,9 +45,13 @@ export default function PremiumExperience({ source, levelSlug, games, products, 
   const [notice, setNotice] = useState('');
   const checkoutLock = useRef(false);
   const checkoutAlert = useRef<HTMLDivElement>(null);
+  const cancellationDialog = useRef<HTMLDialogElement>(null);
   const fields = { source, level_slug: levelSlug, plan: plan.id, price_cents: plan.priceCents };
   useEffect(() => { trackPremium('premium_page_view', { source, level_slug: levelSlug }); }, [source, levelSlug]);
   useEffect(() => { if (error) checkoutAlert.current?.focus(); }, [error]);
+  useEffect(() => {
+    if (notice && !cancellationDialog.current?.open) cancellationDialog.current?.showModal();
+  }, [notice]);
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('checkout') !== 'returned' || !user || status.active) return;
     // The return URL is only a cue to refresh; it never grants membership.
@@ -141,12 +145,22 @@ export default function PremiumExperience({ source, levelSlug, games, products, 
             <p className={styles.billingBenefit}>10 printable packs each month</p>
           </div>
           <p className={styles.comingSoon}>{testMode ? 'Test checkout · No real charges' : 'Renews automatically · Cancel renewal anytime'}</p>
+          <p className={styles.checkoutTerms}>
+            By subscribing, you authorize recurring charges at the selected billing interval until you cancel renewal and agree to our <Link href="/terms">Terms of Service</Link>. Read our <Link href="/terms#refunds">subscription refund policy</Link> and <Link href="/privacy">Privacy Policy</Link> before checkout.
+          </p>
           <div className={styles.reassurance}>
             <span><ShieldCheck aria-hidden="true" /> Secure checkout with Waffo</span>
           </div>
         </div>
       </section>
       {notice && <p role="status" className={styles.status}>{notice}</p>}
+      <dialog ref={cancellationDialog} className={styles.dialog} aria-labelledby="renewal-canceled-title" aria-describedby="renewal-canceled-description">
+        <button type="button" className={styles.close} aria-label="Close notification" onClick={() => cancellationDialog.current?.close()}><X aria-hidden="true" /></button>
+        <span className={`${styles.dialogIcon} ${styles.cancellationIcon}`}><CheckCircle2 aria-hidden="true" /></span>
+        <h2 id="renewal-canceled-title">Renewal canceled</h2>
+        <p id="renewal-canceled-description" className={styles.dialogDescription}>{notice}</p>
+        <form method="dialog"><button className={styles.subscribe}>Got it</button></form>
+      </dialog>
       {!status.active && user && <PaymentReturnNotice refresh={refresh} />}
       {loading ? <p className={styles.status}>Checking your membership…</p> : status.active && (
         <div className={`${styles.status} ${styles.membership}`}>

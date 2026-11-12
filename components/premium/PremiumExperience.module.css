@@ -61,6 +61,8 @@
 .billingAmount { font-size: 24px; line-height: 1.3; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
 .billingBenefit { margin-top: 5px; font-size: 14px; line-height: 1.5; font-weight: 500; color: var(--body); }
 .comingSoon { margin-top: 7px; text-align: center; color: var(--body); font-size: 12px; }
+.checkoutTerms { margin-top: 14px; color: var(--body); font-size: 12px; line-height: 1.7; text-align: center; }
+.checkoutTerms a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
 .reassurance { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 24px; padding-top: 19px; border-top: 1px solid var(--line); }
 .reassurance span { display: inline-flex; align-items: center; gap: 7px; color: var(--body); font-size: 11px; white-space: nowrap; }
 .reassurance span + span { border-left: 1px solid var(--line); padding-left: 12px; }
@@ -68,7 +70,8 @@
 .status { max-width: 1180px; margin: 0 auto 35px; padding: 20px 28px; color: var(--body); font-size: 14px; }
 .membership { display: flex; gap: 18px; border: 1px solid var(--line); border-radius: 20px; background: var(--tint); line-height: 2; }
 .membership > svg { color: var(--gold); flex-shrink: 0; margin-top: 5px; }
-.textLink { font-weight: 650; color: var(--gold); text-underline-offset: 4px; text-decoration: underline; }
+.textLink { font-weight: 650; color: var(--gold); text-underline-offset: 4px; text-decoration: underline; cursor: pointer; }
+.textLink:disabled { cursor: wait; }
 .comparisonSection { border-top: 1px solid var(--line); padding: 68px 24px 76px; background: color-mix(in srgb, var(--surface) 50%, transparent); }
 .sectionHeading { text-align: center; margin-bottom: 32px; }
 .kicker { display: block; font-size: 11px; letter-spacing: .18em; }
@@ -108,6 +111,8 @@
 .close:hover { background: var(--tint); }
 .close svg { width: 20px; height: 20px; }
 .dialogIcon { display: inline-flex; color: var(--gold); padding: 12px; background: var(--tint); border-radius: 15px; }
+.cancellationIcon { color: #36572c; background: #edf3e5; }
+.cancellationIcon svg { width: 32px; height: 32px; }
 .dialogDescription { font-size: 14px; color: var(--body); line-height: 1.8; margin-top: 16px; }
 .dialogPlan { font-weight: 700; margin-top: 15px; }
 .form { margin-top: 22px; }
@@ -128,3 +133,4 @@
 @media (prefers-color-scheme: dark) { .page { --paper: #211b15; --surface: #2a221a; --ink: #f5e5d0; --body: #c4b29e; --gold: #e8b864; --line: #4e3e2b; --tint: #3b2c1b; background: radial-gradient(ellipse at 76% 13%, #392a1a 0, transparent 42%), var(--paper); } .eyebrow { background: linear-gradient(120deg, #4b3316, #362716); color: #efd19d; border-color: #6e4b22; } .headlineAccent::after { border-color: #8c652f; } .benefitIcon { background: linear-gradient(140deg, #4a351b, #3a2b1b); color: #e9b45e; } .planCard { border-color: #72502c; } .cardHeading, .kicker { color: #dfb16e; } .plan { border-color: #514332; } .plan.selected { background: linear-gradient(115deg, #43311c, #382916); border-color: #d49633; } .plan input { border-color: #79684f; } .plan input:checked { border-color: #d49633; } .selected .planPrice { color: #f2c884; } .saving { color: #8dc48c; } .subscribe { color: #36220e; border-color: #c69037; } .success { background: #2e3d27; color: #bed9b2; } .included { color: #a0be8c; } .error { color: #ffb5a4; } }
 @media (prefers-reduced-motion: reduce) { .page *, .page *::after { transition: none; } }
 @media (prefers-color-scheme: dark) { .checkoutAlert { background: #3b291f; border-color: #775039; border-left-color: #e6a16c; color: #f5d7bc; } .alertIcon { background: #593924; color: #f4bd8d; } .alertAction { color: #f4bd8d; } }
+@media (prefers-color-scheme: dark) { .cancellationIcon { background: #2e3d27; color: #bed9b2; } }
