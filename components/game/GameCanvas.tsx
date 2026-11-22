@@ -3,7 +3,7 @@
 import PremiumGameGate from '@/components/premium/PremiumGameGate';
 import PremiumLevelLoader from '@/components/premium/PremiumLevelLoader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState, useRef, useEffect, type ReactNode } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { LevelWithCategory } from '@/lib/levels';
 import { soundEffects } from '@/utils/soundEffects';
@@ -33,7 +33,7 @@ interface GameCanvasProps {
     onComplete: (stats: GameStats) => void;
     maxHints?: number;
     onHeaderUpdate?: (stats: HeaderStats | null) => void;
-    supportAction?: ReactNode;
+    showHelpButton?: boolean;
 }
 
 export default function GameCanvas(props: GameCanvasProps) {
@@ -46,7 +46,7 @@ export default function GameCanvas(props: GameCanvasProps) {
     </PremiumGameGate>;
 }
 
-function PlayableGameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, supportAction }: GameCanvasProps) {
+function PlayableGameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, showHelpButton = true }: GameCanvasProps) {
     // Calculate max hints: should not be >= number of differences
     const actualMaxHints = Math.min(maxHints, level.differences.length - 1);
 
@@ -361,7 +361,7 @@ function PlayableGameCanvas({ level, onComplete, maxHints = 3, onHeaderUpdate, s
                         )}
                     </button>
 
-                    {supportAction ?? <button
+                    {showHelpButton && <button
                         onClick={handleAskForHelp}
                         disabled={foundDifferences.length === level.differences.length}
                         className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 text-white hover:scale-110 hover:shadow-lg cursor-pointer disabled:bg-gray-300 disabled:dark:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"

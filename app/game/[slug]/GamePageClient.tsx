@@ -16,7 +16,6 @@ import { saveGameRecord } from '@/lib/gameRecords';
 import StructuredData from '@/components/seo/StructuredData';
 import { getGameSchema, getBreadcrumbSchema } from '@/lib/structuredData';
 import GameTabs from '@/components/game/GameTabs';
-import KofiDonationButton from '@/components/game/KofiDonationButton';
 
 // Interface for header stats
 interface HeaderStats {
@@ -247,17 +246,19 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                 {/* Game Header with Breadcrumb */}
                 <div className="bg-gray-100 dark:bg-gray-800 p-2 md:p-1 shadow-md">
                     <div className="w-full max-w-7xl mx-auto">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-4">
                             {/* Left: Breadcrumb Navigation with Title and Badge */}
-                            <div className="flex items-center gap-3">
-                                <Link href="/games" className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <Link href="/games" className="shrink-0 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium">
                                     Games
                                 </Link>
-                                <span className="text-gray-400 dark:text-gray-500">/</span>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{level.title}</h1>
+                                <span className="shrink-0 text-gray-400 dark:text-gray-500">/</span>
+                                <h1 className="truncate text-xl font-bold text-gray-900 dark:text-white" title={level.title}>
+                                    {level.title}
+                                </h1>
                                 
                                 {/* Difficulty Capsule Badge */}
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
+                                <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
                                     level.difficulty === 'Easy' 
                                         ? 'bg-emerald-500' 
                                         : level.difficulty === 'Hard' 
@@ -270,7 +271,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             
                             {/* Center: Time and Combo (Desktop Only) */}
                             {headerStats && (!level.is_premium || (!premium.loading && !premium.error && premium.status.active)) && (
-                                <div className="hidden md:flex items-center gap-4">
+                                <div className="hidden md:flex shrink-0 items-center gap-4">
                                     {/* Timer */}
                                     <div className="flex items-center gap-2 text-gray-900 dark:text-white">
                                         <span className="text-xl">⏱️</span>
@@ -291,7 +292,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                             
                             {/* Right: Game Progress and Tools (Desktop Only) */}
                             {headerStats && (!level.is_premium || (!premium.loading && !premium.error && premium.status.active)) && (
-                                <div className="hidden md:flex items-center gap-4">
+                                <div className="hidden md:flex shrink-0 items-center gap-4">
                                     {/* Circular Progress */}
                                     <div className="relative w-15 h-15">
                                         <svg className="w-15 h-15 transform -rotate-90" viewBox="0 0 60 60">
@@ -348,8 +349,6 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
                                             </span>
                                         )}
                                     </button>
-
-                                    <KofiDonationButton />
                                 </div>
                             )}
                         </div>
@@ -358,7 +357,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
 
             {/* Game Area */}
             <div className="flex-grow flex items-center justify-center p-1">
-                <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} supportAction={<KofiDonationButton />} />
+                <GameCanvas level={level} onComplete={handleComplete} onHeaderUpdate={setHeaderStats} showHelpButton={false} />
             </div>
 
             {/* Game Tabs - Description and Stats (Desktop Only) */}
