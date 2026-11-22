@@ -1,7 +1,7 @@
 # Waffo Premium payments (test)
 
 `/premium` now uses `@waffo/pancake-ts` for recurring game membership:
-Monthly USD 9.00, Quarterly USD 24.00, Annual USD 100.00. The printable-only
+Monthly USD 9.00, Quarterly USD 24.00, Annual USD 90.00. The printable-only
 PayPal store remains a separate product. The API derives account ownership from
 the verified Supabase session. Card details are entered only on Waffo's hosted
 checkout. Private keys and checkout session tokens never enter client bundles.

@@ -26,7 +26,7 @@ function save(key, value) {
 const plans = [
   ['MONTHLY', 'Monthly', BillingPeriod.Monthly, '9.00'],
   ['QUARTERLY', 'Quarterly', BillingPeriod.Quarterly, '24.00'],
-  ['ANNUAL', 'Annual', BillingPeriod.Yearly, '100.00'],
+  ['ANNUAL', 'Annual', BillingPeriod.Yearly, '90.00'],
 ];
 try {
   for (const [key, name, billingPeriod, amount] of plans) {
@@ -37,7 +37,7 @@ try {
       prices: { USD: { amount, taxCategory: TaxCategory.DigitalGoods } },
       description: 'All Premium puzzles, ad-free browsing, and 10 printable packs per month.',
       metadata: { app: 'spotdiffs-premium', planId: key.toLowerCase() },
-    }, { idempotencyKey: `spotdiffs-premium-test-${storeId}-${key}-v1` });
+    }, { idempotencyKey: `spotdiffs-premium-test-${storeId}-${key}-v${key === 'ANNUAL' ? 2 : 1}` });
     save(env, product.id);
     console.log(`${env}=${product.id}`);
   }

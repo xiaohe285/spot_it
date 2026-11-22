@@ -111,15 +111,15 @@ export default function PremiumExperience({ source, levelSlug, games, products, 
             <legend className="sr-only">Choose a subscription plan</legend>
             {premiumPlans.map(option => (
               <label key={option.id} className={`${styles.plan} ${option.id === planId ? styles.selected : ''}`}>
-                {option.id === 'quarterly' && <span className={styles.valueBadge}><Crown aria-hidden="true" /> Best Value</span>}
+                {option.id === 'annual' && <span className={styles.valueBadge}><Crown aria-hidden="true" /> Best Value</span>}
                 <input type="radio" name="premium-plan" value={option.id} checked={option.id === planId}
                   onChange={() => { setPlanId(option.id); trackPremium('premium_plan_select', { source, level_slug: levelSlug, plan: option.id, price_cents: option.priceCents }); }} />
                 <span className={styles.planDescription}>
                   <span className={styles.planName}>{option.name}</span>
-                  {option.saving && <span className={styles.saving}>{option.id === 'quarterly' ? 'Save 11%' : 'Save 7%'}</span>}
+                  {option.saving && <span className={styles.saving}>{option.saving}</span>}
                   <span className={styles.billing}>${option.priceCents / 100} billed {option.id === 'monthly' ? 'every month' : option.id === 'quarterly' ? 'every 3 months' : 'every year'}</span>
                 </span>
-                <span className={styles.planPrice}><strong>{option.id === 'monthly' ? '$9.00' : option.id === 'quarterly' ? '$8.00' : '$8.33'}</strong><span>/ month{option.id === 'annual' ? ' approx.' : ''}</span></span>
+                <span className={styles.planPrice}><strong>${(option.priceCents / option.months / 100).toFixed(2)}</strong><span>/ month</span></span>
               </label>
             ))}
           </fieldset>
