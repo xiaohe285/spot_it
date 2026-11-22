@@ -6,7 +6,7 @@ import PremiumExperience from '@/components/premium/PremiumExperience';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Premium — More puzzles, no interruptions',
-  description: 'Unlock every Premium puzzle, play ad-free, and enjoy 10 printable packs each month. From $9 monthly, $24 quarterly or $100 annually.',
+  description: 'Unlock every Premium puzzle, play ad-free, and enjoy 10 printable packs each month. From $9 monthly, $24 quarterly or $90 annually.',
   alternates: { canonical: '/premium' },
 };
 export default async function PremiumPage({ searchParams }: { searchParams: Promise<{ source?: string; level?: string }> }) {

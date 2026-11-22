@@ -17,7 +17,7 @@ const { subscriptionPeriod } = await loadTypeScript('../lib/premium/period.ts');
 const { premiumPlans } = await loadTypeScript('../lib/premium/plans.ts');
 
 test('plans bill the correct complete period, with monthly first', () => {
-  assert.deepEqual(premiumPlans.map(plan => [plan.id, plan.priceCents, plan.months]), [['monthly', 900, 1], ['quarterly', 2400, 3], ['annual', 10000, 12]]);
+  assert.deepEqual(premiumPlans.map(plan => [plan.id, plan.priceCents, plan.months]), [['monthly', 900, 1], ['quarterly', 2400, 3], ['annual', 9000, 12]]);
   assert.equal(premiumPlans[1].priceCents / premiumPlans[1].months, 800);
 });
 test('month-end anniversary returns to the original anchor after February', () => {
